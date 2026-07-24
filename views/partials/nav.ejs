@@ -1,0 +1,25 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">🧾 Рахунки</a>
+    <nav class="mainnav">
+      <a href="/invoices" class="<%= currentPath.startsWith('/invoices') ? 'active' : '' %>">Рахунки</a>
+      <a href="/clients" class="<%= currentPath.startsWith('/clients') ? 'active' : '' %>">Покупці</a>
+      <a href="/services" class="<%= currentPath.startsWith('/services') ? 'active' : '' %>">Товари та послуги</a>
+      <a href="/settings" class="<%= currentPath === '/settings' ? 'active' : '' %>">Реквізити</a>
+      <% if (user && user.role === 'admin') { %>
+        <a href="/settings/users" class="<%= currentPath.startsWith('/settings/users') ? 'active' : '' %>">Користувачі</a>
+      <% } %>
+    </nav>
+    <div class="userbox">
+      <a href="/invoices/new" class="btn btn-primary btn-sm">+ Новий рахунок</a>
+      <span class="userinfo">
+        <span class="uname"><%= user.full_name %></span>
+        <a href="/settings/password" class="ulink">Пароль</a>
+      </span>
+      <form method="post" action="/logout" class="inline">
+        <button type="submit" class="btn btn-ghost btn-sm">Вийти</button>
+      </form>
+    </div>
+  </div>
+</header>
+<main class="container">

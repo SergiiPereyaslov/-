@@ -1,0 +1,50 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1>Покупці</h1>
+  <a href="/clients/new" class="btn btn-primary">+ Новий покупець</a>
+</div>
+
+<div class="tabs">
+  <a href="/clients" class="<%= showArchived ? '' : 'active' %>">Активні</a>
+  <a href="/clients?archived=1" class="<%= showArchived ? 'active' : '' %>">Архів</a>
+</div>
+
+<div class="card">
+  <% if (clients.length === 0) { %>
+    <div class="empty-state small">
+      <div class="empty-icon">👤</div>
+      <p class="muted"><%= showArchived ? 'В архіві порожньо.' : 'Ще немає жодного покупця.' %></p>
+      <% if (!showArchived) { %><a href="/clients/new" class="btn btn-primary">Додати покупця</a><% } %>
+    </div>
+  <% } else { %>
+    <table class="table">
+      <thead>
+        <tr><th>Назва</th><th>ЄДРПОУ</th><th>Контакти</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% clients.forEach(function(c) { %>
+          <tr>
+            <td><strong><%= c.name %></strong><% if (c.address) { %><br><span class="muted small"><%= c.address %></span><% } %></td>
+            <td><%= c.edrpou || '—' %></td>
+            <td class="muted"><%= c.contact_person || '' %> <%= c.phone ? '· ' + c.phone : '' %> <%= c.email ? '· ' + c.email : '' %></td>
+            <td class="right nowrap">
+              <a href="/clients/<%= c.id %>/edit" class="link">Редагувати</a>
+              <form method="post" action="/clients/<%= c.id %>/archive" class="inline">
+                <% if (showArchived) { %>
+                  <input type="hidden" name="restore" value="1">
+                  <button class="linkbtn">Відновити</button>
+                <% } else { %>
+                  <button class="linkbtn muted">В архів</button>
+                <% } %>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

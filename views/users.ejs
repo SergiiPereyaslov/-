@@ -1,0 +1,73 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/nav') %>
+
+<div class="page-head">
+  <h1>Користувачі (менеджери)</h1>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
+<% if (saved === 'created') { %><div class="alert alert-ok">Користувача створено.</div><% } %>
+<% if (saved === 'password') { %><div class="alert alert-ok">Пароль оновлено.</div><% } %>
+<% if (saved === 'toggled') { %><div class="alert alert-ok">Статус користувача змінено.</div><% } %>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Список</h2></div>
+    <table class="table">
+      <thead><tr><th>Ім’я</th><th>Логін</th><th>Роль</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(function(u) { %>
+          <tr>
+            <td><strong><%= u.full_name %></strong></td>
+            <td><%= u.username %></td>
+            <td><%= u.role === 'admin' ? 'Адміністратор' : 'Менеджер' %></td>
+            <td>
+              <% if (u.active) { %><span class="badge badge-ok">Активний</span>
+              <% } else { %><span class="badge badge-muted">Вимкнено</span><% } %>
+            </td>
+            <td class="right nowrap">
+              <details class="inline-details">
+                <summary class="link">Пароль</summary>
+                <form method="post" action="/settings/users/<%= u.id %>/password" class="pw-inline">
+                  <input type="password" name="password" placeholder="Новий пароль" required>
+                  <button class="btn btn-secondary btn-sm">OK</button>
+                </form>
+              </details>
+              <form method="post" action="/settings/users/<%= u.id %>/toggle" class="inline">
+                <button class="linkbtn muted"><%= u.active ? 'Вимкнути' : 'Увімкнути' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Додати менеджера</h2></div>
+    <form method="post" action="/settings/users/new" class="stack pad">
+      <label>
+        <span>Ім’я (ПІБ)</span>
+        <input type="text" name="full_name" required placeholder="Петренко Петро">
+      </label>
+      <label>
+        <span>Логін</span>
+        <input type="text" name="username" required placeholder="petro" autocomplete="off">
+      </label>
+      <label>
+        <span>Пароль</span>
+        <input type="password" name="password" required placeholder="мінімум 4 символи" autocomplete="new-password">
+      </label>
+      <label>
+        <span>Роль</span>
+        <select name="role">
+          <option value="manager">Менеджер</option>
+          <option value="admin">Адміністратор</option>
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary">Створити</button>
+    </form>
+  </section>
+</div>
+
+<%- include('partials/foot') %>

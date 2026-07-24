@@ -1,0 +1,131 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1><%= title %></h1>
+  <a href="/invoices" class="btn btn-ghost">← До списку</a>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<form method="post" action="<%= action %>" class="invoice-form" id="invoiceForm">
+  <div class="card">
+    <div class="form-grid-3">
+      <label>
+        <span>Номер рахунку</span>
+        <input type="text" name="number" value="<%= invoice.number %>" required>
+      </label>
+      <label>
+        <span>Дата</span>
+        <input type="date" name="invoice_date" value="<%= invoice.invoice_date %>" required>
+      </label>
+      <label>
+        <span>Покупець</span>
+        <div class="with-side">
+          <select name="client_id" required>
+            <option value="">— оберіть покупця —</option>
+            <% clients.forEach(function(c) { %>
+              <option value="<%= c.id %>" <%= String(invoice.client_id) === String(c.id) ? 'selected' : '' %>><%= c.name %><%= c.edrpou ? ' (ЄДРПОУ ' + c.edrpou + ')' : '' %></option>
+            <% }); %>
+          </select>
+          <a href="/clients/new" target="_blank" class="side-add" title="Додати нового покупця">+</a>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Позиції</h2>
+      <div class="catalog-add">
+        <select id="catalogSelect" class="catalog-select">
+          <option value="">+ Додати з каталогу…</option>
+          <% services.forEach(function(s) { %>
+            <option value="<%= s.id %>"><%= s.name %> — <%= fmt.formatMoney(s.price) %> ₴/<%= s.unit %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="items-table-wrap">
+      <table class="items-table" id="itemsTable">
+        <thead>
+          <tr>
+            <th class="col-num">№</th>
+            <th class="col-name">Найменування</th>
+            <th class="col-qty">К-сть</th>
+            <th class="col-unit">Од.</th>
+            <th class="col-price">Ціна, ₴</th>
+            <th class="col-sum">Сума, ₴</th>
+            <th class="col-del"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <% (invoice.items || []).forEach(function(it) { %>
+            <tr class="item-row">
+              <td class="col-num"><span class="row-num"></span></td>
+              <td class="col-name">
+                <input type="text" name="item_name[]" list="servicesList" value="<%= it.name %>" placeholder="Товар або послуга" autocomplete="off">
+              </td>
+              <td class="col-qty"><input type="text" inputmode="decimal" name="item_qty[]" value="<%= fmt.formatQty(it.quantity) %>" class="num"></td>
+              <td class="col-unit"><input type="text" name="item_unit[]" value="<%= it.unit %>"></td>
+              <td class="col-price"><input type="text" inputmode="decimal" name="item_price[]" value="<%= fmt.formatMoney(it.price) %>" class="num"></td>
+              <td class="col-sum right"><span class="row-sum">0,00</span></td>
+              <td class="col-del"><button type="button" class="row-del" title="Видалити">✕</button></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="items-foot">
+      <button type="button" class="btn btn-secondary" id="addRow">+ Додати позицію</button>
+      <div class="grand-total">
+        Усього до сплати:
+        <strong id="grandTotal">0,00 ₴</strong>
+        <span class="muted tax-note"><%= company.tax_note || 'Без ПДВ' %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="block">
+      <span>Примітка (необов’язково)</span>
+      <textarea name="notes" rows="2" placeholder="Напр.: Оплата протягом 3 банківських днів"><%= invoice.notes || '' %></textarea>
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary btn-lg">Зберегти рахунок</button>
+    <a href="/invoices" class="btn btn-ghost">Скасувати</a>
+  </div>
+</form>
+
+<datalist id="servicesList">
+  <% services.forEach(function(s) { %>
+    <option value="<%= s.name %>"></option>
+  <% }); %>
+</datalist>
+
+<template id="rowTemplate">
+  <tr class="item-row">
+    <td class="col-num"><span class="row-num"></span></td>
+    <td class="col-name">
+      <input type="text" name="item_name[]" list="servicesList" placeholder="Товар або послуга" autocomplete="off">
+    </td>
+    <td class="col-qty"><input type="text" inputmode="decimal" name="item_qty[]" value="1" class="num"></td>
+    <td class="col-unit"><input type="text" name="item_unit[]" value="шт"></td>
+    <td class="col-price"><input type="text" inputmode="decimal" name="item_price[]" value="0,00" class="num"></td>
+    <td class="col-sum right"><span class="row-sum">0,00</span></td>
+    <td class="col-del"><button type="button" class="row-del" title="Видалити">✕</button></td>
+  </tr>
+</template>
+
+<script>
+  window.__SERVICES__ = <%- JSON.stringify(services) %>;
+</script>
+<script src="/static/js/invoice-form.js"></script>
+
+<%- include('../partials/foot') %>

@@ -1,0 +1,17 @@
+<%- include('partials/head', { title }) %>
+<% if (user) { %>
+  <%- include('partials/nav') %>
+<% } else { %>
+  <main class="container">
+<% } %>
+  <div class="empty-state">
+    <div class="empty-icon">⚠️</div>
+    <h1><%= title %></h1>
+    <p class="muted"><%= message %></p>
+    <% if (typeof linkHref !== 'undefined' && linkHref) { %>
+      <a href="<%= linkHref %>" class="btn btn-primary"><%= linkText %></a>
+    <% } else { %>
+      <a href="/" class="btn btn-secondary">На головну</a>
+    <% } %>
+  </div>
+<%- include('partials/foot') %>

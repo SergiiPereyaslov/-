@@ -1,0 +1,295 @@
+/* ── Базові змінні та скидання ─────────────────────────────────────────── */
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --border: #e3e8f0;
+  --text: #1c2536;
+  --muted: #6b7688;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --ok: #16a34a;
+  --ok-bg: #e7f6ec;
+  --warn: #d97706;
+  --warn-bg: #fef3e2;
+  --danger: #dc2626;
+  --danger-bg: #fdecec;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(20, 30, 60, .06), 0 1px 2px rgba(20, 30, 60, .04);
+  --shadow-lg: 0 4px 16px rgba(20, 30, 60, .10);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1 { font-size: 24px; margin: 0; }
+h2 { font-size: 18px; margin: 0; }
+h3 { font-size: 15px; }
+
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.right { text-align: right; }
+.nowrap { white-space: nowrap; }
+.req { color: var(--danger); }
+
+/* ── Верхня панель ──────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; gap: 24px; height: 60px;
+}
+.brand { font-weight: 700; font-size: 18px; color: var(--text); }
+.brand:hover { text-decoration: none; }
+.mainnav { display: flex; gap: 4px; flex: 1; }
+.mainnav a {
+  color: var(--muted); padding: 8px 12px; border-radius: 8px; font-weight: 500;
+}
+.mainnav a:hover { background: var(--bg); text-decoration: none; color: var(--text); }
+.mainnav a.active { color: var(--primary); background: #eef3ff; }
+.userbox { display: flex; align-items: center; gap: 14px; }
+.userinfo { display: flex; flex-direction: column; line-height: 1.2; text-align: right; }
+.uname { font-weight: 600; font-size: 13px; }
+.ulink { font-size: 12px; color: var(--muted); }
+.inline { display: inline; margin: 0; }
+
+/* ── Контейнер ──────────────────────────────────────────────────────────── */
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
+
+.page-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+}
+.back-link { font-size: 13px; color: var(--muted); display: inline-block; margin-bottom: 4px; }
+.head-actions { display: flex; gap: 8px; }
+.section-hint { margin: -8px 0 16px; }
+
+/* ── Кнопки ─────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background .12s, border-color .12s;
+}
+.btn:hover { text-decoration: none; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #fff; color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--bg); }
+.btn-ghost { background: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+.btn-ok { background: var(--ok); color: #fff; }
+.btn-danger { background: #fff; color: var(--danger); border-color: #f3c9c9; }
+.btn-danger:hover { background: var(--danger-bg); }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-lg { padding: 12px 24px; font-size: 15px; }
+.btn-block { width: 100%; }
+
+.linkbtn {
+  background: none; border: none; color: var(--primary); cursor: pointer;
+  font: inherit; padding: 0; margin-left: 8px;
+}
+.linkbtn.muted { color: var(--muted); }
+.linkbtn:hover { text-decoration: underline; }
+.link { color: var(--primary); }
+.strong-link { font-weight: 600; }
+
+/* ── Картки ─────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px; margin-bottom: 20px;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.pad { padding: 12px 4px; }
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat { padding: 18px 20px; }
+.stat-label { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.stat-ok .stat-value { color: var(--ok); }
+.stat-warn .stat-value { color: var(--warn); }
+
+.grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
+
+/* ── Таблиці ────────────────────────────────────────────────────────────── */
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .03em;
+  color: var(--muted); padding: 10px 12px; border-bottom: 2px solid var(--border);
+}
+.table td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.table tbody tr:last-child td, .table tr:last-child td { border-bottom: none; }
+.table tr.clickable { cursor: pointer; }
+.table tr.clickable:hover { background: var(--bg); }
+
+/* ── Значки / статуси ───────────────────────────────────────────────────── */
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+}
+.badge-ok { background: var(--ok-bg); color: var(--ok); }
+.badge-warn { background: var(--warn-bg); color: var(--warn); }
+.badge-muted { background: #eef1f6; color: var(--muted); }
+.badge-lg { padding: 6px 14px; font-size: 14px; }
+
+/* ── Сповіщення ─────────────────────────────────────────────────────────── */
+.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+.alert-ok { background: var(--ok-bg); color: #135c2c; }
+.alert-error { background: var(--danger-bg); color: #a01b1b; }
+.alert-warn { background: var(--warn-bg); color: #92580a; }
+.alert-link { font-weight: 600; margin-left: 6px; }
+
+/* ── Форми ──────────────────────────────────────────────────────────────── */
+label { display: block; }
+label > span { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #374151; }
+input[type="text"], input[type="password"], input[type="date"], input[type="number"],
+select, textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 14px; font-family: inherit; background: #fff; color: var(--text);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+textarea { resize: vertical; }
+.block { margin-bottom: 16px; }
+.stack > label, .stack > * { margin-bottom: 14px; }
+.stack > *:last-child { margin-bottom: 0; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 16px; }
+.form-narrow { max-width: 680px; }
+.form-actions { display: flex; gap: 10px; margin-top: 8px; }
+.fieldset-title { margin: 22px 0 12px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); text-transform: uppercase; font-size: 12px; letter-spacing: .04em; }
+.hint { color: var(--muted); font-size: 12px; }
+
+.with-side { display: flex; gap: 6px; }
+.with-side select { flex: 1; }
+.side-add {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; border: 1px solid var(--border); border-radius: 8px; font-size: 20px;
+  color: var(--primary); background: #fff;
+}
+.side-add:hover { background: var(--bg); text-decoration: none; }
+
+/* ── Панель інструментів / фільтри ──────────────────────────────────────── */
+.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar .search { flex: 1; min-width: 220px; }
+.toolbar select { width: auto; }
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.tabs a { padding: 7px 14px; border-radius: 8px; color: var(--muted); font-weight: 500; }
+.tabs a.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.tabs a:hover { text-decoration: none; }
+
+.totals-row { display: flex; gap: 20px; margin-bottom: 16px; font-size: 14px; flex-wrap: wrap; }
+.totals-row .tok { color: var(--ok); }
+.totals-row .twarn { color: var(--warn); }
+
+/* ── Дашборд ────────────────────────────────────────────────────────────── */
+.quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.qa {
+  display: flex; align-items: center; gap: 10px; padding: 14px;
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-weight: 500;
+}
+.qa:hover { background: var(--bg); text-decoration: none; border-color: #cfd8e8; }
+.qa-ico { font-size: 22px; }
+.mini-stats { display: flex; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 14px; }
+
+/* ── Форма рахунку: позиції ─────────────────────────────────────────────── */
+.catalog-select { width: auto; max-width: 320px; }
+.items-table-wrap { overflow-x: auto; }
+.items-table { width: 100%; border-collapse: collapse; }
+.items-table th {
+  font-size: 12px; text-transform: uppercase; color: var(--muted); text-align: left;
+  padding: 8px 8px; border-bottom: 2px solid var(--border); font-weight: 600;
+}
+.items-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.items-table input { padding: 7px 9px; }
+.col-num { width: 34px; text-align: center; color: var(--muted); }
+.col-qty { width: 90px; }
+.col-unit { width: 80px; }
+.col-price { width: 120px; }
+.col-sum { width: 120px; text-align: right; font-weight: 600; }
+.col-del { width: 40px; }
+.items-table .num { text-align: right; }
+.row-del {
+  background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px;
+  padding: 4px 8px; border-radius: 6px;
+}
+.row-del:hover { background: var(--danger-bg); color: var(--danger); }
+.items-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: 16px; flex-wrap: wrap;
+}
+.grand-total { font-size: 16px; }
+.grand-total strong { font-size: 22px; color: var(--primary); margin: 0 8px; }
+.tax-note { font-size: 13px; }
+
+/* ── Перегляд рахунку ───────────────────────────────────────────────────── */
+.action-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.invoice-preview { padding: 28px 32px; }
+.ip-head { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+.ip-label { font-size: 12px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; letter-spacing: .04em; }
+.ip-strong { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+.ip-title { margin: 18px 0; padding: 14px 0; border-top: 2px solid var(--border); border-bottom: 2px solid var(--border); font-size: 18px; }
+.preview-items th { background: none; }
+.ip-total { margin-top: 18px; text-align: right; }
+.ip-total-sum { font-size: 18px; margin: 6px 0; }
+.ip-total-sum strong { color: var(--primary); }
+.ip-words { font-style: italic; color: var(--muted); }
+.ip-notes { margin-top: 16px; padding: 12px 14px; background: var(--bg); border-radius: 8px; font-size: 14px; }
+.ip-meta { margin-top: 16px; font-size: 13px; }
+
+.inline-details { display: inline; }
+.inline-details summary { display: inline; cursor: pointer; }
+.pw-inline { display: flex; gap: 6px; margin-top: 8px; }
+.pw-inline input { width: 160px; }
+
+/* ── Порожні стани ──────────────────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 48px 20px; }
+.empty-state.small { padding: 32px 20px; }
+.empty-icon { font-size: 40px; margin-bottom: 8px; }
+
+/* ── Логін ──────────────────────────────────────────────────────────────── */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow-lg); padding: 36px 32px; width: 100%; max-width: 380px; text-align: center;
+}
+.login-logo { font-size: 44px; margin-bottom: 8px; }
+.login-card h1 { font-size: 22px; margin-bottom: 4px; }
+.login-card form { margin-top: 20px; text-align: left; }
+.login-card label { margin-bottom: 14px; }
+
+/* ── Підвал ─────────────────────────────────────────────────────────────── */
+.sitefoot { text-align: center; color: var(--muted); font-size: 13px; padding: 24px; }
+
+/* ── Адаптивність ───────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr; }
+  .topbar-inner { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 10px; }
+  .mainnav { order: 3; width: 100%; overflow-x: auto; }
+  .ip-head { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .cards { grid-template-columns: 1fr; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+  .page-head { flex-direction: column; }
+}

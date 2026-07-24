@@ -1,0 +1,67 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1>Рахунки</h1>
+  <a href="/invoices/new" class="btn btn-primary">+ Новий рахунок</a>
+</div>
+
+<form method="get" action="/invoices" class="toolbar">
+  <input type="text" name="q" value="<%= q %>" placeholder="Пошук за номером або покупцем…" class="search">
+  <select name="status">
+    <option value="">Усі статуси</option>
+    <option value="issued" <%= status === 'issued' ? 'selected' : '' %>>Не оплачені</option>
+    <option value="paid" <%= status === 'paid' ? 'selected' : '' %>>Оплачені</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Показати</button>
+  <% if (q || status) { %><a href="/invoices" class="btn btn-ghost">Скинути</a><% } %>
+</form>
+
+<div class="totals-row">
+  <span>Разом: <strong><%= fmt.formatMoney(totals.sum_all) %> ₴</strong></span>
+  <span class="tok">Оплачено: <strong><%= fmt.formatMoney(totals.sum_paid) %> ₴</strong></span>
+  <span class="twarn">Очікує: <strong><%= fmt.formatMoney(totals.sum_unpaid) %> ₴</strong></span>
+</div>
+
+<div class="card">
+  <% if (invoices.length === 0) { %>
+    <div class="empty-state small">
+      <div class="empty-icon">🧾</div>
+      <p class="muted">Рахунків не знайдено.</p>
+      <a href="/invoices/new" class="btn btn-primary">Створити рахунок</a>
+    </div>
+  <% } else { %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Номер</th><th>Дата</th><th>Покупець</th>
+          <th class="right">Сума</th><th>Статус</th><th>Менеджер</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invoices.forEach(function(inv) { %>
+          <tr>
+            <td><a href="/invoices/<%= inv.id %>" class="strong-link"><%= inv.number %></a></td>
+            <td class="nowrap"><%= fmt.formatDateUk(inv.invoice_date) %></td>
+            <td><%= inv.client_name %></td>
+            <td class="right nowrap"><%= fmt.formatMoney(inv.total) %> ₴</td>
+            <td>
+              <% if (inv.status === 'paid') { %>
+                <span class="badge badge-ok">Оплачено</span>
+              <% } else { %>
+                <span class="badge badge-warn">Не оплачено</span>
+              <% } %>
+            </td>
+            <td class="muted nowrap"><%= inv.author || '—' %></td>
+            <td class="right nowrap">
+              <a href="/invoices/<%= inv.id %>" class="link">Відкрити</a>
+              <a href="/invoices/<%= inv.id %>/print" target="_blank" class="link">Друк</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

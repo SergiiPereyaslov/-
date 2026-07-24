@@ -1,0 +1,50 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1>Товари та послуги</h1>
+  <a href="/services/new" class="btn btn-primary">+ Нова позиція</a>
+</div>
+
+<div class="tabs">
+  <a href="/services" class="<%= showArchived ? '' : 'active' %>">Активні</a>
+  <a href="/services?archived=1" class="<%= showArchived ? 'active' : '' %>">Архів</a>
+</div>
+
+<div class="card">
+  <% if (services.length === 0) { %>
+    <div class="empty-state small">
+      <div class="empty-icon">📦</div>
+      <p class="muted"><%= showArchived ? 'В архіві порожньо.' : 'Каталог порожній. Додайте товари чи послуги, щоб швидко обирати їх у рахунку.' %></p>
+      <% if (!showArchived) { %><a href="/services/new" class="btn btn-primary">Додати позицію</a><% } %>
+    </div>
+  <% } else { %>
+    <table class="table">
+      <thead>
+        <tr><th>Найменування</th><th>Одиниця</th><th class="right">Ціна, ₴</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% services.forEach(function(s) { %>
+          <tr>
+            <td><strong><%= s.name %></strong></td>
+            <td><%= s.unit %></td>
+            <td class="right nowrap"><%= (Math.round(s.price*100)/100).toFixed(2).replace('.', ',') %></td>
+            <td class="right nowrap">
+              <a href="/services/<%= s.id %>/edit" class="link">Редагувати</a>
+              <form method="post" action="/services/<%= s.id %>/archive" class="inline">
+                <% if (showArchived) { %>
+                  <input type="hidden" name="restore" value="1">
+                  <button class="linkbtn">Відновити</button>
+                <% } else { %>
+                  <button class="linkbtn muted">В архів</button>
+                <% } %>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

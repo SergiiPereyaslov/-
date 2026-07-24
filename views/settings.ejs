@@ -1,0 +1,77 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/nav') %>
+
+<div class="page-head">
+  <h1>Реквізити постачальника</h1>
+</div>
+
+<% if (saved) { %><div class="alert alert-ok">Реквізити збережено.</div><% } %>
+
+<p class="muted section-hint">Ці дані підставляються у кожен рахунок як реквізити вашого ТОВ.</p>
+
+<form method="post" action="/settings" class="card form-narrow">
+  <label class="block">
+    <span>Повна назва ТОВ <span class="req">*</span></span>
+    <input type="text" name="name" value="<%= company.name %>" placeholder="Товариство з обмеженою відповідальністю «Приклад»" required>
+  </label>
+
+  <div class="form-grid-2">
+    <label>
+      <span>Код ЄДРПОУ</span>
+      <input type="text" name="edrpou" value="<%= company.edrpou %>">
+    </label>
+    <label>
+      <span>Префікс номера рахунку (необов’язково)</span>
+      <input type="text" name="invoice_prefix" value="<%= company.invoice_prefix %>" placeholder="Напр.: СФ-">
+    </label>
+  </div>
+
+  <label class="block">
+    <span>Юридична адреса</span>
+    <input type="text" name="address" value="<%= company.address %>" placeholder="49000, м. Дніпро, вул. …">
+  </label>
+
+  <h3 class="fieldset-title">Банківські реквізити</h3>
+  <label class="block">
+    <span>IBAN</span>
+    <input type="text" name="iban" value="<%= company.iban %>" placeholder="UA00 0000 0000 0000 0000 0000 0000">
+  </label>
+  <label class="block">
+    <span>Назва банку</span>
+    <input type="text" name="bank_name" value="<%= company.bank_name %>" placeholder="АТ «Банк», м. Київ">
+  </label>
+
+  <h3 class="fieldset-title">Контакти та підписанти</h3>
+  <div class="form-grid-2">
+    <label>
+      <span>Телефон</span>
+      <input type="text" name="phone" value="<%= company.phone %>">
+    </label>
+    <label>
+      <span>Email</span>
+      <input type="text" name="email" value="<%= company.email %>">
+    </label>
+  </div>
+  <div class="form-grid-2">
+    <label>
+      <span>Керівник (ПІБ для підпису)</span>
+      <input type="text" name="director_name" value="<%= company.director_name %>" placeholder="Іваненко І. І.">
+    </label>
+    <label>
+      <span>Бухгалтер (необов’язково)</span>
+      <input type="text" name="accountant_name" value="<%= company.accountant_name %>">
+    </label>
+  </div>
+
+  <label class="block">
+    <span>Напис щодо ПДВ у рахунку</span>
+    <input type="text" name="tax_note" value="<%= company.tax_note %>" placeholder="Без ПДВ">
+    <small class="hint">Для ТОВ без ПДВ залиште «Без ПДВ».</small>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Зберегти реквізити</button>
+  </div>
+</form>
+
+<%- include('partials/foot') %>

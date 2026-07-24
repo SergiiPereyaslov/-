@@ -1,0 +1,21 @@
+# Залежності
+node_modules/
+
+# База даних (створюється автоматично при першому запуску)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Локальні налаштування
+.env
+.env.local
+
+# Логи
+*.log
+npm-debug.log*
+
+# ОС / редактор
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

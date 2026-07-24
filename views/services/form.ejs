@@ -1,0 +1,47 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1><%= title %></h1>
+  <a href="/services" class="btn btn-ghost">← До списку</a>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<form method="post" action="<%= action %>" class="card form-narrow">
+  <label class="block">
+    <span>Найменування <span class="req">*</span></span>
+    <input type="text" name="name" value="<%= service.name || '' %>" required autofocus placeholder="Напр.: Консультаційні послуги">
+  </label>
+
+  <div class="form-grid-2">
+    <label>
+      <span>Одиниця виміру</span>
+      <input type="text" name="unit" value="<%= service.unit || 'шт' %>" list="unitsList" placeholder="шт">
+      <datalist id="unitsList">
+        <option value="шт"></option>
+        <option value="послуга"></option>
+        <option value="год"></option>
+        <option value="день"></option>
+        <option value="міс"></option>
+        <option value="кг"></option>
+        <option value="м"></option>
+        <option value="м²"></option>
+        <option value="компл"></option>
+      </datalist>
+    </label>
+    <label>
+      <span>Ціна, ₴</span>
+      <input type="text" inputmode="decimal" name="price" value="<%= service.price != null ? String(service.price).replace('.', ',') : '' %>" placeholder="0,00">
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a href="/services" class="btn btn-ghost">Скасувати</a>
+  </div>
+</form>
+
+<%- include('../partials/foot') %>

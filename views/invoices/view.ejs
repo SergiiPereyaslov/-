@@ -1,0 +1,92 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <div>
+    <a href="/invoices" class="back-link">← Усі рахунки</a>
+    <h1>Рахунок <%= invoice.number %></h1>
+  </div>
+  <div class="head-actions">
+    <a href="/invoices/<%= invoice.id %>/print" target="_blank" class="btn btn-primary">🖨 Друк / PDF</a>
+    <a href="/invoices/<%= invoice.id %>/edit" class="btn btn-secondary">Редагувати</a>
+  </div>
+</div>
+
+<div class="action-bar">
+  <% if (invoice.status === 'paid') { %>
+    <span class="badge badge-ok badge-lg">✓ Оплачено</span>
+    <form method="post" action="/invoices/<%= invoice.id %>/status" class="inline">
+      <input type="hidden" name="status" value="issued">
+      <button class="btn btn-ghost btn-sm">Позначити як не оплачено</button>
+    </form>
+  <% } else { %>
+    <span class="badge badge-warn badge-lg">Очікує оплати</span>
+    <form method="post" action="/invoices/<%= invoice.id %>/status" class="inline">
+      <input type="hidden" name="status" value="paid">
+      <button class="btn btn-ok btn-sm">✓ Позначити оплаченим</button>
+    </form>
+  <% } %>
+
+  <form method="post" action="/invoices/<%= invoice.id %>/duplicate" class="inline">
+    <button class="btn btn-ghost btn-sm">Створити копію</button>
+  </form>
+  <form method="post" action="/invoices/<%= invoice.id %>/delete" class="inline"
+        onsubmit="return confirm('Видалити рахунок <%= invoice.number %>? Дію не можна скасувати.');">
+    <button class="btn btn-danger btn-sm">Видалити</button>
+  </form>
+</div>
+
+<div class="card invoice-preview">
+  <div class="ip-head">
+    <div>
+      <div class="ip-label">Постачальник</div>
+      <div class="ip-strong"><%= company.name %></div>
+      <% if (company.edrpou) { %><div>ЄДРПОУ: <%= company.edrpou %></div><% } %>
+      <% if (company.address) { %><div><%= company.address %></div><% } %>
+      <% if (company.iban) { %><div>IBAN: <%= company.iban %></div><% } %>
+      <% if (company.bank_name) { %><div><%= company.bank_name %></div><% } %>
+    </div>
+    <div>
+      <div class="ip-label">Покупець</div>
+      <div class="ip-strong"><%= invoice.client_name %></div>
+      <% if (invoice.client_edrpou) { %><div>ЄДРПОУ: <%= invoice.client_edrpou %></div><% } %>
+      <% if (invoice.client_address) { %><div><%= invoice.client_address %></div><% } %>
+    </div>
+  </div>
+
+  <h2 class="ip-title">Рахунок на оплату № <%= invoice.number %> від <%= fmt.formatDateUk(invoice.invoice_date) %></h2>
+
+  <table class="table preview-items">
+    <thead>
+      <tr><th>№</th><th>Найменування</th><th class="right">К-сть</th><th>Од.</th><th class="right">Ціна</th><th class="right">Сума</th></tr>
+    </thead>
+    <tbody>
+      <% items.forEach(function(it) { %>
+        <tr>
+          <td><%= it.position %></td>
+          <td><%= it.name %></td>
+          <td class="right"><%= fmt.formatQty(it.quantity) %></td>
+          <td><%= it.unit %></td>
+          <td class="right"><%= fmt.formatMoney(it.price) %></td>
+          <td class="right"><%= fmt.formatMoney(it.amount) %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <div class="ip-total">
+    <div><%= company.tax_note || 'Без ПДВ' %></div>
+    <div class="ip-total-sum">Усього до сплати: <strong><%= fmt.formatMoney(invoice.total) %> ₴</strong></div>
+    <div class="ip-words"><%= fmt.amountToWords(invoice.total) %></div>
+  </div>
+
+  <% if (invoice.notes) { %>
+    <div class="ip-notes"><strong>Примітка:</strong> <%= invoice.notes %></div>
+  <% } %>
+
+  <div class="ip-meta muted">
+    Створив: <%= invoice.author || '—' %> · <%= fmt.formatDateUk(invoice.created_at.slice(0,10)) %>
+  </div>
+</div>
+
+<%- include('../partials/foot') %>

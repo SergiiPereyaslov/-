@@ -1,0 +1,63 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <h1><%= title %></h1>
+  <a href="/clients" class="btn btn-ghost">← До списку</a>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<form method="post" action="<%= action %>" class="card form-narrow">
+  <label class="block">
+    <span>Назва покупця <span class="req">*</span></span>
+    <input type="text" name="name" value="<%= client.name || '' %>" required autofocus placeholder="ТОВ «Приклад» або ФОП Іваненко І.І.">
+  </label>
+
+  <div class="form-grid-2">
+    <label>
+      <span>Код ЄДРПОУ / ІПН</span>
+      <input type="text" name="edrpou" value="<%= client.edrpou || '' %>">
+    </label>
+    <label>
+      <span>Контактна особа</span>
+      <input type="text" name="contact_person" value="<%= client.contact_person || '' %>">
+    </label>
+  </div>
+
+  <label class="block">
+    <span>Адреса</span>
+    <input type="text" name="address" value="<%= client.address || '' %>">
+  </label>
+
+  <div class="form-grid-2">
+    <label>
+      <span>Телефон</span>
+      <input type="text" name="phone" value="<%= client.phone || '' %>">
+    </label>
+    <label>
+      <span>Email</span>
+      <input type="text" name="email" value="<%= client.email || '' %>">
+    </label>
+  </div>
+
+  <div class="form-grid-2">
+    <label>
+      <span>IBAN (необов’язково)</span>
+      <input type="text" name="iban" value="<%= client.iban || '' %>">
+    </label>
+    <label>
+      <span>Банк (необов’язково)</span>
+      <input type="text" name="bank_name" value="<%= client.bank_name || '' %>">
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a href="/clients" class="btn btn-ghost">Скасувати</a>
+  </div>
+</form>
+
+<%- include('../partials/foot') %>
