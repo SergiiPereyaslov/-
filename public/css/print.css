@@ -1,89 +1,73 @@
-/* ── Друкована форма «Рахунок на оплату» ────────────────────────────────── */
+/* ── Одиночний документ на А4 ───────────────────────────────────────────── */
 * { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  background: #eceff4;
-  color: #000;
+  margin: 0; background: #eceff4; color: #000;
   font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 13px; line-height: 1.4;
 }
 
 .toolbar {
   background: #fff; border-bottom: 1px solid #d7dce6;
   padding: 12px 20px; display: flex; align-items: center; gap: 16px;
-  position: sticky; top: 0;
+  position: sticky; top: 0; z-index: 10;
   font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
-.pbtn {
-  background: #2563eb; color: #fff; border: none; border-radius: 8px;
-  padding: 9px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
-}
+.pbtn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .pbtn:hover { background: #1d4ed8; }
 .pback { color: #6b7688; text-decoration: none; font-size: 14px; }
 .hint { color: #97a0b0; font-size: 13px; margin-left: auto; }
 
-/* Аркуш A4 */
-.sheet {
-  background: #fff;
-  width: 210mm;
-  min-height: 297mm;
-  margin: 20px auto;
-  padding: 15mm 18mm;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, .12);
+.sheet-a4 {
+  background: #fff; width: 210mm; min-height: 297mm; margin: 20px auto;
+  padding: 15mm 18mm; box-shadow: 0 2px 12px rgba(0, 0, 0, .12);
 }
 
-.bank { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-.bank td { border: 1px solid #000; padding: 5px 8px; vertical-align: top; }
-.bank-label { width: 90px; font-size: 11px; color: #333; }
-.bank-val { font-size: 12px; }
+/* ── Документ (спільні класи) ────────────────────────────────────────────── */
+.doc-bank { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.doc-bank td { border: 1px solid #000; padding: 5px 8px; vertical-align: top; }
+.doc-bank .db-label { width: 100px; font-size: 11px; color: #333; }
+.doc-bank .db-val { font-size: 12px; }
 
-.doc-title { font-size: 17px; text-align: center; margin: 18px 0 14px; font-weight: 700; }
+.doc-title { font-size: 16px; text-align: center; margin: 16px 0 12px; font-weight: 700; }
 
-.parties { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-.parties td { padding: 3px 0; vertical-align: top; }
-.p-label { width: 110px; color: #333; }
-.p-val { }
+.doc-parties { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+.doc-parties td { padding: 3px 0; vertical-align: top; }
+.doc-parties .dp-label { width: 110px; color: #333; }
 
-.goods { width: 100%; border-collapse: collapse; margin-bottom: 0; }
-.goods th, .goods td { border: 1px solid #000; padding: 5px 6px; }
-.goods th { background: #f0f0f0; font-size: 11px; text-align: center; font-weight: 700; }
-.goods .c-num { width: 28px; text-align: center; }
-.goods .c-name { text-align: left; }
-.goods .c-qty { width: 55px; text-align: center; }
-.goods .c-unit { width: 45px; text-align: center; }
-.goods .c-price { width: 85px; text-align: right; }
-.goods .c-sum { width: 90px; text-align: right; }
-.goods td.c-name { text-align: left; }
-.goods td.c-num, .goods td.c-qty, .goods td.c-unit { text-align: center; }
-.goods td.c-price, .goods td.c-sum { text-align: right; }
+.doc-goods { width: 100%; border-collapse: collapse; }
+.doc-goods th, .doc-goods td { border: 1px solid #000; padding: 5px 6px; }
+.doc-goods th { background: #f0f0f0; font-size: 11px; text-align: center; font-weight: 700; }
+.doc-goods .g-num { width: 30px; text-align: center; }
+.doc-goods .g-name { text-align: left; }
+.doc-goods .g-qty { width: 55px; text-align: center; }
+.doc-goods .g-unit { width: 45px; text-align: center; }
+.doc-goods .g-price { width: 90px; text-align: right; }
+.doc-goods .g-sum { width: 95px; text-align: right; }
+.doc-goods td.g-num, .doc-goods td.g-qty, .doc-goods td.g-unit { text-align: center; }
+.doc-goods td.g-price, .doc-goods td.g-sum { text-align: right; }
 
-.summary { width: 100%; border-collapse: collapse; margin-top: 8px; }
-.summary td { padding: 3px 6px; }
-.summary .s-label { text-align: right; }
-.summary .s-val { width: 90px; text-align: right; padding-right: 6px; }
-.summary .s-total { font-weight: 700; font-size: 14px; }
-.summary .s-total .s-label { border-top: 1px solid #000; }
-.summary .s-total .s-val { border-top: 1px solid #000; }
+.doc-summary { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.doc-summary td { padding: 3px 6px; }
+.doc-summary .s-label { text-align: right; }
+.doc-summary .s-val { width: 95px; text-align: right; }
+.doc-summary .s-total { font-weight: 700; font-size: 14px; }
+.doc-summary .s-total .s-label, .doc-summary .s-total .s-val { border-top: 1px solid #000; }
 
-.in-words { margin: 14px 0; }
-.notes { margin: 10px 0; font-style: italic; }
+.doc-words { margin: 14px 0; }
+.doc-notes { margin: 10px 0; font-style: italic; }
 
-.signs { margin-top: 40px; display: flex; gap: 60px; }
-.sign { min-width: 240px; }
-.sign-role { font-size: 12px; margin-bottom: 26px; }
-.sign-line { border-bottom: 1px solid #000; width: 200px; display: inline-block; }
-.sign-name { font-size: 12px; margin-top: 2px; }
-.stamp-hint { margin-top: 24px; color: #555; font-size: 12px; }
+.doc-signs { margin-top: 36px; }
+.doc-signs .sign { margin-bottom: 22px; }
+.doc-signs .sign-role { display: inline-block; width: 120px; }
+.doc-signs .sign-line { display: inline-block; width: 220px; border-bottom: 1px solid #000; }
+.doc-signs .sign-name { display: inline-block; margin-left: 10px; }
+.doc-signs .sign-mp { margin-top: 16px; color: #555; }
 
-/* ── Режим друку ────────────────────────────────────────────────────────── */
+/* ── Друк ────────────────────────────────────────────────────────────────── */
 @media print {
   body { background: #fff; }
   .no-print { display: none !important; }
-  .sheet {
-    width: auto; min-height: auto; margin: 0; padding: 0;
-    box-shadow: none;
-  }
-  @page { size: A4; margin: 15mm 15mm; }
+  .sheet-a4 { width: auto; min-height: auto; margin: 0; padding: 0; box-shadow: none; }
+  @page { size: A4; margin: 15mm; }
 }

@@ -1,9 +1,18 @@
 <%- include('../partials/head', { title }) %>
 <%- include('../partials/nav') %>
 
+<%
+  function qs(overrides) {
+    const p = Object.assign({ q, category, sort, archived: showArchived ? '1' : '' }, overrides);
+    return '/clients?' + Object.keys(p)
+      .filter((k) => p[k] !== '' && p[k] != null)
+      .map((k) => k + '=' + encodeURIComponent(p[k])).join('&');
+  }
+%>
+
 <div class="page-head">
-  <h1>Покупці</h1>
-  <a href="/clients/new" class="btn btn-primary">+ Новий покупець</a>
+  <h1>Заклади освіти</h1>
+  <a href="/clients/new" class="btn btn-primary">+ Новий заклад</a>
 </div>
 
 <div class="tabs">
@@ -11,24 +20,49 @@
   <a href="/clients?archived=1" class="<%= showArchived ? 'active' : '' %>">Архів</a>
 </div>
 
+<form method="get" action="/clients" class="toolbar">
+  <% if (showArchived) { %><input type="hidden" name="archived" value="1"><% } %>
+  <input type="text" name="q" value="<%= q %>" class="search" placeholder="Пошук за назвою, короткою назвою або кодом…" autofocus>
+  <select name="category">
+    <option value="">Усі категорії</option>
+    <% categories.forEach(function(c) { %>
+      <option value="<%= c %>" <%= category === c ? 'selected' : '' %>><%= c %></option>
+    <% }); %>
+  </select>
+  <select name="sort">
+    <option value="name" <%= sort === 'name' ? 'selected' : '' %>>За назвою (А→Я)</option>
+    <option value="name_desc" <%= sort === 'name_desc' ? 'selected' : '' %>>За назвою (Я→А)</option>
+    <option value="code" <%= sort === 'code' ? 'selected' : '' %>>За кодом</option>
+    <option value="category" <%= sort === 'category' ? 'selected' : '' %>>За категорією</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Показати</button>
+  <% if (q || category || (sort !== 'name')) { %><a href="<%= showArchived ? '/clients?archived=1' : '/clients' %>" class="btn btn-ghost">Скинути</a><% } %>
+</form>
+
+<div class="totals-row">
+  <span>Знайдено: <strong><%= total %></strong></span>
+  <% if (pages > 1) { %><span class="muted">Сторінка <%= currentPage %> з <%= pages %></span><% } %>
+</div>
+
 <div class="card">
   <% if (clients.length === 0) { %>
     <div class="empty-state small">
-      <div class="empty-icon">👤</div>
-      <p class="muted"><%= showArchived ? 'В архіві порожньо.' : 'Ще немає жодного покупця.' %></p>
-      <% if (!showArchived) { %><a href="/clients/new" class="btn btn-primary">Додати покупця</a><% } %>
+      <div class="empty-icon">🏫</div>
+      <p class="muted"><%= (q || category) ? 'За вашим запитом нічого не знайдено.' : (showArchived ? 'В архіві порожньо.' : 'Ще немає жодного закладу.') %></p>
+      <% if (!showArchived && !q && !category) { %><a href="/clients/new" class="btn btn-primary">Додати заклад</a><% } %>
     </div>
   <% } else { %>
     <table class="table">
       <thead>
-        <tr><th>Назва</th><th>ЄДРПОУ</th><th>Контакти</th><th></th></tr>
+        <tr><th>Назва закладу</th><th>Коротка назва</th><th>Код</th><th>Категорія</th><th></th></tr>
       </thead>
       <tbody>
         <% clients.forEach(function(c) { %>
           <tr>
-            <td><strong><%= c.name %></strong><% if (c.address) { %><br><span class="muted small"><%= c.address %></span><% } %></td>
-            <td><%= c.edrpou || '—' %></td>
-            <td class="muted"><%= c.contact_person || '' %> <%= c.phone ? '· ' + c.phone : '' %> <%= c.email ? '· ' + c.email : '' %></td>
+            <td><strong><%= c.name %></strong></td>
+            <td class="muted"><%= c.short_name || '—' %></td>
+            <td class="nowrap"><%= c.code || '—' %></td>
+            <td class="muted small"><%= c.category || '' %></td>
             <td class="right nowrap">
               <a href="/clients/<%= c.id %>/edit" class="link">Редагувати</a>
               <form method="post" action="/clients/<%= c.id %>/archive" class="inline">
@@ -46,5 +80,19 @@
     </table>
   <% } %>
 </div>
+
+<% if (pages > 1) { %>
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="<%= qs({ page: 1 }) %>" class="pg">« Перша</a>
+      <a href="<%= qs({ page: currentPage - 1 }) %>" class="pg">‹ Назад</a>
+    <% } %>
+    <span class="pg-info">Сторінка <%= currentPage %> з <%= pages %></span>
+    <% if (currentPage < pages) { %>
+      <a href="<%= qs({ page: currentPage + 1 }) %>" class="pg">Далі ›</a>
+      <a href="<%= qs({ page: pages }) %>" class="pg">Остання »</a>
+    <% } %>
+  </div>
+<% } %>
 
 <%- include('../partials/foot') %>

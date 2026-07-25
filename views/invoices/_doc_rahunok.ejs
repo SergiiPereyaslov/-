@@ -1,0 +1,74 @@
+<div class="doc doc-rahunok">
+  <table class="doc-bank">
+    <tr>
+      <td class="db-label">Постачальник</td>
+      <td class="db-val">
+        <strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %>
+        <% if (company.address) { %><br><%= company.address %><% } %>
+      </td>
+    </tr>
+    <tr>
+      <td class="db-label">Банк</td>
+      <td class="db-val">
+        <% if (pay.iban) { %>IBAN: <strong><%= pay.iban %></strong><% } %>
+        <% if (pay.bank_name) { %><br><%= pay.bank_name %><% } %>
+      </td>
+    </tr>
+  </table>
+
+  <h1 class="doc-title">Рахунок на оплату № <%= invoice.number %> від
+    <% if (invoice.invoice_date) { %><%= fmt.formatDateUk(invoice.invoice_date) %><% } else { %>«___» ______________ 20__ р.<% } %>
+  </h1>
+
+  <table class="doc-parties">
+    <tr><td class="dp-label">Постачальник:</td><td><strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %></td></tr>
+    <tr><td class="dp-label">Покупець:</td><td><strong><%= invoice.client_name %></strong></td></tr>
+  </table>
+
+  <table class="doc-goods">
+    <thead>
+      <tr>
+        <th class="g-num">№</th>
+        <th class="g-name">Товари (роботи, послуги)</th>
+        <th class="g-qty">Кіль-<br>кість</th>
+        <th class="g-unit">Од.</th>
+        <th class="g-price">Ціна<br>без ПДВ</th>
+        <th class="g-sum">Сума<br>без ПДВ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach(function(it) { %>
+        <tr>
+          <td class="g-num"><%= it.position %></td>
+          <td class="g-name"><%= it.name %></td>
+          <td class="g-qty"><%= fmt.formatQty(it.quantity) %></td>
+          <td class="g-unit"><%= it.unit %></td>
+          <td class="g-price"><%= fmt.formatMoney(it.price) %></td>
+          <td class="g-sum"><%= fmt.formatMoney(it.amount) %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <table class="doc-summary">
+    <tr><td class="s-label">Разом без ПДВ:</td><td class="s-val"><%= fmt.formatMoney(invoice.total) %></td></tr>
+    <tr><td class="s-label"><%= company.tax_note || 'Без ПДВ' %></td><td class="s-val">—</td></tr>
+    <tr class="s-total"><td class="s-label">Загальна сума до сплати:</td><td class="s-val"><%= fmt.formatMoney(invoice.total) %></td></tr>
+  </table>
+
+  <p class="doc-words">
+    Усього найменувань <%= items.length %>, на суму <%= fmt.formatMoney(invoice.total) %> грн.<br>
+    <strong><%= fmt.amountToWords(invoice.total) %></strong>
+  </p>
+
+  <% if (invoice.notes) { %><p class="doc-notes"><%= invoice.notes %></p><% } %>
+
+  <div class="doc-signs">
+    <div class="sign">
+      <span class="sign-role">Керівник</span>
+      <span class="sign-line"></span>
+      <span class="sign-name"><%= company.director_name || '' %></span>
+    </div>
+    <div class="sign-mp">М.П.</div>
+  </div>
+</div>

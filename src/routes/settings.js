@@ -9,16 +9,24 @@ const router = express.Router();
 router.use(requireAuth);
 
 // ── Реквізити компанії ─────────────────────────────────────────────────────
+function bankAccounts() {
+  return db.prepare('SELECT * FROM bank_accounts WHERE archived = 0 ORDER BY is_default DESC, sort_order, id').all();
+}
+
 router.get('/', (req, res) => {
   const company = db.prepare('SELECT * FROM company WHERE id = 1').get();
-  res.render('settings', { title: 'Реквізити', company, saved: req.query.saved === '1' });
+  res.render('settings', {
+    title: 'Реквізити', company, accounts: bankAccounts(),
+    saved: req.query.saved || '',
+    error: req.query.err ? decodeURIComponent(req.query.err) : '',
+  });
 });
 
 router.post('/', (req, res) => {
   const b = req.body;
   db.prepare(
     `UPDATE company SET
-       name=@name, edrpou=@edrpou, address=@address, iban=@iban, bank_name=@bank_name,
+       name=@name, edrpou=@edrpou, address=@address,
        phone=@phone, email=@email, director_name=@director_name, accountant_name=@accountant_name,
        invoice_prefix=@invoice_prefix, tax_note=@tax_note, updated_at=datetime('now')
      WHERE id = 1`
@@ -26,8 +34,6 @@ router.post('/', (req, res) => {
     name: (b.name || '').trim(),
     edrpou: (b.edrpou || '').trim(),
     address: (b.address || '').trim(),
-    iban: (b.iban || '').trim(),
-    bank_name: (b.bank_name || '').trim(),
     phone: (b.phone || '').trim(),
     email: (b.email || '').trim(),
     director_name: (b.director_name || '').trim(),
@@ -36,6 +42,51 @@ router.post('/', (req, res) => {
     tax_note: (b.tax_note || 'Без ПДВ').trim(),
   });
   res.redirect('/settings?saved=1');
+});
+
+// ── Банківські рахунки ──────────────────────────────────────────────────────
+function readAccount(b) {
+  return {
+    label: (b.label || '').trim(),
+    iban: (b.iban || '').trim(),
+    bank_name: (b.bank_name || '').trim(),
+  };
+}
+
+router.post('/bank/new', (req, res) => {
+  const a = readAccount(req.body);
+  if (!a.iban && !a.bank_name) {
+    return res.redirect('/settings?err=' + encodeURIComponent('Вкажіть IBAN або назву банку.'));
+  }
+  const count = db.prepare('SELECT COUNT(*) AS n FROM bank_accounts WHERE archived = 0').get().n;
+  db.prepare(
+    'INSERT INTO bank_accounts (label, iban, bank_name, is_default, sort_order) VALUES (?, ?, ?, ?, ?)'
+  ).run(a.label, a.iban, a.bank_name, count === 0 ? 1 : 0, count);
+  res.redirect('/settings?saved=bank');
+});
+
+router.post('/bank/:id/edit', (req, res) => {
+  const a = readAccount(req.body);
+  db.prepare('UPDATE bank_accounts SET label=?, iban=?, bank_name=? WHERE id=?')
+    .run(a.label, a.iban, a.bank_name, req.params.id);
+  res.redirect('/settings?saved=bank');
+});
+
+router.post('/bank/:id/default', (req, res) => {
+  db.prepare('UPDATE bank_accounts SET is_default = 0').run();
+  db.prepare('UPDATE bank_accounts SET is_default = 1 WHERE id = ?').run(req.params.id);
+  res.redirect('/settings?saved=bank');
+});
+
+router.post('/bank/:id/delete', (req, res) => {
+  const acc = db.prepare('SELECT is_default FROM bank_accounts WHERE id = ?').get(req.params.id);
+  db.prepare('DELETE FROM bank_accounts WHERE id = ?').run(req.params.id);
+  // Якщо видалили типовий — призначаємо типовим перший з тих, що залишились.
+  if (acc && acc.is_default) {
+    const next = db.prepare('SELECT id FROM bank_accounts WHERE archived = 0 ORDER BY sort_order, id LIMIT 1').get();
+    if (next) db.prepare('UPDATE bank_accounts SET is_default = 1 WHERE id = ?').run(next.id);
+  }
+  res.redirect('/settings?saved=bank');
 });
 
 // ── Керування користувачами (лише адмін) ───────────────────────────────────

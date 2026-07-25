@@ -7,7 +7,7 @@
     <h1>Рахунок <%= invoice.number %></h1>
   </div>
   <div class="head-actions">
-    <a href="/invoices/<%= invoice.id %>/print" target="_blank" class="btn btn-primary">🖨 Друк / PDF</a>
+    <a href="/invoices/<%= invoice.id %>/print-set" target="_blank" class="btn btn-primary">🖨 Друк комплекту</a>
     <a href="/invoices/<%= invoice.id %>/edit" class="btn btn-secondary">Редагувати</a>
   </div>
 </div>
@@ -27,6 +27,7 @@
     </form>
   <% } %>
 
+  <a href="/invoices/<%= invoice.id %>/print" target="_blank" class="btn btn-ghost btn-sm">Тільки рахунок</a>
   <form method="post" action="/invoices/<%= invoice.id %>/duplicate" class="inline">
     <button class="btn btn-ghost btn-sm">Створити копію</button>
   </form>
@@ -43,18 +44,19 @@
       <div class="ip-strong"><%= company.name %></div>
       <% if (company.edrpou) { %><div>ЄДРПОУ: <%= company.edrpou %></div><% } %>
       <% if (company.address) { %><div><%= company.address %></div><% } %>
-      <% if (company.iban) { %><div>IBAN: <%= company.iban %></div><% } %>
-      <% if (company.bank_name) { %><div><%= company.bank_name %></div><% } %>
+      <% if (pay.iban) { %><div>IBAN: <%= pay.iban %></div><% } %>
+      <% if (pay.bank_name) { %><div><%= pay.bank_name %></div><% } %>
     </div>
     <div>
       <div class="ip-label">Покупець</div>
       <div class="ip-strong"><%= invoice.client_name %></div>
-      <% if (invoice.client_edrpou) { %><div>ЄДРПОУ: <%= invoice.client_edrpou %></div><% } %>
-      <% if (invoice.client_address) { %><div><%= invoice.client_address %></div><% } %>
     </div>
   </div>
 
-  <h2 class="ip-title">Рахунок на оплату № <%= invoice.number %> від <%= fmt.formatDateUk(invoice.invoice_date) %></h2>
+  <h2 class="ip-title">
+    Рахунок на оплату № <%= invoice.number %>
+    <% if (invoice.invoice_date) { %>від <%= fmt.formatDateUk(invoice.invoice_date) %><% } else { %><span class="muted">(без дати)</span><% } %>
+  </h2>
 
   <table class="table preview-items">
     <thead>
@@ -85,7 +87,7 @@
   <% } %>
 
   <div class="ip-meta muted">
-    Створив: <%= invoice.author || '—' %> · <%= fmt.formatDateUk(invoice.created_at.slice(0,10)) %>
+    Створив: <%= invoice.author || '—' %><% if (invoice.created_at) { %> · <%= fmt.formatDateUk(invoice.created_at.slice(0,10)) %><% } %>
   </div>
 </div>
 

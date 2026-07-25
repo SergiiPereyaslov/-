@@ -1,0 +1,82 @@
+/* ── Комплект: два А5-документи на аркуші А4 (вертикально) ───────────────── */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0; background: #eceff4; color: #000;
+  font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
+  font-size: 9px; line-height: 1.25;
+}
+
+.toolbar {
+  background: #fff; border-bottom: 1px solid #d7dce6;
+  padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 10;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+.pbtn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.pbtn:hover { background: #1d4ed8; }
+.pback { color: #6b7688; text-decoration: none; font-size: 14px; }
+.hint { color: #97a0b0; font-size: 12px; margin-left: auto; max-width: 46%; }
+
+/* Аркуш А4 з двома половинками */
+.a4-page {
+  width: 210mm; min-height: 297mm; background: #fff; margin: 16px auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .12); padding: 8mm;
+  display: flex; flex-direction: column;
+}
+.a5-slot { height: 138mm; overflow: hidden; padding: 2mm 5mm; }
+.a5-cut { height: 0; border-top: 1px dashed #c0c6d2; margin: 1mm 0; }
+
+/* ── Компактний документ ─────────────────────────────────────────────────── */
+.doc-bank { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+.doc-bank td { border: 1px solid #000; padding: 2px 5px; vertical-align: top; }
+.doc-bank .db-label { width: 70px; font-size: 8px; color: #333; }
+.doc-bank .db-val { font-size: 9px; }
+
+.doc-title { font-size: 11px; text-align: center; margin: 6px 0 5px; font-weight: 700; }
+
+.doc-parties { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+.doc-parties td { padding: 1px 0; vertical-align: top; }
+.doc-parties .dp-label { width: 78px; color: #333; }
+
+.doc-goods { width: 100%; border-collapse: collapse; }
+.doc-goods th, .doc-goods td { border: 1px solid #000; padding: 2px 4px; }
+.doc-goods th { background: #f0f0f0; font-size: 8px; text-align: center; font-weight: 700; line-height: 1.1; }
+.doc-goods .g-num { width: 22px; text-align: center; }
+.doc-goods .g-name { text-align: left; }
+.doc-goods .g-qty { width: 40px; text-align: center; }
+.doc-goods .g-unit { width: 34px; text-align: center; }
+.doc-goods .g-price { width: 62px; text-align: right; }
+.doc-goods .g-sum { width: 66px; text-align: right; }
+.doc-goods td.g-num, .doc-goods td.g-qty, .doc-goods td.g-unit { text-align: center; }
+.doc-goods td.g-price, .doc-goods td.g-sum { text-align: right; }
+
+.doc-summary { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.doc-summary td { padding: 1px 4px; }
+.doc-summary .s-label { text-align: right; }
+.doc-summary .s-val { width: 66px; text-align: right; }
+.doc-summary .s-total { font-weight: 700; font-size: 10px; }
+.doc-summary .s-total .s-label, .doc-summary .s-total .s-val { border-top: 1px solid #000; }
+
+.doc-words { margin: 6px 0; }
+.doc-notes { margin: 4px 0; font-style: italic; }
+
+.doc-signs { margin-top: 12px; }
+.doc-signs .sign { margin-bottom: 10px; }
+.doc-signs .sign-role { display: inline-block; width: 92px; }
+.doc-signs .sign-line { display: inline-block; width: 150px; border-bottom: 1px solid #000; }
+.doc-signs .sign-name { display: inline-block; margin-left: 8px; }
+.doc-signs .sign-mp { margin-top: 8px; color: #555; }
+
+/* ── Друк ────────────────────────────────────────────────────────────────── */
+@page { size: A4 portrait; margin: 8mm; }
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .a4-page {
+    width: auto; min-height: auto; margin: 0; padding: 0; box-shadow: none;
+    page-break-after: always;
+  }
+  .a4-page:last-child { page-break-after: auto; }
+  .a5-slot { height: 131mm; padding: 0 3mm; }
+}

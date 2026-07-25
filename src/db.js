@@ -53,10 +53,25 @@ function init() {
       updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
-    -- Покупці (клієнти).
+    -- Банківські рахунки постачальника (для вибору «куди платити»).
+    CREATE TABLE IF NOT EXISTS bank_accounts (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      label      TEXT NOT NULL DEFAULT '',
+      iban       TEXT NOT NULL DEFAULT '',
+      bank_name  TEXT NOT NULL DEFAULT '',
+      is_default INTEGER NOT NULL DEFAULT 0,
+      archived   INTEGER NOT NULL DEFAULT 0,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    -- Покупці (навчальні заклади).
     CREATE TABLE IF NOT EXISTS clients (
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       name           TEXT NOT NULL,
+      code           TEXT NOT NULL DEFAULT '',
+      short_name     TEXT NOT NULL DEFAULT '',
+      category       TEXT NOT NULL DEFAULT '',
       edrpou         TEXT NOT NULL DEFAULT '',
       address        TEXT NOT NULL DEFAULT '',
       iban           TEXT NOT NULL DEFAULT '',
@@ -92,6 +107,9 @@ function init() {
       client_address TEXT NOT NULL DEFAULT '',
       client_iban    TEXT NOT NULL DEFAULT '',
       client_bank    TEXT NOT NULL DEFAULT '',
+      -- знімок рахунку для оплати
+      pay_iban       TEXT NOT NULL DEFAULT '',
+      pay_bank       TEXT NOT NULL DEFAULT '',
       total          REAL NOT NULL DEFAULT 0,
       status         TEXT NOT NULL DEFAULT 'issued',
       notes          TEXT NOT NULL DEFAULT '',
@@ -116,12 +134,36 @@ function init() {
 
     CREATE INDEX IF NOT EXISTS idx_invoices_year_seq ON invoices(year, seq);
     CREATE INDEX IF NOT EXISTS idx_items_invoice ON invoice_items(invoice_id);
+    CREATE INDEX IF NOT EXISTS idx_clients_code ON clients(code);
+    CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name COLLATE NOCASE);
   `);
+
+  // Міграції: додаємо нові колонки, якщо база створена раніше.
+  addColumns('clients', [
+    ['code', "code TEXT NOT NULL DEFAULT ''"],
+    ['short_name', "short_name TEXT NOT NULL DEFAULT ''"],
+    ['category', "category TEXT NOT NULL DEFAULT ''"],
+  ]);
+  addColumns('invoices', [
+    ['pay_iban', "pay_iban TEXT NOT NULL DEFAULT ''"],
+    ['pay_bank', "pay_bank TEXT NOT NULL DEFAULT ''"],
+  ]);
 
   // Гарантуємо наявність єдиного запису компанії.
   const companyExists = db.prepare('SELECT id FROM company WHERE id = 1').get();
   if (!companyExists) {
     db.prepare('INSERT INTO company (id) VALUES (1)').run();
+  }
+
+  // Міграція банківського рахунку зі старого поля company.iban.
+  const acctCount = db.prepare('SELECT COUNT(*) AS n FROM bank_accounts').get().n;
+  if (acctCount === 0) {
+    const comp = db.prepare('SELECT iban, bank_name FROM company WHERE id = 1').get();
+    if (comp && (comp.iban || comp.bank_name)) {
+      db.prepare(
+        'INSERT INTO bank_accounts (label, iban, bank_name, is_default, sort_order) VALUES (?, ?, ?, 1, 0)'
+      ).run(comp.bank_name || 'Основний рахунок', comp.iban, comp.bank_name);
+    }
   }
 
   // Створюємо адміністратора за замовчуванням, якщо користувачів ще немає.
@@ -134,6 +176,49 @@ function init() {
     ).run('admin', hash, 'Адміністратор');
     console.log('▶ Створено користувача за замовчуванням: логін "admin", пароль "admin".');
     console.log('  Обов’язково змініть пароль у розділі «Користувачі» після входу.');
+  }
+
+  seedInitialData();
+}
+
+// Додає колонки до таблиці, якщо їх ще немає (проста міграція).
+function addColumns(table, cols) {
+  const existing = db.prepare(`PRAGMA table_info(${table})`).all().map((c) => c.name);
+  for (const [name, ddl] of cols) {
+    if (!existing.includes(name)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl};`);
+  }
+}
+
+// Одноразове завантаження закладів і товарів із seed-файлів (лише якщо порожньо).
+function seedInitialData() {
+  const seedDir = path.join(__dirname, '..', 'seed');
+
+  if (db.prepare('SELECT COUNT(*) AS n FROM clients').get().n === 0) {
+    const file = path.join(seedDir, 'institutions.json');
+    if (fs.existsSync(file)) {
+      const list = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const ins = db.prepare(
+        'INSERT INTO clients (name, code, short_name, category) VALUES (@name, @code, @short_name, @category)'
+      );
+      transaction(() => {
+        for (const c of list) {
+          ins.run({ name: c.name || '', code: c.code || '', short_name: c.short_name || '', category: c.category || '' });
+        }
+      });
+      console.log(`▶ Завантажено закладів освіти: ${list.length}.`);
+    }
+  }
+
+  if (db.prepare('SELECT COUNT(*) AS n FROM services').get().n === 0) {
+    const file = path.join(seedDir, 'products.json');
+    if (fs.existsSync(file)) {
+      const list = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const ins = db.prepare('INSERT INTO services (name, unit, price) VALUES (@name, @unit, @price)');
+      transaction(() => {
+        for (const p of list) ins.run({ name: p.name || '', unit: p.unit || 'шт', price: Number(p.price) || 0 });
+      });
+      console.log(`▶ Завантажено товарів у каталог: ${list.length}.`);
+    }
   }
 }
 

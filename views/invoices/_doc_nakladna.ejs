@@ -1,0 +1,58 @@
+<div class="doc doc-nakladna">
+  <h1 class="doc-title">Видаткова накладна № <%= invoice.number %> від
+    <% if (invoice.invoice_date) { %><%= fmt.formatDateUk(invoice.invoice_date) %><% } else { %>«___» ______________ 20__ р.<% } %>
+  </h1>
+
+  <table class="doc-parties">
+    <tr><td class="dp-label">Постачальник:</td><td><strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %></td></tr>
+    <tr><td class="dp-label">Одержувач:</td><td><strong><%= invoice.client_name %></strong></td></tr>
+  </table>
+
+  <table class="doc-goods">
+    <thead>
+      <tr>
+        <th class="g-num">№</th>
+        <th class="g-name">Найменування</th>
+        <th class="g-qty">Кіль-<br>кість</th>
+        <th class="g-unit">Од.</th>
+        <th class="g-price">Ціна<br>без ПДВ</th>
+        <th class="g-sum">Сума<br>без ПДВ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach(function(it) { %>
+        <tr>
+          <td class="g-num"><%= it.position %></td>
+          <td class="g-name"><%= it.name %></td>
+          <td class="g-qty"><%= fmt.formatQty(it.quantity) %></td>
+          <td class="g-unit"><%= it.unit %></td>
+          <td class="g-price"><%= fmt.formatMoney(it.price) %></td>
+          <td class="g-sum"><%= fmt.formatMoney(it.amount) %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <table class="doc-summary">
+    <tr><td class="s-label">Разом без ПДВ:</td><td class="s-val"><%= fmt.formatMoney(invoice.total) %></td></tr>
+    <tr><td class="s-label"><%= company.tax_note || 'Без ПДВ' %></td><td class="s-val">—</td></tr>
+    <tr class="s-total"><td class="s-label">Усього до сплати:</td><td class="s-val"><%= fmt.formatMoney(invoice.total) %></td></tr>
+  </table>
+
+  <p class="doc-words">
+    Усього відпущено найменувань <%= items.length %>, на суму <%= fmt.formatMoney(invoice.total) %> грн.<br>
+    <strong><%= fmt.amountToWords(invoice.total) %></strong>
+  </p>
+
+  <div class="doc-signs signs-nakl">
+    <div class="sign">
+      <span class="sign-role">Відпустив(ла)</span>
+      <span class="sign-line"></span>
+    </div>
+    <div class="sign">
+      <span class="sign-role">Отримав(ла)</span>
+      <span class="sign-line"></span>
+    </div>
+    <div class="sign-mp">М.П.</div>
+  </div>
+</div>

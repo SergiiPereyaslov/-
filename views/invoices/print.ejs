@@ -6,120 +6,15 @@
   <title>Рахунок на оплату № <%= invoice.number %></title>
   <link rel="stylesheet" href="/static/css/print.css">
 </head>
-<body>
+<body class="doc-scope">
   <div class="toolbar no-print">
     <button onclick="window.print()" class="pbtn">🖨 Друкувати / Зберегти PDF</button>
     <a href="/invoices/<%= invoice.id %>" class="pback">← Назад</a>
-    <span class="hint">У вікні друку оберіть «Зберегти як PDF»</span>
+    <span class="hint">Один рахунок на аркуші А4</span>
   </div>
 
-  <div class="sheet">
-    <!-- Банківські реквізити постачальника -->
-    <table class="bank">
-      <tr>
-        <td class="bank-label">Постачальник</td>
-        <td class="bank-val">
-          <strong><%= company.name %></strong><br>
-          <% if (company.edrpou) { %>Код ЄДРПОУ <%= company.edrpou %><br><% } %>
-          <% if (company.address) { %><%= company.address %><br><% } %>
-          <% if (company.phone) { %>тел.: <%= company.phone %><% } %><% if (company.email) { %> · <%= company.email %><% } %>
-        </td>
-      </tr>
-      <tr>
-        <td class="bank-label">Банк</td>
-        <td class="bank-val">
-          <% if (company.iban) { %>IBAN: <strong><%= company.iban %></strong><br><% } %>
-          <%= company.bank_name %>
-        </td>
-      </tr>
-    </table>
-
-    <h1 class="doc-title">Рахунок на оплату № <%= invoice.number %> від <%= fmt.formatDateUk(invoice.invoice_date) %></h1>
-
-    <table class="parties">
-      <tr>
-        <td class="p-label">Постачальник:</td>
-        <td class="p-val"><strong><%= company.name %></strong><%= company.edrpou ? ', код ЄДРПОУ ' + company.edrpou : '' %></td>
-      </tr>
-      <tr>
-        <td class="p-label">Покупець:</td>
-        <td class="p-val">
-          <strong><%= invoice.client_name %></strong><%= invoice.client_edrpou ? ', код ЄДРПОУ ' + invoice.client_edrpou : '' %>
-          <% if (invoice.client_address) { %><br><%= invoice.client_address %><% } %>
-        </td>
-      </tr>
-    </table>
-
-    <table class="goods">
-      <thead>
-        <tr>
-          <th class="c-num">№</th>
-          <th class="c-name">Товари (роботи, послуги)</th>
-          <th class="c-qty">Кіль-<br>кість</th>
-          <th class="c-unit">Од.</th>
-          <th class="c-price">Ціна без<br>ПДВ, грн</th>
-          <th class="c-sum">Сума без<br>ПДВ, грн</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% items.forEach(function(it) { %>
-          <tr>
-            <td class="c-num"><%= it.position %></td>
-            <td class="c-name"><%= it.name %></td>
-            <td class="c-qty"><%= fmt.formatQty(it.quantity) %></td>
-            <td class="c-unit"><%= it.unit %></td>
-            <td class="c-price"><%= fmt.formatMoney(it.price) %></td>
-            <td class="c-sum"><%= fmt.formatMoney(it.amount) %></td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-
-    <table class="summary">
-      <tr>
-        <td class="s-label">Разом без ПДВ:</td>
-        <td class="s-val"><%= fmt.formatMoney(invoice.total) %></td>
-      </tr>
-      <tr>
-        <td class="s-label"><%= company.tax_note || 'Без ПДВ' %></td>
-        <td class="s-val">—</td>
-      </tr>
-      <tr class="s-total">
-        <td class="s-label">Загальна сума до сплати:</td>
-        <td class="s-val"><%= fmt.formatMoney(invoice.total) %></td>
-      </tr>
-    </table>
-
-    <p class="in-words">
-      Усього найменувань <%= items.length %>, на суму <%= fmt.formatMoney(invoice.total) %> грн.<br>
-      <strong><%= fmt.amountToWords(invoice.total) %></strong>
-    </p>
-
-    <% if (invoice.notes) { %>
-      <p class="notes"><%= invoice.notes %></p>
-    <% } %>
-
-    <div class="signs">
-      <div class="sign">
-        <div class="sign-role">Керівник</div>
-        <div class="sign-line"></div>
-        <div class="sign-name"><%= company.director_name || '' %></div>
-      </div>
-      <% if (company.accountant_name) { %>
-      <div class="sign">
-        <div class="sign-role">Бухгалтер</div>
-        <div class="sign-line"></div>
-        <div class="sign-name"><%= company.accountant_name %></div>
-      </div>
-      <% } %>
-    </div>
-
-    <div class="stamp-hint">М.П.</div>
+  <div class="sheet sheet-a4">
+    <%- include('_doc_rahunok') %>
   </div>
-
-  <script>
-    // За бажанням: автоматично відкривати діалог друку (вимкнено, щоб не заважати перегляду).
-    // window.addEventListener('load', () => window.print());
-  </script>
 </body>
 </html>

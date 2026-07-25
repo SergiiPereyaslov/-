@@ -19,21 +19,38 @@
       </label>
       <label>
         <span>Дата</span>
-        <input type="date" name="invoice_date" value="<%= invoice.invoice_date %>" required>
+        <input type="date" name="invoice_date" id="invoiceDate" value="<%= invoice.invoice_date || '' %>">
+        <label class="chk">
+          <input type="checkbox" id="noDate" <%= invoice.invoice_date ? '' : 'checked' %>>
+          <span>Без дати (проставлю пізніше)</span>
+        </label>
       </label>
       <label>
-        <span>Покупець</span>
-        <div class="with-side">
-          <select name="client_id" required>
-            <option value="">— оберіть покупця —</option>
-            <% clients.forEach(function(c) { %>
-              <option value="<%= c.id %>" <%= String(invoice.client_id) === String(c.id) ? 'selected' : '' %>><%= c.name %><%= c.edrpou ? ' (ЄДРПОУ ' + c.edrpou + ')' : '' %></option>
-            <% }); %>
-          </select>
-          <a href="/clients/new" target="_blank" class="side-add" title="Додати нового покупця">+</a>
+        <span>Заклад (покупець)</span>
+        <div class="client-picker">
+          <input type="hidden" name="client_id" id="clientId" value="<%= invoice.client_id || '' %>">
+          <input type="text" id="clientSearch" class="client-search-input" autocomplete="off"
+                 value="<%= invoice.client_name || '' %>"
+                 placeholder="Введіть назву, коротку назву або код…">
+          <div id="clientResults" class="client-results" hidden></div>
         </div>
       </label>
     </div>
+
+    <label class="block acct-field">
+      <span>Рахунок для оплати</span>
+      <% if (bankAccounts && bankAccounts.length) { %>
+        <select name="pay_account_id" class="acct-select">
+          <% bankAccounts.forEach(function(a) { %>
+            <option value="<%= a.id %>" <%= String(selectedAccountId) === String(a.id) ? 'selected' : '' %>>
+              <%= a.label || a.bank_name || 'Рахунок' %><%= a.iban ? ' — ' + a.iban : '' %>
+            </option>
+          <% }); %>
+        </select>
+      <% } else { %>
+        <div class="hint">Немає доданих рахунків. <a href="/settings" target="_blank">Додати банківський рахунок →</a></div>
+      <% } %>
+    </label>
   </div>
 
   <div class="card">
@@ -43,7 +60,7 @@
         <select id="catalogSelect" class="catalog-select">
           <option value="">+ Додати з каталогу…</option>
           <% services.forEach(function(s) { %>
-            <option value="<%= s.id %>"><%= s.name %> — <%= fmt.formatMoney(s.price) %> ₴/<%= s.unit %></option>
+            <option value="<%= s.id %>"><%= s.name %><%= s.price ? ' — ' + fmt.formatMoney(s.price) + ' ₴/' + s.unit : '' %></option>
           <% }); %>
         </select>
       </div>
@@ -93,7 +110,7 @@
   <div class="card">
     <label class="block">
       <span>Примітка (необов’язково)</span>
-      <textarea name="notes" rows="2" placeholder="Напр.: Оплата протягом 3 банківських днів"><%= invoice.notes || '' %></textarea>
+      <textarea name="notes" rows="2" placeholder="Напр.: Оплата протягом 5 банківських днів"><%= invoice.notes || '' %></textarea>
     </label>
   </div>
 
@@ -123,9 +140,6 @@
   </tr>
 </template>
 
-<script>
-  window.__SERVICES__ = <%- JSON.stringify(services) %>;
-</script>
 <script src="/static/js/invoice-form.js"></script>
 
 <%- include('../partials/foot') %>

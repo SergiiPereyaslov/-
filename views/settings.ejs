@@ -5,7 +5,9 @@
   <h1>Реквізити постачальника</h1>
 </div>
 
-<% if (saved) { %><div class="alert alert-ok">Реквізити збережено.</div><% } %>
+<% if (saved === '1') { %><div class="alert alert-ok">Реквізити збережено.</div><% } %>
+<% if (saved === 'bank') { %><div class="alert alert-ok">Банківські рахунки оновлено.</div><% } %>
+<% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
 
 <p class="muted section-hint">Ці дані підставляються у кожен рахунок як реквізити вашого ТОВ.</p>
 
@@ -31,26 +33,10 @@
     <input type="text" name="address" value="<%= company.address %>" placeholder="49000, м. Дніпро, вул. …">
   </label>
 
-  <h3 class="fieldset-title">Банківські реквізити</h3>
-  <label class="block">
-    <span>IBAN</span>
-    <input type="text" name="iban" value="<%= company.iban %>" placeholder="UA00 0000 0000 0000 0000 0000 0000">
-  </label>
-  <label class="block">
-    <span>Назва банку</span>
-    <input type="text" name="bank_name" value="<%= company.bank_name %>" placeholder="АТ «Банк», м. Київ">
-  </label>
-
   <h3 class="fieldset-title">Контакти та підписанти</h3>
   <div class="form-grid-2">
-    <label>
-      <span>Телефон</span>
-      <input type="text" name="phone" value="<%= company.phone %>">
-    </label>
-    <label>
-      <span>Email</span>
-      <input type="text" name="email" value="<%= company.email %>">
-    </label>
+    <label><span>Телефон</span><input type="text" name="phone" value="<%= company.phone %>"></label>
+    <label><span>Email</span><input type="text" name="email" value="<%= company.email %>"></label>
   </div>
   <div class="form-grid-2">
     <label>
@@ -73,5 +59,52 @@
     <button type="submit" class="btn btn-primary">Зберегти реквізити</button>
   </div>
 </form>
+
+<div class="card form-narrow">
+  <div class="card-head"><h2>Банківські рахунки</h2></div>
+  <p class="muted section-hint">Додайте всі рахунки у різних банках. При виставленні рахунку менеджер обиратиме, на який саме платити. Позначте один як «типовий».</p>
+
+  <% if (accounts.length === 0) { %>
+    <p class="muted pad">Ще немає жодного рахунку. Додайте перший нижче.</p>
+  <% } else { %>
+    <div class="acct-list">
+      <% accounts.forEach(function(a) { %>
+        <div class="acct-item">
+          <form method="post" action="/settings/bank/<%= a.id %>/edit" class="acct-edit">
+            <div class="acct-row">
+              <input type="text" name="label" value="<%= a.label %>" placeholder="Назва (напр.: ПриватБанк)">
+              <input type="text" name="bank_name" value="<%= a.bank_name %>" placeholder="Назва банку">
+            </div>
+            <input type="text" name="iban" value="<%= a.iban %>" placeholder="IBAN" class="acct-iban">
+            <div class="acct-actions">
+              <button type="submit" class="btn btn-secondary btn-sm">Зберегти</button>
+              <% if (a.is_default) { %>
+                <span class="badge badge-ok">Типовий</span>
+              <% } else { %>
+                <button type="submit" form="def-<%= a.id %>" class="btn btn-ghost btn-sm">Зробити типовим</button>
+              <% } %>
+              <button type="submit" form="del-<%= a.id %>" class="btn btn-danger btn-sm"
+                      onclick="return confirm('Видалити цей рахунок?');">Видалити</button>
+            </div>
+          </form>
+          <form method="post" action="/settings/bank/<%= a.id %>/default" id="def-<%= a.id %>"></form>
+          <form method="post" action="/settings/bank/<%= a.id %>/delete" id="del-<%= a.id %>"></form>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <form method="post" action="/settings/bank/new" class="acct-new">
+    <h3 class="fieldset-title">Додати рахунок</h3>
+    <div class="acct-row">
+      <input type="text" name="label" placeholder="Назва (напр.: ПриватБанк — основний)">
+      <input type="text" name="bank_name" placeholder="Назва банку (АТ «…»)">
+    </div>
+    <input type="text" name="iban" placeholder="IBAN: UA00 0000 …" class="acct-iban">
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Додати рахунок</button>
+    </div>
+  </form>
+</div>
 
 <%- include('partials/foot') %>
