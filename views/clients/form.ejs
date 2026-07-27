@@ -13,23 +13,23 @@
 <form method="post" action="<%= action %>" class="card form-narrow">
   <label class="block">
     <span>Назва закладу <span class="req">*</span></span>
-    <input type="text" name="name" value="<%= client.name || '' %>" required autofocus placeholder="Повна назва навчального закладу">
+    <input type="text" name="name" value="<%= inst.name || '' %>" required autofocus placeholder="Повна назва навчального закладу">
   </label>
 
   <div class="form-grid-2">
     <label>
       <span>Код</span>
-      <input type="text" name="code" value="<%= client.code || '' %>" placeholder="Напр.: 2799">
+      <input type="text" name="code" value="<%= inst.code || '' %>" placeholder="Напр.: 2799">
     </label>
     <label>
       <span>Коротка назва</span>
-      <input type="text" name="short_name" value="<%= client.short_name || '' %>" placeholder="Напр.: ДНУ">
+      <input type="text" name="short_name" value="<%= inst.short_name || '' %>" placeholder="Напр.: ДНУ">
     </label>
   </div>
 
   <label class="block">
     <span>Категорія</span>
-    <input type="text" name="category" value="<%= client.category || '' %>" list="catList" placeholder="Напр.: Заклад вищої освіти">
+    <input type="text" name="category" value="<%= inst.category || '' %>" list="catList" placeholder="Напр.: Заклад вищої освіти">
     <datalist id="catList">
       <option value="Заклад вищої освіти"></option>
       <option value="Заклади фахової передвищої освіти"></option>
@@ -42,25 +42,25 @@
       <div class="form-grid-2">
         <label>
           <span>Код ЄДРПОУ</span>
-          <input type="text" name="edrpou" value="<%= client.edrpou || '' %>">
+          <input type="text" name="edrpou" value="<%= inst.edrpou || '' %>">
         </label>
         <label>
           <span>Контактна особа</span>
-          <input type="text" name="contact_person" value="<%= client.contact_person || '' %>">
+          <input type="text" name="contact_person" value="<%= inst.contact_person || '' %>">
         </label>
       </div>
       <label class="block">
         <span>Адреса</span>
-        <input type="text" name="address" value="<%= client.address || '' %>">
+        <input type="text" name="address" value="<%= inst.address || '' %>">
       </label>
       <div class="form-grid-2">
         <label>
           <span>Телефон</span>
-          <input type="text" name="phone" value="<%= client.phone || '' %>">
+          <input type="text" name="phone" value="<%= inst.phone || '' %>">
         </label>
         <label>
           <span>Email</span>
-          <input type="text" name="email" value="<%= client.email || '' %>">
+          <input type="text" name="email" value="<%= inst.email || '' %>">
         </label>
       </div>
     </div>

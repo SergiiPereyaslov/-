@@ -71,3 +71,11 @@ body {
   .sheet-a4 { width: auto; min-height: auto; margin: 0; padding: 0; box-shadow: none; }
   @page { size: A4; margin: 15mm; }
 }
+
+/* ── Договір (повні аркуші А4) ───────────────────────────────────────────── */
+.contract-title { font-size: 17px; text-align: center; margin: 0 0 14px; font-weight: 700; }
+.contract-meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 18px; font-size: 13px;
+}
+.contract-body { white-space: pre-wrap; font-size: 13px; line-height: 1.5; text-align: justify; }

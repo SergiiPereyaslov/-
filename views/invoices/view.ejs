@@ -28,6 +28,9 @@
   <% } %>
 
   <a href="/invoices/<%= invoice.id %>/print" target="_blank" class="btn btn-ghost btn-sm">Тільки рахунок</a>
+  <% if (invoice.print_with_contract) { %>
+    <a href="/invoices/<%= invoice.id %>/print-contract" target="_blank" class="btn btn-ghost btn-sm">Тільки договір</a>
+  <% } %>
   <form method="post" action="/invoices/<%= invoice.id %>/duplicate" class="inline">
     <button class="btn btn-ghost btn-sm">Створити копію</button>
   </form>
@@ -51,7 +54,14 @@
     </div>
     <div>
       <div class="ip-label">Покупець</div>
-      <div class="ip-strong"><%= invoice.client_name %></div>
+      <div class="ip-strong">
+        <% if (invoice.client_id) { %>
+          <a href="/clients/<%= invoice.client_id %>"><%= invoice.client_name %></a>
+        <% } else { %><%= invoice.client_name %><% } %>
+      </div>
+      <% if (invoice.print_with_contract) { %>
+        <div class="muted small">Друкується разом із договором</div>
+      <% } %>
     </div>
   </div>
 

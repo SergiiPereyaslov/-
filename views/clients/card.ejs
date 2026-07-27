@@ -1,0 +1,141 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <div>
+    <a href="/clients" class="back-link">← Усі заклади</a>
+    <h1><%= inst.name %></h1>
+  </div>
+  <div class="head-actions">
+    <a href="/clients/<%= inst.id %>/contract" class="btn btn-primary">📄 Договір</a>
+    <a href="/clients/<%= inst.id %>/edit" class="btn btn-secondary">Редагувати</a>
+  </div>
+</div>
+
+<% if (saved === 'contract') { %><div class="alert alert-ok">Договір збережено.</div><% } %>
+<% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Реквізити закладу</h2></div>
+    <table class="table kv">
+      <tr><td class="kv-k">Коротка назва</td><td><%= inst.short_name || '—' %></td></tr>
+      <tr><td class="kv-k">Код</td><td><%= inst.code || '—' %></td></tr>
+      <tr><td class="kv-k">Категорія</td><td><%= inst.category || '—' %></td></tr>
+      <% if (inst.edrpou) { %><tr><td class="kv-k">ЄДРПОУ</td><td><%= inst.edrpou %></td></tr><% } %>
+      <% if (inst.address) { %><tr><td class="kv-k">Адреса</td><td><%= inst.address %></td></tr><% } %>
+      <% if (inst.contact_person) { %><tr><td class="kv-k">Контактна особа</td><td><%= inst.contact_person %></td></tr><% } %>
+      <% if (inst.phone) { %><tr><td class="kv-k">Телефон</td><td><%= inst.phone %></td></tr><% } %>
+      <% if (inst.email) { %><tr><td class="kv-k">Email</td><td><%= inst.email %></td></tr><% } %>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Договір</h2></div>
+    <% if (inst.contract_template) { %>
+      <table class="table kv">
+        <tr>
+          <td class="kv-k">Номер</td>
+          <td>
+            <% if (inst.contract_number) { %><%= inst.contract_number %>
+            <% } else { %><span class="muted">не вказано — у друку лишиться місце для запису від руки</span><% } %>
+          </td>
+        </tr>
+        <tr>
+          <td class="kv-k">Дата</td>
+          <td>
+            <% if (inst.contract_date) { %><%= fmt.formatDateUk(inst.contract_date) %>
+            <% } else { %><span class="muted">не вказано — у друку лишиться місце для запису від руки</span><% } %>
+          </td>
+        </tr>
+      </table>
+      <div class="form-actions">
+        <a href="/clients/<%= inst.id %>/contract" class="btn btn-secondary btn-sm">Редагувати текст</a>
+      </div>
+    <% } else { %>
+      <p class="muted pad">Шаблон договору для цього закладу ще не додано.</p>
+      <a href="/clients/<%= inst.id %>/contract" class="btn btn-primary btn-sm">Додати договір</a>
+    <% } %>
+
+    <div class="mini-stats">
+      <div><span class="muted">Документів:</span> <strong><%= totals.cnt %></strong></div>
+      <div><span class="muted">На суму:</span> <strong><%= fmt.formatMoney(totals.sum_all) %> ₴</strong></div>
+    </div>
+  </section>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>Історія документів</h2>
+    <span class="muted small">
+      Оплачено: <%= fmt.formatMoney(totals.sum_paid) %> ₴ · Очікує: <%= fmt.formatMoney(totals.sum_unpaid) %> ₴
+    </span>
+  </div>
+
+  <% if (invoices.length === 0) { %>
+    <div class="empty-state small">
+      <div class="empty-icon">🧾</div>
+      <p class="muted">По цьому закладу ще немає жодного рахунку.</p>
+      <a href="/invoices/new" class="btn btn-primary">Виставити рахунок</a>
+    </div>
+  <% } else { %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Дата</th><th>Номер</th><th>Компанія</th>
+          <th class="right">Сума</th><th>Статус</th><th>Документи</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invoices.forEach(function(inv) { %>
+          <tr>
+            <td class="nowrap">
+              <% if (inv.invoice_date) { %><%= fmt.formatDateUk(inv.invoice_date) %>
+              <% } else { %><span class="muted">без дати</span><% } %>
+            </td>
+            <td><a href="/invoices/<%= inv.id %>" class="strong-link"><%= inv.number %></a></td>
+            <td class="muted small"><%= inv.company_short || '—' %></td>
+            <td class="right nowrap"><%= fmt.formatMoney(inv.total) %> ₴</td>
+            <td>
+              <% if (inv.status === 'paid') { %>
+                <span class="badge badge-ok">Оплачено</span>
+              <% } else { %>
+                <span class="badge badge-warn">Не оплачено</span>
+              <% } %>
+            </td>
+            <td class="muted small nowrap">
+              рахунок · накладна<% if (inv.print_with_contract) { %> · договір<% } %>
+            </td>
+            <td class="right nowrap">
+              <a href="/invoices/<%= inv.id %>/print-set" target="_blank" class="link">Друк</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<div class="card danger-zone">
+  <div class="card-head"><h2>Видалення закладу</h2></div>
+  <% if (totals.cnt > 0) { %>
+    <p class="muted">
+      По цьому закладу є документи (<%= totals.cnt %>), тому видалити його не можна —
+      інакше історія загубиться. Щоб прибрати заклад зі списку, скористайтеся архівом.
+    </p>
+    <form method="post" action="/clients/<%= inst.id %>/archive" class="inline">
+      <button class="btn btn-secondary btn-sm">Перемістити в архів</button>
+    </form>
+  <% } else { %>
+    <p class="muted">По цьому закладу немає жодного документа — його можна видалити остаточно.</p>
+    <form method="post" action="/clients/<%= inst.id %>/delete" class="inline"
+          onsubmit="return confirm('Видалити заклад «<%= inst.short_name || inst.name %>»? Дію не можна скасувати.');">
+      <button class="btn btn-danger btn-sm">Видалити заклад</button>
+    </form>
+    <form method="post" action="/clients/<%= inst.id %>/archive" class="inline">
+      <button class="btn btn-ghost btn-sm">Або в архів</button>
+    </form>
+  <% } %>
+</div>
+
+<%- include('../partials/foot') %>

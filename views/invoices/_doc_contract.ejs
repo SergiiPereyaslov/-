@@ -1,0 +1,16 @@
+<div class="doc doc-contract">
+  <h1 class="contract-title">
+    Договір
+    <% if (contract.number) { %>№ <%= contract.number %><% } else { %>№ ______<% } %>
+  </h1>
+
+  <div class="contract-meta">
+    <span class="cm-left"><%= contract.place || '' %></span>
+    <span class="cm-right">
+      <% if (contract.date) { %><%= fmt.formatDateUk(contract.date) %>
+      <% } else { %>«___» ______________ 20__ р.<% } %>
+    </span>
+  </div>
+
+  <div class="contract-body"><%= contract.body %></div>
+</div>

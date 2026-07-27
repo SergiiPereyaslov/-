@@ -10,6 +10,7 @@
     "accountant_name": "",
     "invoice_prefix": "",
     "tax_note": "Без ПДВ",
+    "place_of_compilation": "м. Дніпро",
     "bank_accounts": [
       {
         "label": "Райффайзен Банк (Київ)",
@@ -36,6 +37,7 @@
     "accountant_name": "",
     "invoice_prefix": "",
     "tax_note": "Без ПДВ",
+    "place_of_compilation": "м. Дніпро",
     "bank_accounts": [
       {
         "label": "Райффайзен Банк (Київ)",

@@ -49,6 +49,7 @@ function init() {
       accountant_name TEXT NOT NULL DEFAULT '',
       invoice_prefix  TEXT NOT NULL DEFAULT '',
       tax_note        TEXT NOT NULL DEFAULT 'Без ПДВ',
+      place_of_compilation TEXT NOT NULL DEFAULT '',
       archived        INTEGER NOT NULL DEFAULT 0,
       sort_order      INTEGER NOT NULL DEFAULT 0,
       created_at      TEXT NOT NULL DEFAULT (datetime('now'))
@@ -82,6 +83,10 @@ function init() {
       contact_person TEXT NOT NULL DEFAULT '',
       phone          TEXT NOT NULL DEFAULT '',
       email          TEXT NOT NULL DEFAULT '',
+      -- договір закладу: власний шаблон, номер і дата (заповнюються вручну)
+      contract_template TEXT NOT NULL DEFAULT '',
+      contract_number   TEXT NOT NULL DEFAULT '',
+      contract_date     TEXT NOT NULL DEFAULT '',
       archived       INTEGER NOT NULL DEFAULT 0,
       created_at     TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -113,6 +118,7 @@ function init() {
       company_director_name    TEXT NOT NULL DEFAULT '',
       company_accountant_name  TEXT NOT NULL DEFAULT '',
       company_tax_note         TEXT NOT NULL DEFAULT 'Без ПДВ',
+      company_place            TEXT NOT NULL DEFAULT '',
       client_id      INTEGER,
       -- знімок реквізитів покупця на момент виставлення
       client_name    TEXT NOT NULL DEFAULT '',
@@ -126,6 +132,8 @@ function init() {
       total          REAL NOT NULL DEFAULT 0,
       status         TEXT NOT NULL DEFAULT 'issued',
       notes          TEXT NOT NULL DEFAULT '',
+      -- чи друкувати комплект разом із договором
+      print_with_contract INTEGER NOT NULL DEFAULT 0,
       created_by     INTEGER,
       created_at     TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL,
@@ -158,6 +166,12 @@ function init() {
     ['code', "code TEXT NOT NULL DEFAULT ''"],
     ['short_name', "short_name TEXT NOT NULL DEFAULT ''"],
     ['category', "category TEXT NOT NULL DEFAULT ''"],
+    ['contract_template', "contract_template TEXT NOT NULL DEFAULT ''"],
+    ['contract_number', "contract_number TEXT NOT NULL DEFAULT ''"],
+    ['contract_date', "contract_date TEXT NOT NULL DEFAULT ''"],
+  ]);
+  addColumns('companies', [
+    ['place_of_compilation', "place_of_compilation TEXT NOT NULL DEFAULT ''"],
   ]);
   addColumns('invoices', [
     ['pay_iban', "pay_iban TEXT NOT NULL DEFAULT ''"],
@@ -171,6 +185,8 @@ function init() {
     ['company_director_name', "company_director_name TEXT NOT NULL DEFAULT ''"],
     ['company_accountant_name', "company_accountant_name TEXT NOT NULL DEFAULT ''"],
     ['company_tax_note', "company_tax_note TEXT NOT NULL DEFAULT 'Без ПДВ'"],
+    ['company_place', "company_place TEXT NOT NULL DEFAULT ''"],
+    ['print_with_contract', 'print_with_contract INTEGER NOT NULL DEFAULT 0'],
   ]);
   addColumns('sessions', [
     ['current_company_id', 'current_company_id INTEGER'],
@@ -211,8 +227,8 @@ function seedInitialData() {
     if (fs.existsSync(file)) {
       const list = JSON.parse(fs.readFileSync(file, 'utf8'));
       const insCompany = db.prepare(
-        `INSERT INTO companies (name, short_name, edrpou, address, phone, email, director_name, accountant_name, invoice_prefix, tax_note, sort_order)
-         VALUES (@name, @short_name, @edrpou, @address, @phone, @email, @director_name, @accountant_name, @invoice_prefix, @tax_note, @sort_order)`
+        `INSERT INTO companies (name, short_name, edrpou, address, phone, email, director_name, accountant_name, invoice_prefix, tax_note, place_of_compilation, sort_order)
+         VALUES (@name, @short_name, @edrpou, @address, @phone, @email, @director_name, @accountant_name, @invoice_prefix, @tax_note, @place_of_compilation, @sort_order)`
       );
       const insAccount = db.prepare(
         `INSERT INTO bank_accounts (company_id, label, iban, bank_name, is_default, sort_order)
@@ -225,6 +241,7 @@ function seedInitialData() {
             address: c.address || '', phone: c.phone || '', email: c.email || '',
             director_name: c.director_name || '', accountant_name: c.accountant_name || '',
             invoice_prefix: c.invoice_prefix || '', tax_note: c.tax_note || 'Без ПДВ',
+            place_of_compilation: c.place_of_compilation || '',
             sort_order: idx,
           });
           const companyId = info.lastInsertRowid;

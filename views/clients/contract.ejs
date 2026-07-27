@@ -1,0 +1,68 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<div class="page-head">
+  <div>
+    <a href="/clients/<%= inst.id %>" class="back-link">← До картки закладу</a>
+    <h1>Договір</h1>
+  </div>
+</div>
+
+<p class="muted section-hint">Заклад: <strong><%= inst.name %></strong></p>
+
+<form method="post" action="/clients/<%= inst.id %>/contract">
+  <div class="card">
+    <div class="form-grid-2">
+      <label>
+        <span>Номер договору</span>
+        <input type="text" name="contract_number" value="<%= inst.contract_number %>" placeholder="напр.: 17/2026">
+        <small class="hint">Якщо лишити порожнім — у документі буде місце для запису від руки.</small>
+      </label>
+      <label>
+        <span>Дата договору</span>
+        <input type="date" name="contract_date" value="<%= inst.contract_date %>">
+        <small class="hint">Якщо лишити порожньою — у документі буде «___» ______ 20__ р.</small>
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Текст договору</h2></div>
+    <p class="muted section-hint">
+      Вставте сюди текст договору для цього закладу. Дані підставляться автоматично —
+      достатньо написати підстановку у фігурних дужках, наприклад <code>{{ЗАМОВНИК}}</code>.
+    </p>
+    <textarea name="contract_template" class="contract-area" rows="22"
+              placeholder="Вставте текст договору сюди…"><%= inst.contract_template %></textarea>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary btn-lg">Зберегти договір</button>
+    <a href="/clients/<%= inst.id %>" class="btn btn-ghost">Скасувати</a>
+  </div>
+</form>
+
+<div class="card">
+  <details class="more-fields" open>
+    <summary>Підстановки, які можна вживати в тексті</summary>
+    <div class="more-body">
+      <table class="table ph-table">
+        <thead><tr><th>Підстановка</th><th>Що підставиться</th></tr></thead>
+        <tbody>
+          <% placeholders.forEach(function(p) { %>
+            <tr>
+              <td class="nowrap"><code>{{<%= p[0] %>}}</code></td>
+              <td class="muted"><%= p[1] %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <p class="hint">
+        Підстановки <code>{{СУМА}}</code>, <code>{{СУМА_ПРОПИСОМ}}</code> та <code>{{ПОЗИЦІЇ}}</code>
+        заповнюються з рахунку, разом з яким друкується договір.
+      </p>
+    </div>
+  </details>
+</div>
+
+<%- include('../partials/foot') %>

@@ -3,6 +3,10 @@
     <% if (invoice.invoice_date) { %><%= fmt.formatDateUk(invoice.invoice_date) %><% } else { %>«___» ______________ 20__ р.<% } %>
   </h1>
 
+  <% if (company.place_of_compilation) { %>
+    <p class="doc-place">Місце складання: <%= company.place_of_compilation %></p>
+  <% } %>
+
   <table class="doc-parties">
     <tr><td class="dp-label">Постачальник:</td><td><strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %></td></tr>
     <tr><td class="dp-label">Одержувач:</td><td><strong><%= invoice.client_name %></strong></td></tr>

@@ -354,3 +354,26 @@ textarea { resize: vertical; }
 .acct-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .acct-new { margin-top: 8px; }
 @media (max-width: 560px) { .acct-row { grid-template-columns: 1fr; } }
+
+/* ── Картка закладу ─────────────────────────────────────────────────────── */
+.table.kv td { padding: 8px 12px; }
+.table.kv .kv-k { width: 45%; color: var(--muted); font-size: 13px; }
+.danger-zone { border-color: #f0d5d5; background: #fffbfb; }
+.danger-zone .card-head h2 { color: var(--danger); font-size: 16px; }
+.danger-zone p { margin: 0 0 12px; font-size: 14px; }
+
+/* ── Редактор договору ──────────────────────────────────────────────────── */
+.contract-area {
+  width: 100%; min-height: 420px; resize: vertical;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px; line-height: 1.55;
+}
+code {
+  background: #eef2f9; border: 1px solid var(--border); border-radius: 5px;
+  padding: 1px 6px; font-size: 12.5px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.ph-table td { padding: 6px 12px; font-size: 13px; }
+.ph-table th { padding: 8px 12px; }
+.chk-block { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.chk-block span { font-size: 14px; color: var(--text); }

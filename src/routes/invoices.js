@@ -5,6 +5,7 @@ const { db, transaction } = require('../db');
 const { requireAuth } = require('../auth');
 const { requireCompany, bankAccountsForCompany, defaultAccountForCompany, getCompanyById } = require('../company');
 const fmt = require('../format');
+const { renderContract } = require('../contract');
 const {
   nextSeqForYear, formatInvoiceNumber, parseItems, itemsTotal,
 } = require('../invoiceHelpers');
@@ -23,6 +24,7 @@ function companySnapshotFromInvoice(invoice) {
     director_name: invoice.company_director_name,
     accountant_name: invoice.company_accountant_name,
     tax_note: invoice.company_tax_note,
+    place_of_compilation: invoice.company_place,
   };
 }
 
@@ -49,6 +51,24 @@ function servicesList() {
 function accountIdForBank(bankAccounts, iban, bankName) {
   const match = bankAccounts.find((a) => a.iban === iban && a.bank_name === bankName);
   return match ? match.id : '';
+}
+
+// Готує договір для друку разом із рахунком. Шаблон, номер і дата беруться
+// з картки закладу; порожні номер/дата лишають місце для запису від руки.
+function buildContractFor(invoice, company, pay, items) {
+  if (!invoice.client_id) return null;
+  const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(invoice.client_id);
+  if (!client || !client.contract_template) return null;
+  return {
+    number: client.contract_number || '',
+    date: client.contract_date || '',
+    place: invoice.company_place || company.place_of_compilation || '',
+    body: renderContract({
+      template: client.contract_template,
+      company: { ...company, place_of_compilation: invoice.company_place || '' },
+      client, pay, invoice, items,
+    }),
+  };
 }
 
 // Список рахунків (історія) — лише активної компанії.
@@ -142,25 +162,27 @@ router.post('/new', requireCompany, (req, res) => {
       `INSERT INTO invoices
          (number, seq, year, invoice_date, company_id,
           company_name, company_edrpou, company_address, company_phone, company_email,
-          company_director_name, company_accountant_name, company_tax_note,
+          company_director_name, company_accountant_name, company_tax_note, company_place,
           client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
-          pay_iban, pay_bank, total, status, notes, created_by)
+          pay_iban, pay_bank, total, status, notes, print_with_contract, created_by)
        VALUES
          (@number, @seq, @year, @invoice_date, @company_id,
           @company_name, @company_edrpou, @company_address, @company_phone, @company_email,
-          @company_director_name, @company_accountant_name, @company_tax_note,
+          @company_director_name, @company_accountant_name, @company_tax_note, @company_place,
           @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
-          @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
+          @pay_iban, @pay_bank, @total, 'issued', @notes, @print_with_contract, @created_by)`
     ).run({
       number, seq, year, invoice_date: invoiceDate, company_id: company.id,
       company_name: company.name, company_edrpou: company.edrpou, company_address: company.address,
       company_phone: company.phone, company_email: company.email,
       company_director_name: company.director_name, company_accountant_name: company.accountant_name,
-      company_tax_note: company.tax_note,
+      company_tax_note: company.tax_note, company_place: company.place_of_compilation || '',
       client_id: client.id, client_name: client.name, client_edrpou: client.edrpou, client_address: client.address,
       client_iban: client.iban, client_bank: client.bank_name,
       pay_iban: account ? account.iban : '', pay_bank: account ? account.bank_name : '',
-      total, notes: (req.body.notes || '').trim(), created_by: req.user.id,
+      total, notes: (req.body.notes || '').trim(),
+      print_with_contract: req.body.print_with_contract ? 1 : 0,
+      created_by: req.user.id,
     });
     const newId = info.lastInsertRowid;
     const insItem = db.prepare(
@@ -199,15 +221,44 @@ router.get('/:id/print', (req, res) => {
   });
 });
 
-// Друк комплекту: 2 рахунки + 2 видаткові накладні (по два А5 на аркуш А4).
+// Друк комплекту: (за потреби договір на А4) + 2 рахунки + 2 видаткові накладні (по два А5 на аркуш).
 router.get('/:id/print-set', (req, res) => {
   const invoice = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
   const autoprint = req.query.autoprint === '1';
+  const company = companySnapshotFromInvoice(invoice);
+  const pay = resolvePayAccount(invoice);
+
+  // Договір друкуємо, лише якщо його ввімкнено для цього рахунку і в закладі є шаблон.
+  // ?contract=1|0 у посиланні дозволяє перевизначити разово.
+  let withContract = invoice.print_with_contract === 1;
+  if (req.query.contract === '1') withContract = true;
+  if (req.query.contract === '0') withContract = false;
+
+  const contract = withContract ? buildContractFor(invoice, company, pay, items) : null;
+
   res.render('invoices/print-set', {
-    invoice, items, company: companySnapshotFromInvoice(invoice), pay: resolvePayAccount(invoice), fmt, autoprint,
+    invoice, items, company, pay, fmt, autoprint, contract,
   });
+});
+
+// Друк лише договору (повний А4).
+router.get('/:id/print-contract', (req, res) => {
+  const invoice = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
+  if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
+  const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
+  const company = companySnapshotFromInvoice(invoice);
+  const contract = buildContractFor(invoice, company, resolvePayAccount(invoice), items);
+  if (!contract) {
+    return res.render('error', {
+      title: 'Немає договору',
+      message: 'Для цього закладу ще не додано шаблон договору.',
+      linkHref: invoice.client_id ? `/clients/${invoice.client_id}/contract` : '/clients',
+      linkText: 'Додати договір',
+    });
+  }
+  res.render('invoices/print-contract', { invoice, contract, fmt });
 });
 
 // Форма редагування. Компанія рахунку — та, під якою його створено (не обов'язково активна зараз).
@@ -266,7 +317,8 @@ router.post('/:id/edit', (req, res) => {
          number=@number, invoice_date=@invoice_date, client_id=@client_id,
          client_name=@client_name, client_edrpou=@client_edrpou, client_address=@client_address,
          client_iban=@client_iban, client_bank=@client_bank,
-         pay_iban=@pay_iban, pay_bank=@pay_bank, total=@total, notes=@notes
+         pay_iban=@pay_iban, pay_bank=@pay_bank, total=@total, notes=@notes,
+         print_with_contract=@print_with_contract
        WHERE id=@id`
     ).run({
       id: existing.id, number, invoice_date: invoiceDate, client_id: client.id,
@@ -275,6 +327,7 @@ router.post('/:id/edit', (req, res) => {
       pay_iban: account ? account.iban : existing.pay_iban,
       pay_bank: account ? account.bank_name : existing.pay_bank,
       total, notes: (req.body.notes || '').trim(),
+      print_with_contract: req.body.print_with_contract ? 1 : 0,
     });
     db.prepare('DELETE FROM invoice_items WHERE invoice_id = ?').run(existing.id);
     const insItem = db.prepare(
@@ -309,25 +362,26 @@ router.post('/:id/duplicate', (req, res) => {
       `INSERT INTO invoices
          (number, seq, year, invoice_date, company_id,
           company_name, company_edrpou, company_address, company_phone, company_email,
-          company_director_name, company_accountant_name, company_tax_note,
+          company_director_name, company_accountant_name, company_tax_note, company_place,
           client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
-          pay_iban, pay_bank, total, status, notes, created_by)
+          pay_iban, pay_bank, total, status, notes, print_with_contract, created_by)
        VALUES
          (@number, @seq, @year, @invoice_date, @company_id,
           @company_name, @company_edrpou, @company_address, @company_phone, @company_email,
-          @company_director_name, @company_accountant_name, @company_tax_note,
+          @company_director_name, @company_accountant_name, @company_tax_note, @company_place,
           @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
-          @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
+          @pay_iban, @pay_bank, @total, 'issued', @notes, @print_with_contract, @created_by)`
     ).run({
       number, seq, year, invoice_date: todayIso(), company_id: src.company_id,
       company_name: src.company_name, company_edrpou: src.company_edrpou, company_address: src.company_address,
       company_phone: src.company_phone, company_email: src.company_email,
       company_director_name: src.company_director_name, company_accountant_name: src.company_accountant_name,
-      company_tax_note: src.company_tax_note,
+      company_tax_note: src.company_tax_note, company_place: src.company_place,
       client_id: src.client_id, client_name: src.client_name, client_edrpou: src.client_edrpou,
       client_address: src.client_address, client_iban: src.client_iban, client_bank: src.client_bank,
       pay_iban: src.pay_iban, pay_bank: src.pay_bank,
-      total: src.total, notes: src.notes, created_by: req.user.id,
+      total: src.total, notes: src.notes, print_with_contract: src.print_with_contract,
+      created_by: req.user.id,
     });
     const id = info.lastInsertRowid;
     const insItem = db.prepare(

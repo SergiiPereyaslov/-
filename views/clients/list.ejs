@@ -39,6 +39,10 @@
   <% if (q || category || (sort !== 'name')) { %><a href="<%= showArchived ? '/clients?archived=1' : '/clients' %>" class="btn btn-ghost">Скинути</a><% } %>
 </form>
 
+<% if (typeof saved !== 'undefined' && saved === 'deleted') { %>
+  <div class="alert alert-ok">Заклад видалено.</div>
+<% } %>
+
 <div class="totals-row">
   <span>Знайдено: <strong><%= total %></strong></span>
   <% if (pages > 1) { %><span class="muted">Сторінка <%= currentPage %> з <%= pages %></span><% } %>
@@ -59,11 +63,15 @@
       <tbody>
         <% clients.forEach(function(c) { %>
           <tr>
-            <td><strong><%= c.name %></strong></td>
+            <td>
+              <a href="/clients/<%= c.id %>" class="strong-link"><%= c.name %></a>
+              <% if (c.contract_template) { %><span class="badge badge-muted" title="Є договір">договір</span><% } %>
+            </td>
             <td class="muted"><%= c.short_name || '—' %></td>
             <td class="nowrap"><%= c.code || '—' %></td>
             <td class="muted small"><%= c.category || '' %></td>
             <td class="right nowrap">
+              <a href="/clients/<%= c.id %>" class="link">Відкрити</a>
               <a href="/clients/<%= c.id %>/edit" class="link">Редагувати</a>
               <form method="post" action="/clients/<%= c.id %>/archive" class="inline">
                 <% if (showArchived) { %>

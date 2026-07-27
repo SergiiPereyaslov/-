@@ -80,3 +80,15 @@ body {
   .a4-page:last-child { page-break-after: auto; }
   .a5-slot { height: 131mm; padding: 0 3mm; }
 }
+
+/* ── Договір усередині комплекту (повні А4, а не половинки) ──────────────── */
+.a4-full { display: block; padding: 12mm 15mm; font-size: 12px; }
+.contract-title { font-size: 15px; text-align: center; margin: 0 0 12px; font-weight: 700; }
+.contract-meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 14px; font-size: 12px;
+}
+.contract-body { white-space: pre-wrap; font-size: 12px; line-height: 1.45; text-align: justify; }
+@media print {
+  .a4-full { padding: 0; }
+}

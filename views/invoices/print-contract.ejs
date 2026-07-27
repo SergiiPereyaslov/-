@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Договір <%= contract.number ? '№ ' + contract.number : '' %></title>
+  <link rel="stylesheet" href="/static/css/print.css">
+</head>
+<body class="doc-scope">
+  <div class="toolbar no-print">
+    <button onclick="window.print()" class="pbtn">🖨 Друкувати / Зберегти PDF</button>
+    <a href="/invoices/<%= invoice.id %>" class="pback">← Назад</a>
+    <span class="hint">Договір друкується на повних аркушах А4</span>
+  </div>
+
+  <div class="sheet sheet-a4">
+    <%- include('_doc_contract', { contract, fmt }) %>
+  </div>
+</body>
+</html>

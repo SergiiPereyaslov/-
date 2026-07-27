@@ -56,11 +56,18 @@
     </label>
   </div>
 
-  <label class="block">
-    <span>Напис щодо ПДВ у рахунку</span>
-    <input type="text" name="tax_note" value="<%= company.tax_note %>" placeholder="Без ПДВ">
-    <small class="hint">Для ТОВ без ПДВ залиште «Без ПДВ».</small>
-  </label>
+  <div class="form-grid-2">
+    <label>
+      <span>Напис щодо ПДВ у рахунку</span>
+      <input type="text" name="tax_note" value="<%= company.tax_note %>" placeholder="Без ПДВ">
+      <small class="hint">Для ТОВ без ПДВ залиште «Без ПДВ».</small>
+    </label>
+    <label>
+      <span>Місце складання</span>
+      <input type="text" name="place_of_compilation" value="<%= company.place_of_compilation || '' %>" placeholder="м. Дніпро">
+      <small class="hint">Виводиться у видатковій накладній рядком «Місце складання: …».</small>
+    </label>
+  </div>
 
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Зберегти реквізити</button>

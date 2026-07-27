@@ -24,7 +24,7 @@ router.post('/', requireCompany, (req, res) => {
     `UPDATE companies SET
        name=@name, short_name=@short_name, edrpou=@edrpou, address=@address,
        phone=@phone, email=@email, director_name=@director_name, accountant_name=@accountant_name,
-       invoice_prefix=@invoice_prefix, tax_note=@tax_note
+       invoice_prefix=@invoice_prefix, tax_note=@tax_note, place_of_compilation=@place_of_compilation
      WHERE id = @id`
   ).run({
     id: req.company.id,
@@ -38,6 +38,7 @@ router.post('/', requireCompany, (req, res) => {
     accountant_name: (b.accountant_name || '').trim(),
     invoice_prefix: (b.invoice_prefix || '').trim(),
     tax_note: (b.tax_note || 'Без ПДВ').trim(),
+    place_of_compilation: (b.place_of_compilation || '').trim(),
   });
   res.redirect('/settings?saved=1');
 });
