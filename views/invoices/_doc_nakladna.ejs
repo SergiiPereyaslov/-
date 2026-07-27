@@ -3,10 +3,6 @@
     <% if (invoice.invoice_date) { %><%= fmt.formatDateUk(invoice.invoice_date) %><% } else { %>«___» ______________ 20__ р.<% } %>
   </h1>
 
-  <% if (company.place_of_compilation) { %>
-    <p class="doc-place">Місце складання: <%= company.place_of_compilation %></p>
-  <% } %>
-
   <table class="doc-parties">
     <tr><td class="dp-label">Постачальник:</td><td><strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %></td></tr>
     <tr><td class="dp-label">Одержувач:</td><td><strong><%= invoice.client_name %></strong></td></tr>
@@ -48,15 +44,23 @@
     <strong><%= fmt.amountToWords(invoice.total) %></strong>
   </p>
 
+  <%# «Відпустив» ліворуч, «Отримав» праворуч — в один ряд. %>
   <div class="doc-signs signs-nakl">
-    <div class="sign">
-      <span class="sign-role">Відпустив(ла)</span>
-      <span class="sign-line"></span>
+    <div class="sign-col">
+      <div class="sign">
+        <span class="sign-role">Відпустив(ла)</span>
+        <span class="sign-line"></span>
+      </div>
+      <% if (company.place_of_compilation) { %>
+        <div class="doc-place">Місце складання: <%= company.place_of_compilation %></div>
+      <% } %>
     </div>
-    <div class="sign">
-      <span class="sign-role">Отримав(ла)</span>
-      <span class="sign-line"></span>
+    <div class="sign-col">
+      <div class="sign">
+        <span class="sign-role">Отримав(ла)</span>
+        <span class="sign-line"></span>
+      </div>
     </div>
-    <div class="sign-mp">М.П.</div>
   </div>
+  <div class="sign-mp">М.П.</div>
 </div>
