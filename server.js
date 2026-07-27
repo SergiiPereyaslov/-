@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const { init, db } = require('./src/db');
 const auth = require('./src/auth');
+const { loadCompany } = require('./src/company');
 
 init();
 
@@ -21,8 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-// Підвантаження користувача у кожен запит.
+// Підвантаження користувача та активної компанії у кожен запит.
 app.use(auth.loadUser);
+app.use(loadCompany);
 
 // ── Автентифікація ──────────────────────────────────────────────────────────
 app.get('/login', (req, res) => {
@@ -56,25 +58,26 @@ app.post('/logout', (req, res) => {
 app.get('/', auth.requireAuth, (req, res) => {
   const fmt = require('./src/format');
   const year = new Date().getFullYear();
+  const companyId = req.company ? req.company.id : 0;
   const stats = db.prepare(
     `SELECT
         COUNT(*) AS cnt,
         COALESCE(SUM(total), 0) AS sum_all,
         COALESCE(SUM(CASE WHEN status='paid' THEN total ELSE 0 END), 0) AS sum_paid,
         COALESCE(SUM(CASE WHEN status='issued' THEN total ELSE 0 END), 0) AS sum_unpaid
-       FROM invoices WHERE year = ?`
-  ).get(year);
+       FROM invoices WHERE year = ? AND company_id = ?`
+  ).get(year, companyId);
   const recent = db.prepare(
     `SELECT i.*, u.full_name AS author
        FROM invoices i LEFT JOIN users u ON u.id = i.created_by
+      WHERE i.company_id = ?
       ORDER BY i.id DESC LIMIT 8`
-  ).all();
+  ).all(companyId);
   const counts = {
     clients: db.prepare('SELECT COUNT(*) AS n FROM clients WHERE archived = 0').get().n,
     services: db.prepare('SELECT COUNT(*) AS n FROM services WHERE archived = 0').get().n,
   };
-  const company = db.prepare('SELECT * FROM company WHERE id = 1').get();
-  res.render('dashboard', { title: 'Головна', stats, recent, counts, company, year, fmt });
+  res.render('dashboard', { title: 'Головна', stats, recent, counts, year, fmt });
 });
 
 // ── Розділи ──────────────────────────────────────────────────────────────────
@@ -82,6 +85,7 @@ app.use('/invoices', require('./src/routes/invoices'));
 app.use('/clients', require('./src/routes/clients'));
 app.use('/services', require('./src/routes/services'));
 app.use('/settings', require('./src/routes/settings'));
+app.use('/company', require('./src/routes/company'));
 
 // 404
 app.use((req, res) => {

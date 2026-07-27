@@ -3,6 +3,7 @@
 const express = require('express');
 const { db, transaction } = require('../db');
 const { requireAuth } = require('../auth');
+const { requireCompany, bankAccountsForCompany, defaultAccountForCompany, getCompanyById } = require('../company');
 const fmt = require('../format');
 const {
   nextSeqForYear, formatInvoiceNumber, parseItems, itemsTotal,
@@ -11,29 +12,26 @@ const {
 const router = express.Router();
 router.use(requireAuth);
 
-function getCompany() {
-  return db.prepare('SELECT * FROM company WHERE id = 1').get();
+// Реквізити компанії, знятi з рахунку на момент виставлення (не залежать від подальших змін).
+function companySnapshotFromInvoice(invoice) {
+  return {
+    name: invoice.company_name,
+    edrpou: invoice.company_edrpou,
+    address: invoice.company_address,
+    director_name: invoice.company_director_name,
+    accountant_name: invoice.company_accountant_name,
+    tax_note: invoice.company_tax_note,
+  };
 }
 
-function getBankAccounts() {
-  return db.prepare(
-    'SELECT * FROM bank_accounts WHERE archived = 0 ORDER BY is_default DESC, sort_order, id'
-  ).all();
-}
-
-function getDefaultAccount() {
-  const accounts = getBankAccounts();
-  return accounts.find((a) => a.is_default) || accounts[0] || null;
-}
-
-// Рахунок для оплати у друкованому документі: знімок з рахунку, або типовий, або з company.
-function resolvePayAccount(invoice, company) {
+// Рахунок для оплати у друкованому документі: знімок з рахунку, або типовий рахунок компанії.
+function resolvePayAccount(invoice) {
   if (invoice.pay_iban || invoice.pay_bank) {
     return { iban: invoice.pay_iban, bank_name: invoice.pay_bank };
   }
-  const def = getDefaultAccount();
+  const def = invoice.company_id ? defaultAccountForCompany(invoice.company_id) : null;
   if (def) return { iban: def.iban, bank_name: def.bank_name };
-  return { iban: company.iban || '', bank_name: company.bank_name || '' };
+  return { iban: '', bank_name: '' };
 }
 
 function todayIso() {
@@ -46,12 +44,17 @@ function servicesList() {
   return db.prepare('SELECT id, name, unit, price FROM services WHERE archived = 0 ORDER BY name COLLATE NOCASE').all();
 }
 
-// Список рахунків (історія) з фільтрами.
-router.get('/', (req, res) => {
+function accountIdForBank(bankAccounts, iban, bankName) {
+  const match = bankAccounts.find((a) => a.iban === iban && a.bank_name === bankName);
+  return match ? match.id : '';
+}
+
+// Список рахунків (історія) — лише активної компанії.
+router.get('/', requireCompany, (req, res) => {
   const q = (req.query.q || '').trim();
   const status = (req.query.status || '').trim();
-  const conditions = [];
-  const params = {};
+  const conditions = ['i.company_id = @companyId'];
+  const params = { companyId: req.company.id };
   if (q) {
     conditions.push('(i.number LIKE @q OR i.client_name LIKE @q)');
     params.q = `%${q}%`;
@@ -60,7 +63,7 @@ router.get('/', (req, res) => {
     conditions.push('i.status = @status');
     params.status = status;
   }
-  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const where = `WHERE ${conditions.join(' AND ')}`;
   const invoices = db.prepare(
     `SELECT i.*, u.full_name AS author
        FROM invoices i LEFT JOIN users u ON u.id = i.created_by
@@ -80,18 +83,11 @@ router.get('/', (req, res) => {
   res.render('invoices/list', { title: 'Рахунки', invoices, totals, q, status, fmt });
 });
 
-// Форма нового рахунку.
-router.get('/new', (req, res) => {
-  const company = getCompany();
-  if (!company.name) {
-    return res.render('error', {
-      title: 'Спочатку заповніть реквізити',
-      message: 'Щоб виставляти рахунки, спершу заповніть реквізити вашого ТОВ у розділі «Реквізити».',
-      linkHref: '/settings', linkText: 'Перейти до реквізитів',
-    });
-  }
-  const bankAccounts = getBankAccounts();
-  const seq = nextSeqForYear(new Date().getFullYear());
+// Форма нового рахунку (у межах активної компанії).
+router.get('/new', requireCompany, (req, res) => {
+  const company = req.company;
+  const bankAccounts = bankAccountsForCompany(company.id);
+  const seq = nextSeqForYear(company.id, new Date().getFullYear());
   res.render('invoices/form', {
     title: 'Новий рахунок',
     invoice: {
@@ -100,27 +96,22 @@ router.get('/new', (req, res) => {
       client_id: '', client_name: '', notes: '', items: [],
     },
     services: servicesList(), bankAccounts,
-    selectedAccountId: (getDefaultAccount() || {}).id || '',
+    selectedAccountId: (defaultAccountForCompany(company.id) || {}).id || '',
     company, fmt, action: '/invoices/new',
   });
 });
 
-function accountIdForInvoice(invoice, bankAccounts) {
-  const match = bankAccounts.find((a) => a.iban === invoice.pay_iban && a.bank_name === invoice.pay_bank);
-  return match ? match.id : '';
-}
-
 // Створення рахунку.
-router.post('/new', (req, res) => {
-  const company = getCompany();
-  const bankAccounts = getBankAccounts();
+router.post('/new', requireCompany, (req, res) => {
+  const company = req.company;
+  const bankAccounts = bankAccountsForCompany(company.id);
   const items = parseItems(req.body);
   const clientId = req.body.client_id ? Number(req.body.client_id) : null;
   const client = clientId ? db.prepare('SELECT * FROM clients WHERE id = ?').get(clientId) : null;
   const invoiceDate = (req.body.invoice_date || '').trim();
   const account = req.body.pay_account_id
-    ? db.prepare('SELECT * FROM bank_accounts WHERE id = ?').get(Number(req.body.pay_account_id))
-    : getDefaultAccount();
+    ? bankAccounts.find((a) => String(a.id) === String(req.body.pay_account_id))
+    : defaultAccountForCompany(company.id);
 
   const rerender = (error) => res.render('invoices/form', {
     title: 'Новий рахунок',
@@ -143,20 +134,25 @@ router.post('/new', (req, res) => {
   const total = itemsTotal(items);
 
   const invoiceId = transaction(() => {
-    const seq = nextSeqForYear(year);
+    const seq = nextSeqForYear(company.id, year);
     const number = (req.body.number || '').trim() || formatInvoiceNumber(company.invoice_prefix, seq);
     const info = db.prepare(
       `INSERT INTO invoices
-         (number, seq, year, invoice_date, client_id,
-          client_name, client_edrpou, client_address, client_iban, client_bank,
+         (number, seq, year, invoice_date, company_id,
+          company_name, company_edrpou, company_address, company_director_name, company_accountant_name, company_tax_note,
+          client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
           pay_iban, pay_bank, total, status, notes, created_by)
        VALUES
-         (@number, @seq, @year, @invoice_date, @client_id,
-          @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
+         (@number, @seq, @year, @invoice_date, @company_id,
+          @company_name, @company_edrpou, @company_address, @company_director_name, @company_accountant_name, @company_tax_note,
+          @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
           @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
     ).run({
-      number, seq, year, invoice_date: invoiceDate, client_id: client.id,
-      client_name: client.name, client_edrpou: client.edrpou, client_address: client.address,
+      number, seq, year, invoice_date: invoiceDate, company_id: company.id,
+      company_name: company.name, company_edrpou: company.edrpou, company_address: company.address,
+      company_director_name: company.director_name, company_accountant_name: company.accountant_name,
+      company_tax_note: company.tax_note,
+      client_id: client.id, client_name: client.name, client_edrpou: client.edrpou, client_address: client.address,
       client_iban: client.iban, client_bank: client.bank_name,
       pay_iban: account ? account.iban : '', pay_bank: account ? account.bank_name : '',
       total, notes: (req.body.notes || '').trim(), created_by: req.user.id,
@@ -181,10 +177,10 @@ router.get('/:id', (req, res) => {
   ).get(req.params.id);
   if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
-  const company = getCompany();
   res.render('invoices/view', {
-    title: `Рахунок ${invoice.number}`, invoice, items, company,
-    pay: resolvePayAccount(invoice, company), fmt,
+    title: `Рахунок ${invoice.number}`, invoice, items,
+    company: companySnapshotFromInvoice(invoice),
+    pay: resolvePayAccount(invoice), fmt,
   });
 });
 
@@ -193,8 +189,9 @@ router.get('/:id/print', (req, res) => {
   const invoice = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
-  const company = getCompany();
-  res.render('invoices/print', { invoice, items, company, pay: resolvePayAccount(invoice, company), fmt });
+  res.render('invoices/print', {
+    invoice, items, company: companySnapshotFromInvoice(invoice), pay: resolvePayAccount(invoice), fmt,
+  });
 });
 
 // Друк комплекту: 2 рахунки + 2 видаткові накладні (по два А5 на аркуш А4).
@@ -202,24 +199,24 @@ router.get('/:id/print-set', (req, res) => {
   const invoice = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
-  const company = getCompany();
   const autoprint = req.query.autoprint === '1';
-  res.render('invoices/print-set', { invoice, items, company, pay: resolvePayAccount(invoice, company), fmt, autoprint });
+  res.render('invoices/print-set', {
+    invoice, items, company: companySnapshotFromInvoice(invoice), pay: resolvePayAccount(invoice), fmt, autoprint,
+  });
 });
 
-// Форма редагування.
+// Форма редагування. Компанія рахунку — та, під якою його створено (не обов'язково активна зараз).
 router.get('/:id/edit', (req, res) => {
   const invoice = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!invoice) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(invoice.id);
-  const company = getCompany();
-  const bankAccounts = getBankAccounts();
+  const bankAccounts = invoice.company_id ? bankAccountsForCompany(invoice.company_id) : [];
   res.render('invoices/form', {
     title: `Редагувати рахунок ${invoice.number}`,
     invoice: { ...invoice, items },
     services: servicesList(), bankAccounts,
-    selectedAccountId: accountIdForInvoice(invoice, bankAccounts),
-    company, fmt, action: `/invoices/${invoice.id}/edit`,
+    selectedAccountId: accountIdForBank(bankAccounts, invoice.pay_iban, invoice.pay_bank),
+    company: companySnapshotFromInvoice(invoice), fmt, action: `/invoices/${invoice.id}/edit`,
   });
 });
 
@@ -228,14 +225,13 @@ router.post('/:id/edit', (req, res) => {
   const existing = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!existing) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
 
-  const company = getCompany();
-  const bankAccounts = getBankAccounts();
+  const bankAccounts = existing.company_id ? bankAccountsForCompany(existing.company_id) : [];
   const items = parseItems(req.body);
   const clientId = req.body.client_id ? Number(req.body.client_id) : null;
   const client = clientId ? db.prepare('SELECT * FROM clients WHERE id = ?').get(clientId) : null;
   const invoiceDate = (req.body.invoice_date || '').trim();
   const account = req.body.pay_account_id
-    ? db.prepare('SELECT * FROM bank_accounts WHERE id = ?').get(Number(req.body.pay_account_id))
+    ? bankAccounts.find((a) => String(a.id) === String(req.body.pay_account_id))
     : null;
 
   const rerender = (error) => res.render('invoices/form', {
@@ -249,8 +245,8 @@ router.post('/:id/edit', (req, res) => {
       notes: (req.body.notes || '').trim(), items,
     },
     services: servicesList(), bankAccounts,
-    selectedAccountId: account ? account.id : accountIdForInvoice(existing, bankAccounts),
-    company, fmt, action: `/invoices/${existing.id}/edit`, error,
+    selectedAccountId: account ? account.id : accountIdForBank(bankAccounts, existing.pay_iban, existing.pay_bank),
+    company: companySnapshotFromInvoice(existing), fmt, action: `/invoices/${existing.id}/edit`, error,
   });
 
   if (!client) return rerender('Оберіть заклад (покупця) зі списку.');
@@ -292,30 +288,36 @@ router.post('/:id/status', (req, res) => {
   res.redirect(req.get('referer') || `/invoices/${req.params.id}`);
 });
 
-// Дублювання рахунку.
+// Дублювання рахунку — копія лишається в тій самій компанії, з новим номером у її нумерації.
 router.post('/:id/duplicate', (req, res) => {
   const src = db.prepare('SELECT * FROM invoices WHERE id = ?').get(req.params.id);
   if (!src) return res.status(404).render('error', { title: 'Не знайдено', message: 'Рахунок не знайдено.' });
   const items = db.prepare('SELECT * FROM invoice_items WHERE invoice_id = ? ORDER BY position').all(src.id);
-  const company = getCompany();
   const year = new Date().getFullYear();
+  const company = src.company_id ? getCompanyById(src.company_id) : null;
+  const prefix = company ? company.invoice_prefix : '';
 
   const newId = transaction(() => {
-    const seq = nextSeqForYear(year);
-    const number = formatInvoiceNumber(company.invoice_prefix, seq);
+    const seq = nextSeqForYear(src.company_id, year);
+    const number = formatInvoiceNumber(prefix, seq);
     const info = db.prepare(
       `INSERT INTO invoices
-         (number, seq, year, invoice_date, client_id,
-          client_name, client_edrpou, client_address, client_iban, client_bank,
+         (number, seq, year, invoice_date, company_id,
+          company_name, company_edrpou, company_address, company_director_name, company_accountant_name, company_tax_note,
+          client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
           pay_iban, pay_bank, total, status, notes, created_by)
        VALUES
-         (@number, @seq, @year, @invoice_date, @client_id,
-          @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
+         (@number, @seq, @year, @invoice_date, @company_id,
+          @company_name, @company_edrpou, @company_address, @company_director_name, @company_accountant_name, @company_tax_note,
+          @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
           @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
     ).run({
-      number, seq, year, invoice_date: todayIso(), client_id: src.client_id,
-      client_name: src.client_name, client_edrpou: src.client_edrpou, client_address: src.client_address,
-      client_iban: src.client_iban, client_bank: src.client_bank,
+      number, seq, year, invoice_date: todayIso(), company_id: src.company_id,
+      company_name: src.company_name, company_edrpou: src.company_edrpou, company_address: src.company_address,
+      company_director_name: src.company_director_name, company_accountant_name: src.company_accountant_name,
+      company_tax_note: src.company_tax_note,
+      client_id: src.client_id, client_name: src.client_name, client_edrpou: src.client_edrpou,
+      client_address: src.client_address, client_iban: src.client_iban, client_bank: src.client_bank,
       pay_iban: src.pay_iban, pay_bank: src.pay_bank,
       total: src.total, notes: src.notes, created_by: req.user.id,
     });

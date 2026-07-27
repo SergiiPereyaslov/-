@@ -21,5 +21,25 @@
       </form>
     </div>
   </div>
+  <% if (typeof companies !== 'undefined' && companies.length > 0) { %>
+    <div class="company-bar">
+      <div class="company-bar-inner">
+        <span class="company-bar-label">Компанія:</span>
+        <% if (companies.length === 1) { %>
+          <span class="company-pill active"><%= company.short_name || company.name %></span>
+        <% } else { %>
+          <div class="company-pills">
+            <% companies.forEach(function(c) { %>
+              <form method="post" action="/company/switch/<%= c.id %>" class="inline">
+                <button type="submit" class="company-pill <%= (company && company.id === c.id) ? 'active' : '' %>">
+                  <%= c.short_name || c.name %>
+                </button>
+              </form>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
 </header>
 <main class="container">

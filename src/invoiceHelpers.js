@@ -11,9 +11,9 @@ function toNumber(v) {
   return Number(String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.')) || 0;
 }
 
-// Наступний порядковий номер для року.
-function nextSeqForYear(year) {
-  const row = db.prepare('SELECT MAX(seq) AS m FROM invoices WHERE year = ?').get(year);
+// Наступний порядковий номер для року в межах компанії (кожна компанія має свою нумерацію).
+function nextSeqForYear(companyId, year) {
+  const row = db.prepare('SELECT MAX(seq) AS m FROM invoices WHERE company_id = ? AND year = ?').get(companyId, year);
   return (row && row.m ? row.m : 0) + 1;
 }
 

@@ -6,6 +6,8 @@
   <a href="/invoices" class="btn btn-ghost">← До списку</a>
 </div>
 
+<p class="muted section-hint">Рахунок компанії: <strong><%= company.name %></strong></p>
+
 <% if (typeof error !== 'undefined' && error) { %>
   <div class="alert alert-error"><%= error %></div>
 <% } %>

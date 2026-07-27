@@ -2,26 +2,33 @@
 <%- include('partials/nav') %>
 
 <div class="page-head">
-  <h1>Реквізити постачальника</h1>
+  <h1>Реквізити компанії: <%= company.short_name || company.name %></h1>
 </div>
 
 <% if (saved === '1') { %><div class="alert alert-ok">Реквізити збережено.</div><% } %>
 <% if (saved === 'bank') { %><div class="alert alert-ok">Банківські рахунки оновлено.</div><% } %>
 <% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
 
-<p class="muted section-hint">Ці дані підставляються у кожен рахунок як реквізити вашого ТОВ.</p>
+<p class="muted section-hint">Редагуються реквізити активної компанії (перемкнути компанію можна вгорі сторінки). Ці дані підставляються у кожен рахунок цієї компанії.</p>
 
 <form method="post" action="/settings" class="card form-narrow">
   <label class="block">
-    <span>Повна назва ТОВ <span class="req">*</span></span>
+    <span>Повна назва компанії <span class="req">*</span></span>
     <input type="text" name="name" value="<%= company.name %>" placeholder="Товариство з обмеженою відповідальністю «Приклад»" required>
   </label>
 
   <div class="form-grid-2">
     <label>
+      <span>Коротка назва (для перемикача)</span>
+      <input type="text" name="short_name" value="<%= company.short_name %>" placeholder="Напр.: ОДЦПІТ">
+    </label>
+    <label>
       <span>Код ЄДРПОУ</span>
       <input type="text" name="edrpou" value="<%= company.edrpou %>">
     </label>
+  </div>
+
+  <div class="form-grid-2">
     <label>
       <span>Префікс номера рахунку (необов’язково)</span>
       <input type="text" name="invoice_prefix" value="<%= company.invoice_prefix %>" placeholder="Напр.: СФ-">

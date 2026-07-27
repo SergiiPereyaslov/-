@@ -66,6 +66,22 @@ h3 { font-size: 15px; }
 .ulink { font-size: 12px; color: var(--muted); }
 .inline { display: inline; margin: 0; }
 
+/* ── Панель вибору компанії ─────────────────────────────────────────────── */
+.company-bar { background: #f3f6fc; border-bottom: 1px solid var(--border); }
+.company-bar-inner {
+  max-width: 1100px; margin: 0 auto; padding: 7px 20px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.company-bar-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.company-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.company-pill {
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  padding: 5px 13px; border-radius: 999px; border: 1px solid var(--border);
+  background: #fff; color: var(--muted);
+}
+button.company-pill:hover { background: var(--bg); color: var(--text); }
+.company-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); cursor: default; }
+
 /* ── Контейнер ──────────────────────────────────────────────────────────── */
 .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
 
