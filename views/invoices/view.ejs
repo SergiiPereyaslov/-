@@ -44,6 +44,8 @@
       <div class="ip-strong"><%= company.name %></div>
       <% if (company.edrpou) { %><div>ЄДРПОУ: <%= company.edrpou %></div><% } %>
       <% if (company.address) { %><div><%= company.address %></div><% } %>
+      <% if (company.phone) { %><div>тел.: <%= company.phone %></div><% } %>
+      <% if (company.email) { %><div><%= company.email %></div><% } %>
       <% if (pay.iban) { %><div>IBAN: <%= pay.iban %></div><% } %>
       <% if (pay.bank_name) { %><div><%= pay.bank_name %></div><% } %>
     </div>

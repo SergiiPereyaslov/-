@@ -18,6 +18,8 @@ function companySnapshotFromInvoice(invoice) {
     name: invoice.company_name,
     edrpou: invoice.company_edrpou,
     address: invoice.company_address,
+    phone: invoice.company_phone,
+    email: invoice.company_email,
     director_name: invoice.company_director_name,
     accountant_name: invoice.company_accountant_name,
     tax_note: invoice.company_tax_note,
@@ -139,17 +141,20 @@ router.post('/new', requireCompany, (req, res) => {
     const info = db.prepare(
       `INSERT INTO invoices
          (number, seq, year, invoice_date, company_id,
-          company_name, company_edrpou, company_address, company_director_name, company_accountant_name, company_tax_note,
+          company_name, company_edrpou, company_address, company_phone, company_email,
+          company_director_name, company_accountant_name, company_tax_note,
           client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
           pay_iban, pay_bank, total, status, notes, created_by)
        VALUES
          (@number, @seq, @year, @invoice_date, @company_id,
-          @company_name, @company_edrpou, @company_address, @company_director_name, @company_accountant_name, @company_tax_note,
+          @company_name, @company_edrpou, @company_address, @company_phone, @company_email,
+          @company_director_name, @company_accountant_name, @company_tax_note,
           @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
           @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
     ).run({
       number, seq, year, invoice_date: invoiceDate, company_id: company.id,
       company_name: company.name, company_edrpou: company.edrpou, company_address: company.address,
+      company_phone: company.phone, company_email: company.email,
       company_director_name: company.director_name, company_accountant_name: company.accountant_name,
       company_tax_note: company.tax_note,
       client_id: client.id, client_name: client.name, client_edrpou: client.edrpou, client_address: client.address,
@@ -303,17 +308,20 @@ router.post('/:id/duplicate', (req, res) => {
     const info = db.prepare(
       `INSERT INTO invoices
          (number, seq, year, invoice_date, company_id,
-          company_name, company_edrpou, company_address, company_director_name, company_accountant_name, company_tax_note,
+          company_name, company_edrpou, company_address, company_phone, company_email,
+          company_director_name, company_accountant_name, company_tax_note,
           client_id, client_name, client_edrpou, client_address, client_iban, client_bank,
           pay_iban, pay_bank, total, status, notes, created_by)
        VALUES
          (@number, @seq, @year, @invoice_date, @company_id,
-          @company_name, @company_edrpou, @company_address, @company_director_name, @company_accountant_name, @company_tax_note,
+          @company_name, @company_edrpou, @company_address, @company_phone, @company_email,
+          @company_director_name, @company_accountant_name, @company_tax_note,
           @client_id, @client_name, @client_edrpou, @client_address, @client_iban, @client_bank,
           @pay_iban, @pay_bank, @total, 'issued', @notes, @created_by)`
     ).run({
       number, seq, year, invoice_date: todayIso(), company_id: src.company_id,
       company_name: src.company_name, company_edrpou: src.company_edrpou, company_address: src.company_address,
+      company_phone: src.company_phone, company_email: src.company_email,
       company_director_name: src.company_director_name, company_accountant_name: src.company_accountant_name,
       company_tax_note: src.company_tax_note,
       client_id: src.client_id, client_name: src.client_name, client_edrpou: src.client_edrpou,

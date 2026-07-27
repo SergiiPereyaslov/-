@@ -5,6 +5,10 @@
       <td class="db-val">
         <strong><%= company.name %></strong><% if (company.edrpou) { %>, код ЄДРПОУ <%= company.edrpou %><% } %>
         <% if (company.address) { %><br><%= company.address %><% } %>
+        <% if (company.phone || company.email) { %><br><% } %>
+        <% if (company.phone) { %>тел.: <%= company.phone %><% } %>
+        <% if (company.phone && company.email) { %> · <% } %>
+        <% if (company.email) { %><%= company.email %><% } %>
       </td>
     </tr>
     <tr>
