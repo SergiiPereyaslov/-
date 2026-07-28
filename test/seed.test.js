@@ -19,6 +19,36 @@ test('seed/institutions.json — коректна структура закла�
   assert.equal(new Set(codes).size, codes.length, 'коди закладів унікальні');
 });
 
+// Та сама нормалізація, що і в scripts/import-institutions.js: назви
+// порівнюються без лапок, апострофів, дефісів і регістру, інакше
+// «КЗ "Ліцей"» і «КЗ Ліцей» вважалися б різними закладами.
+function normName(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[«»"“”„]/g, ' ').replace(/['’ʼ`´]/g, '')
+    .replace(/[–—−-]/g, ' ').replace(/[.,;:()]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+test('seed/institutions.json — назви закладів не дублюються', () => {
+  const list = JSON.parse(fs.readFileSync(path.join(seedDir, 'institutions.json'), 'utf8'));
+  const seen = new Set();
+  const dups = [];
+  for (const c of list) {
+    const key = normName(c.name);
+    if (seen.has(key)) dups.push(c.name);
+    else seen.add(key);
+  }
+  assert.deepEqual(dups, [], `дублі назв: ${dups.slice(0, 3).join(' | ')}`);
+});
+
+test('seed/institutions.json — містить і заклади професійної освіти', () => {
+  const list = JSON.parse(fs.readFileSync(path.join(seedDir, 'institutions.json'), 'utf8'));
+  const cats = new Set(list.map((c) => c.category).filter(Boolean));
+  assert.ok(cats.has('Заклад вищої освіти'), 'немає ЗВО');
+  assert.ok(cats.has('Заклади фахової передвищої освіти'), 'немає фахової передвищої');
+  assert.ok([...cats].some((c) => c.includes('професійної')), 'немає профтехосвіти');
+});
+
 test('seed/products.json — коректна структура товарів', () => {
   const list = JSON.parse(fs.readFileSync(path.join(seedDir, 'products.json'), 'utf8'));
   assert.ok(Array.isArray(list) && list.length > 0);
