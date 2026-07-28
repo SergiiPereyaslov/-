@@ -1,10 +1,12 @@
 'use strict';
 
 const express = require('express');
+const fs = require('node:fs');
 const { db } = require('../db');
 const { requireAuth } = require('../auth');
 const fmt = require('../format');
 const { PLACEHOLDERS } = require('../contract');
+const uploads = require('../uploads');
 
 const router = express.Router();
 router.use(requireAuth);
@@ -84,13 +86,24 @@ router.get('/:id', (req, res) => {
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
   if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
 
+  // Сортування історії документів: спочатку нові (типово) або спочатку старі.
+  const oldestFirst = req.query.sort === 'old';
+  const direction = oldestFirst ? 'ASC' : 'DESC';
   const invoices = db.prepare(
     `SELECT i.*, u.full_name AS author, c.short_name AS company_short
        FROM invoices i
        LEFT JOIN users u ON u.id = i.created_by
        LEFT JOIN companies c ON c.id = i.company_id
       WHERE i.client_id = ?
-      ORDER BY COALESCE(NULLIF(i.invoice_date, ''), i.created_at) DESC, i.id DESC`
+      ORDER BY COALESCE(NULLIF(i.invoice_date, ''), i.created_at) ${direction}, i.id ${direction}`
+  ).all(client.id);
+
+  const files = db.prepare(
+    `SELECT f.*, u.full_name AS uploader
+       FROM client_files f
+       LEFT JOIN users u ON u.id = f.uploaded_by
+      WHERE f.client_id = ?
+      ORDER BY f.created_at DESC, f.id DESC`
   ).all(client.id);
 
   const totals = db.prepare(
@@ -105,9 +118,66 @@ router.get('/:id', (req, res) => {
   res.render('clients/card', {
     title: client.short_name || client.name,
     inst: client, invoices, totals, fmt,
+    files, oldestFirst, humanSize: uploads.humanSize, allowedHint: uploads.ALLOWED_HINT,
     saved: req.query.saved || '',
     error: req.query.err ? decodeURIComponent(req.query.err) : '',
   });
+});
+
+// ── Файли закладу (договори у Word/PDF, скани) ──────────────────────────────
+const cardUrl = (id, extra = '') => `/clients/${id}${extra}`;
+
+router.post('/:id/files', (req, res) => {
+  const client = db.prepare('SELECT id FROM clients WHERE id = ?').get(req.params.id);
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
+
+  uploads.upload.array('files', 10)(req, res, (err) => {
+    if (err) {
+      const msg = err.code === 'LIMIT_FILE_SIZE'
+        ? 'Файл завеликий. Максимальний розмір — 25 МБ.'
+        : err.message;
+      return res.redirect(cardUrl(client.id, `?err=${encodeURIComponent(msg)}`));
+    }
+    const list = req.files || [];
+    if (list.length === 0) {
+      return res.redirect(cardUrl(client.id, `?err=${encodeURIComponent('Оберіть файл для завантаження.')}`));
+    }
+    const title = (req.body.title || '').trim();
+    const ins = db.prepare(
+      `INSERT INTO client_files (client_id, original_name, stored_name, size, title, uploaded_by)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    );
+    for (const f of list) {
+      ins.run(client.id, uploads.decodeName(f.originalname), f.filename, f.size, title, req.user.id);
+    }
+    res.redirect(cardUrl(client.id, '?saved=file'));
+  });
+});
+
+router.get('/:id/files/:fileId', (req, res) => {
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (!row) return res.status(404).render('error', { title: 'Не знайдено', message: 'Файл не знайдено.' });
+
+  const full = uploads.filePath(row.stored_name);
+  if (!full || !fs.existsSync(full)) {
+    return res.status(404).render('error', {
+      title: 'Файл відсутній',
+      message: 'Запис про файл є, але сам файл не знайдено на диску.',
+    });
+  }
+  // Завжди віддаємо як вкладення — файл ніколи не виконується у браузері.
+  res.download(full, row.original_name);
+});
+
+router.post('/:id/files/:fileId/delete', (req, res) => {
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (row) {
+    db.prepare('DELETE FROM client_files WHERE id = ?').run(row.id);
+    uploads.removeFile(row.stored_name);
+  }
+  res.redirect(cardUrl(req.params.id, '?saved=file-deleted'));
 });
 
 router.get('/:id/edit', (req, res) => {
@@ -204,7 +274,10 @@ router.post('/:id/delete', (req, res) => {
     return res.redirect(`/clients/${client.id}?err=${encodeURIComponent(msg)}`);
   }
 
+  // Прибираємо і прикріплені файли з диска, щоб не лишалося «сиріт».
+  const files = db.prepare('SELECT stored_name FROM client_files WHERE client_id = ?').all(client.id);
   db.prepare('DELETE FROM clients WHERE id = ?').run(client.id);
+  for (const f of files) uploads.removeFile(f.stored_name);
   res.redirect('/clients?saved=deleted');
 });
 

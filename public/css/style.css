@@ -377,3 +377,23 @@ code {
 .ph-table th { padding: 8px 12px; }
 .chk-block { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .chk-block span { font-size: 14px; color: var(--text); }
+
+/* ── Картка закладу: сортування історії та файли договорів ───────────────── */
+.head-inline { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.sort-toggle { display: inline-flex; gap: 2px; background: var(--bg); border-radius: 8px; padding: 2px; }
+.sort-toggle a {
+  padding: 4px 10px; border-radius: 6px; font-size: 13px; color: var(--muted); font-weight: 500;
+}
+.sort-toggle a:hover { text-decoration: none; color: var(--text); }
+.sort-toggle a.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+
+.upload-form { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.upload-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.upload-row input[type="file"] { flex: 1 1 260px; width: auto; padding: 7px 9px; }
+.upload-row input[type="text"] { flex: 1 1 240px; width: auto; }
+.upload-form .hint { display: block; margin-top: 8px; }
+
+@media (max-width: 700px) {
+  .upload-row { flex-direction: column; align-items: stretch; }
+}

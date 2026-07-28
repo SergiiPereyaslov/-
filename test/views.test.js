@@ -50,13 +50,42 @@ test('жодна локальна змінна шаблону не має зар
   }
 });
 
+const cardLocals = (extra = {}) => ({
+  title: 'T', inst, invoices: [],
+  totals: { cnt: 0, sum_all: 0, sum_paid: 0, sum_unpaid: 0 }, fmt, saved: '', error: '',
+  files: [], oldestFirst: false,
+  humanSize: (n) => `${n} Б`, allowedHint: 'Word, PDF',
+  ...extra,
+});
+
 test('картка закладу рендериться без помилок', async () => {
-  const out = await render('clients/card.ejs', {
-    title: 'T', inst, invoices: [],
-    totals: { cnt: 0, sum_all: 0, sum_paid: 0, sum_unpaid: 0 }, fmt, saved: '', error: '',
-  });
+  const out = await render('clients/card.ejs', cardLocals());
   assert.match(out, /Тестовий коледж/);
   assert.match(out, /Історія документів/);
+  assert.match(out, /Файли договорів/);
+});
+
+test('картка закладу показує прикріплені файли договорів', async () => {
+  const out = await render('clients/card.ejs', cardLocals({
+    files: [{
+      id: 7, original_name: 'Договір 12-25.docx', title: 'Основний договір',
+      size: 2048, uploader: 'Петренко П.', created_at: '2026-07-28 10:00:00',
+    }],
+  }));
+  assert.match(out, /Договір 12-25\.docx/);
+  assert.match(out, /Основний договір/);
+  assert.match(out, /\/clients\/1\/files\/7/);
+});
+
+test('картка закладу дає перемикач сортування, коли документів більше одного', async () => {
+  const invoices = [1, 2].map((n) => ({
+    id: n, number: String(n), invoice_date: `2026-0${n}-01`, total: 100,
+    status: 'issued', company_short: 'ТОВ', print_with_contract: 0,
+  }));
+  const out = await render('clients/card.ejs', cardLocals({ invoices }));
+  assert.match(out, /Спочатку нові/);
+  assert.match(out, /Спочатку старі/);
+  assert.match(out, /\/invoices\/1\/duplicate/); // кнопка «Копія» в папці
 });
 
 test('форма закладу рендериться і для нового, і для наявного запису', async () => {

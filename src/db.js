@@ -154,11 +154,26 @@ function init() {
       FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
     );
 
+    -- Файли, прикріплені до закладу (сканы та Word-файли договорів, додаткові угоди).
+    CREATE TABLE IF NOT EXISTS client_files (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id     INTEGER NOT NULL,
+      original_name TEXT NOT NULL,
+      stored_name   TEXT NOT NULL,
+      size          INTEGER NOT NULL DEFAULT 0,
+      title         TEXT NOT NULL DEFAULT '',
+      uploaded_by   INTEGER,
+      created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id)   REFERENCES clients(id) ON DELETE CASCADE,
+      FOREIGN KEY (uploaded_by) REFERENCES users(id)   ON DELETE SET NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_invoices_company_year_seq ON invoices(company_id, year, seq);
     CREATE INDEX IF NOT EXISTS idx_items_invoice ON invoice_items(invoice_id);
     CREATE INDEX IF NOT EXISTS idx_clients_code ON clients(code);
     CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name COLLATE NOCASE);
     CREATE INDEX IF NOT EXISTS idx_bank_accounts_company ON bank_accounts(company_id);
+    CREATE INDEX IF NOT EXISTS idx_client_files_client ON client_files(client_id);
   `);
 
   // Міграції: додаємо нові колонки, якщо база створена раніше.
