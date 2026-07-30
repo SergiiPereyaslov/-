@@ -14,6 +14,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
+// Увімкніть TRUST_PROXY=1, якщо застосунок стоїть за зворотним проксі
+// (nginx, Caddy тощо) — інакше Express не бачитиме, що з'єднання
+// прийшло через HTTPS, і secure-cookie не спрацює коректно.
+if (process.env.TRUST_PROXY === '1') app.set('trust proxy', 1);
+
 // Перегляди (EJS) + автоматичний layout через res.render + partials.
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -43,6 +48,9 @@ app.post('/login', (req, res) => {
   res.cookie(auth.COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: 'lax',
+    // Увімкніть COOKIE_SECURE=1 після налаштування HTTPS (див. README) —
+    // тоді cookie сесії передаватиметься лише зашифрованим з'єднанням.
+    secure: process.env.COOKIE_SECURE === '1',
     maxAge: auth.COOKIE_MAX_AGE,
   });
   res.redirect('/');
