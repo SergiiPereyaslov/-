@@ -10,8 +10,60 @@ const fmt = require('../format');
 const { PLACEHOLDERS } = require('../contract');
 const uploads = require('../uploads');
 const preview = require('../preview');
+const onlyoffice = require('../onlyoffice');
 
 const router = express.Router();
+
+// ── Маршрути для Document Server (без сесії-кукі) ─────────────────────────
+// Document Server звертається до цих двох адрес сам, напряму, без логіну
+// менеджера — замість сесії їх захищає підписаний токен на файл і дію.
+// Тому вони визначені ДО router.use(requireAuth) нижче: Express обирає
+// перший маршрут, що збігається за шляхом, у порядку визначення, тож
+// requireAuth до цих двох просто не дійде.
+
+router.get('/:id/files/:fileId/raw', (req, res) => {
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (!row) return res.status(404).end();
+  if (!onlyoffice.verifyFileToken(req.query.token, row.id, 'raw')) return res.status(403).end();
+
+  const full = uploads.filePath(row.stored_name);
+  if (!full || !fs.existsSync(full)) return res.status(404).end();
+
+  res.setHeader('Content-Type', 'application/octet-stream');
+  fs.createReadStream(full).pipe(res);
+});
+
+router.post('/:id/files/:fileId/oo-callback', express.json({ limit: '2mb' }), (req, res) => {
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (!row) return res.status(404).json({ error: 1 });
+  if (!onlyoffice.verifyFileToken(req.query.token, row.id, 'callback')) {
+    return res.status(403).json({ error: 1 });
+  }
+
+  const status = Number(req.body && req.body.status);
+  // 2 — документ готовий до збереження; 6 — примусове збереження під
+  // час редагування. В обох випадках Document Server дає посилання,
+  // звідки забрати новий вміст файлу.
+  if ((status === 2 || status === 6) && req.body.url) {
+    const dest = uploads.filePath(row.stored_name);
+    onlyoffice.fetchToFile(req.body.url, dest)
+      .then(() => {
+        db.prepare('UPDATE client_files SET size = ? WHERE id = ?').run(fs.statSync(dest).size, row.id);
+        preview.removePreview(row.stored_name); // старий кеш перегляду застарів
+        res.json({ error: 0 });
+      })
+      .catch((err) => {
+        console.error('Не вдалося зберегти відредагований файл:', row.original_name, err.message);
+        res.status(500).json({ error: 1 });
+      });
+    return;
+  }
+
+  res.json({ error: 0 });
+});
+
 router.use(requireAuth);
 
 const PAGE_SIZE = 50;
@@ -114,6 +166,10 @@ router.get('/:id', (req, res) => {
       WHERE f.client_id = ?
       ORDER BY f.created_at DESC, f.id DESC`
   ).all(client.id);
+  const oofficeEnabled = onlyoffice.isEnabled();
+  for (const f of files) {
+    f.canEdit = oofficeEnabled && onlyoffice.canEdit(path.extname(f.stored_name).toLowerCase());
+  }
 
   const totals = db.prepare(
     `SELECT
@@ -256,6 +312,48 @@ router.get('/:id/files/:fileId/print', async (req, res) => {
     title: `Друк — ${row.original_name}`,
     fileUrl: `/clients/${req.params.id}/files/${row.id}/view`,
     isImage: result.contentType.startsWith('image/'),
+  });
+});
+
+// Редагування файлу договору прямо в сервісі через OnlyOffice Document
+// Server (окремий сервіс, налаштовується адміністратором — ONLYOFFICE_URL
+// у .env). Якщо не налаштовано або тип файлу не підтримується — пояснюємо
+// й повертаємо в картку, замість зламаної сторінки.
+router.get('/:id/files/:fileId/edit', (req, res) => {
+  if (!onlyoffice.isEnabled()) {
+    return res.redirect(cardUrl(req.params.id, `?err=${encodeURIComponent(
+      'Редагування в браузері не налаштоване на цьому сервері (ONLYOFFICE_URL).'
+    )}`));
+  }
+
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (!row) return res.status(404).render('error', { title: 'Не знайдено', message: 'Файл не знайдено.' });
+
+  const ext = path.extname(row.stored_name).toLowerCase();
+  if (!onlyoffice.canEdit(ext)) {
+    return res.redirect(cardUrl(req.params.id, `?err=${encodeURIComponent(
+      `Редагування недоступне для файлів «${ext}». Скористайтеся переглядом або завантаженням.`
+    )}`));
+  }
+
+  const full = uploads.filePath(row.stored_name);
+  if (!full || !fs.existsSync(full)) {
+    return res.status(404).render('error', {
+      title: 'Файл відсутній',
+      message: 'Запис про файл є, але сам файл не знайдено на диску.',
+    });
+  }
+
+  const config = onlyoffice.buildEditorConfig({
+    req, fileId: row.id, clientId: req.params.id, ext,
+    title: row.original_name, mtimeMs: fs.statSync(full).mtimeMs, user: req.user,
+  });
+
+  res.render('clients/file-edit', {
+    title: `Редагування — ${row.original_name}`,
+    documentServerUrl: onlyoffice.documentServerUrl(),
+    config, cardBackUrl: cardUrl(req.params.id),
   });
 });
 

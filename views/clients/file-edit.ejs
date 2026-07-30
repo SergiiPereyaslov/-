@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+  <style>
+    html, body { margin: 0; height: 100%; }
+    #editor { position: absolute; inset: 0; }
+    .oo-back {
+      position: absolute; top: 8px; left: 8px; z-index: 1000;
+      background: #fff; border: 1px solid #d7dce6; border-radius: 8px;
+      padding: 6px 12px; font: 13px -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #2563eb; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <a href="<%= cardBackUrl %>" class="oo-back">← До картки замовника</a>
+  <div id="editor"></div>
+
+  <script src="<%= documentServerUrl %>/web-apps/apps/api/documents/api.js"></script>
+  <script>
+    new DocsAPI.DocEditor("editor", <%- JSON.stringify(config) %>);
+  </script>
+</body>
+</html>
