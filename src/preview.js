@@ -25,18 +25,45 @@ const CONTENT_TYPES = {
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
 };
 
-let sofficeConfirmed = false; // кешуємо лише підтверджену наявність.
+// «soffice» на PATH працює на Linux-серверах і якщо LibreOffice стояв
+// через `brew install --cask` (він додає символьне посилання в PATH).
+// Але звичайне встановлення на macOS (перетягнути .app у Programs) PATH
+// не чіпає — бінарник лишається лише всередині пакета застосунку, тож
+// перевіряємо і типові прямі шляхи.
+const CANDIDATE_COMMANDS = [
+  'soffice',
+  '/Applications/LibreOffice.app/Contents/MacOS/soffice',
+  '/opt/homebrew/bin/soffice',
+  '/usr/local/bin/soffice',
+  '/usr/bin/soffice',
+];
+
+let resolvedCommand = null; // кешуємо лише підтверджений робочий шлях.
 
 // Чи встановлено LibreOffice на цьому сервері. Успішний результат
 // кешуємо назавжди (перевірка більше не потрібна); невдалий — ні:
 // перевірка дешева (~0.1с), а кешування збою назавжди означало б, що
 // одна випадкова невдача на старті ламає перегляд до перезапуску сервера.
 function sofficeAvailable() {
-  if (sofficeConfirmed) return Promise.resolve(true);
+  return resolveSofficeCommand().then((cmd) => !!cmd);
+}
+
+function resolveSofficeCommand() {
+  if (resolvedCommand) return Promise.resolve(resolvedCommand);
+  return tryCandidates(CANDIDATE_COMMANDS.slice());
+}
+
+function tryCandidates(candidates) {
+  if (candidates.length === 0) return Promise.resolve(null);
+  const [cmd, ...rest] = candidates;
   return new Promise((resolve) => {
-    execFile('soffice', ['--version'], { timeout: 10000 }, (err) => {
-      sofficeConfirmed = !err;
-      resolve(sofficeConfirmed);
+    execFile(cmd, ['--version'], { timeout: 10000 }, (err) => {
+      if (!err) {
+        resolvedCommand = cmd;
+        resolve(cmd);
+      } else {
+        resolve(tryCandidates(rest));
+      }
     });
   });
 }
@@ -73,10 +100,11 @@ async function previewPath(storedName, ext) {
   return fs.existsSync(cached) ? { file: cached, contentType: 'application/pdf' } : null;
 }
 
-function convertToPdf(srcFile, outDir) {
+async function convertToPdf(srcFile, outDir) {
+  const cmd = await resolveSofficeCommand();
   return new Promise((resolve, reject) => {
     execFile(
-      'soffice',
+      cmd,
       ['--headless', '--convert-to', 'pdf', '--outdir', outDir, srcFile],
       { timeout: 30000 },
       (err) => (err ? reject(err) : resolve())
