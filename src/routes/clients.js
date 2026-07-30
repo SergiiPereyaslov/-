@@ -3,6 +3,7 @@
 const express = require('express');
 const fs = require('node:fs');
 const path = require('node:path');
+const contentDisposition = require('content-disposition');
 const { db } = require('../db');
 const { requireAuth } = require('../auth');
 const fmt = require('../format');
@@ -216,8 +217,12 @@ router.get('/:id/files/:fileId/view', async (req, res) => {
     ? `${baseName}.pdf`
     : row.original_name;
 
+  // contentDisposition() коректно кодує кириличні імена за RFC 6266
+  // (filename* поруч із ASCII-заміною) — ручний encodeURIComponent у
+  // самому filename="..." браузери не завжди розуміють правильно і
+  // деякі замість перегляду відкривають діалог збереження.
   res.setHeader('Content-Type', result.contentType);
-  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(dispositionName)}"`);
+  res.setHeader('Content-Disposition', contentDisposition(dispositionName, { type: 'inline' }));
   fs.createReadStream(result.file).pipe(res);
 });
 

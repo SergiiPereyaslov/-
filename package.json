@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "content-disposition": "^0.5.4",
     "cookie-parser": "^1.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
