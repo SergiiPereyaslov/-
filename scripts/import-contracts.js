@@ -181,10 +181,12 @@ function main() {
           ? 'ймовірно той самий замовник, інакше набраний'
           : 'можливо';
         console.log(`      ${label}: ${s.name}  (схожість ${s.score.toFixed(2)})`);
-        if (s.score >= LIKELY_SAME_SCORE) {
-          const diff = firstDifference(norm(abbreviate(folder)), norm(s.name));
-          if (diff) console.log(diff);
-        }
+        // Показуємо різницю для будь-якої підказки, не лише найвпевненіших:
+        // якщо після скорочення назви мають бути однаковими, а точний збіг
+        // усе одно не спрацював — значить, десь є прихована відмінність,
+        // і варто побачити її, а не тільки коли схожість вже й так висока.
+        const diff = firstDifference(norm(abbreviate(folder)), norm(s.name));
+        if (diff) console.log(diff);
       }
     }
     console.log('');
