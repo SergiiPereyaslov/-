@@ -44,8 +44,15 @@ const COMPILED = ORDERED.map(([phrase, abbr, opts]) => ({
 
 // Скорочує назву замовника. Якщо скорочення вже стоїть у назві —
 // повторно нічого не змінює (функція ідемпотентна).
+//
+// normalize('NFC') тут критичний, а не косметичний: macOS (APFS) часто
+// повертає літери на кшталт «й», «ї», «є» у розкладеній формі (буква +
+// окремий діакритичний знак). У такому вигляді жодне правило нижче не
+// знаходить фрази в тексті — regex шукає точний, зібраний символ «й»,
+// а розкладена форма — це вже два ЗОВСІМ ІНШІ символи. Без цього рядка
+// abbreviate() на macOS мовчки нічого не скорочувало.
 function abbreviate(name) {
-  let out = String(name || '');
+  let out = String(name || '').normalize('NFC');
   for (const { re, abbr } of COMPILED) {
     out = out.replace(re, abbr);
   }
@@ -55,7 +62,7 @@ function abbreviate(name) {
 
 // Які саме правила застосувалися — для звіту перед імпортом.
 function appliedRules(name) {
-  const src = String(name || '');
+  const src = String(name || '').normalize('NFC');
   return ORDERED.filter(([phrase, , opts]) => new RegExp(phrasePattern(phrase, opts), 'i').test(src))
     .map(([, abbr]) => abbr);
 }
