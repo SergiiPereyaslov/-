@@ -93,6 +93,7 @@
             </td>
             <td class="right nowrap">
               <a href="/clients/<%= inst.id %>/files/<%= f.id %>/view" target="_blank" class="link">Переглянути</a>
+              <a href="/clients/<%= inst.id %>/files/<%= f.id %>/print" target="_blank" class="link">Друк</a>
               <form method="post" action="/clients/<%= inst.id %>/files/<%= f.id %>/delete" class="inline"
                     onsubmit="return confirm('Видалити файл «<%= f.original_name %>»? Дію не можна скасувати.');">
                 <button class="linkbtn muted">Видалити</button>

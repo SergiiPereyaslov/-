@@ -179,20 +179,25 @@ router.get('/:id/files/:fileId', (req, res) => {
   res.download(full, row.original_name);
 });
 
-// Перегляд файлу прямо в браузері (без завантаження на диск). PDF і
-// зображення показуються як є; Word/Excel/RTF/ODT/TXT конвертуються в
-// PDF на льоту через LibreOffice (якщо він встановлений на сервері).
-router.get('/:id/files/:fileId/view', async (req, res) => {
+// Спільна підготовка для перегляду й друку: знаходить файл на диску й
+// готує PDF-версію (конвертуючи через LibreOffice за потреби). У разі
+// помилки сама відповідає (404 або редірект з поясненням) і повертає
+// null — виклику лишається лише перевірити результат.
+async function resolvePreviewFile(req, res, errMessage) {
   const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
     .get(req.params.fileId, req.params.id);
-  if (!row) return res.status(404).render('error', { title: 'Не знайдено', message: 'Файл не знайдено.' });
+  if (!row) {
+    res.status(404).render('error', { title: 'Не знайдено', message: 'Файл не знайдено.' });
+    return null;
+  }
 
   const full = uploads.filePath(row.stored_name);
   if (!full || !fs.existsSync(full)) {
-    return res.status(404).render('error', {
+    res.status(404).render('error', {
       title: 'Файл відсутній',
       message: 'Запис про файл є, але сам файл не знайдено на диску.',
     });
+    return null;
   }
 
   const ext = path.extname(row.stored_name).toLowerCase();
@@ -200,15 +205,26 @@ router.get('/:id/files/:fileId/view', async (req, res) => {
   try {
     result = await preview.previewPath(row.stored_name, ext);
   } catch (err) {
-    console.error('Перегляд файлу не вдався:', row.original_name, err.message);
+    console.error('Перегляд/друк файлу не вдався:', row.original_name, err.message);
     result = null;
   }
 
   if (!result) {
-    return res.redirect(cardUrl(req.params.id, `?err=${encodeURIComponent(
-      'Перегляд у браузері недоступний для цього файлу (не встановлено LibreOffice на сервері). Скористайтеся завантаженням.'
-    )}`));
+    res.redirect(cardUrl(req.params.id, `?err=${encodeURIComponent(errMessage)}`));
+    return null;
   }
+
+  return { row, result, ext };
+}
+
+// Перегляд файлу прямо в браузері (без завантаження на диск). PDF і
+// зображення показуються як є; Word/Excel/RTF/ODT/TXT конвертуються в
+// PDF на льоту через LibreOffice (якщо він встановлений на сервері).
+router.get('/:id/files/:fileId/view', async (req, res) => {
+  const resolved = await resolvePreviewFile(req, res,
+    'Перегляд у браузері недоступний для цього файлу (не встановлено LibreOffice на сервері). Скористайтеся завантаженням.');
+  if (!resolved) return;
+  const { row, result, ext } = resolved;
 
   // Для конвертованих файлів показуємо назву з розширенням .pdf (саме
   // такий вміст і надсилається); для «рідних» PDF/зображень — як є.
@@ -224,6 +240,23 @@ router.get('/:id/files/:fileId/view', async (req, res) => {
   res.setHeader('Content-Type', result.contentType);
   res.setHeader('Content-Disposition', contentDisposition(dispositionName, { type: 'inline' }));
   fs.createReadStream(result.file).pipe(res);
+});
+
+// Друк файлу договору: сторінка з файлом на весь екран і кнопкою друку
+// (плюс автоматичний виклик діалогу друку) — на відміну від
+// «Переглянути», не вимагає шукати кнопку друку в панелі переглядача
+// PDF конкретного браузера.
+router.get('/:id/files/:fileId/print', async (req, res) => {
+  const resolved = await resolvePreviewFile(req, res,
+    'Друк недоступний для цього файлу (не встановлено LibreOffice на сервері). Скористайтеся завантаженням.');
+  if (!resolved) return;
+  const { row, result } = resolved;
+
+  res.render('clients/file-print', {
+    title: `Друк — ${row.original_name}`,
+    fileUrl: `/clients/${req.params.id}/files/${row.id}/view`,
+    isImage: result.contentType.startsWith('image/'),
+  });
 });
 
 router.post('/:id/files/:fileId/delete', (req, res) => {
