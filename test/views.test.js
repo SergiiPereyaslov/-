@@ -88,12 +88,12 @@ test('картка закладу дає перемикач сортування
   assert.match(out, /\/invoices\/1\/duplicate/); // кнопка «Копія» в папці
 });
 
-test('форма закладу рендериться і для нового, і для наявного запису', async () => {
+test('форма замовника рендериться і для нового, і для наявного запису', async () => {
   const existing = await render('clients/form.ejs', { title: 'T', inst, action: '/clients/1/edit' });
   assert.match(existing, /Тестовий коледж/);
 
   const fresh = await render('clients/form.ejs', { title: 'T', inst: {}, action: '/clients/new' });
-  assert.match(fresh, /Назва закладу/);
+  assert.match(fresh, /Назва замовника/);
 });
 
 test('сторінка договору рендериться', async () => {

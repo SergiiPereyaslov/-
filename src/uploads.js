@@ -10,11 +10,16 @@ const multer = require('multer');
 const UPLOAD_DIR = path.join(__dirname, '..', 'data', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-// Дозволені розширення: договори у Word, PDF та скани.
-const ALLOWED = new Set(['.doc', '.docx', '.rtf', '.odt', '.pdf', '.jpg', '.jpeg', '.png']);
+// Дозволені розширення: договори у Word, PDF, таблиці, текст і скани.
+const ALLOWED = new Set([
+  '.doc', '.docx', '.rtf', '.odt', '.pdf',
+  '.xls', '.xlsx', '.txt',
+  '.jpg', '.jpeg', '.png',
+]);
 const MAX_SIZE = 25 * 1024 * 1024; // 25 МБ
 
-const ALLOWED_HINT = 'Word (.doc, .docx), PDF, RTF, ODT або скан (.jpg, .png), до 25 МБ';
+const ALLOWED_HINT = 'Word (.doc, .docx), PDF, RTF, ODT, Excel (.xls, .xlsx), .txt '
+  + 'або скан (.jpg, .png), до 25 МБ';
 
 // Ім'я файлу на диску — випадкове: користувацьке ім'я ніколи не потрапляє
 // у шлях, тож обхід каталогів (../) неможливий.

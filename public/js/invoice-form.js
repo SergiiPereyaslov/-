@@ -108,7 +108,7 @@
   sync();
 })();
 
-// ── Автодоповнення закладу (покупця) ────────────────────────────────────────
+// ── Автодоповнення замовника ────────────────────────────────────────
 (function () {
   const search = document.getElementById('clientSearch');
   const hidden = document.getElementById('clientId');
@@ -175,7 +175,7 @@
         e.preventDefault();
         search.classList.add('invalid');
         search.focus();
-        alert('Оберіть заклад (покупець) зі списку пошуку.');
+        alert('Оберіть замовника зі списку пошуку.');
       }
     });
   }

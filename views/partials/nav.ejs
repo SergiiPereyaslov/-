@@ -3,7 +3,7 @@
     <a class="brand" href="/">🧾 Рахунки</a>
     <nav class="mainnav">
       <a href="/invoices" class="<%= currentPath.startsWith('/invoices') ? 'active' : '' %>">Рахунки</a>
-      <a href="/clients" class="<%= currentPath.startsWith('/clients') ? 'active' : '' %>">Заклади</a>
+      <a href="/clients" class="<%= currentPath.startsWith('/clients') ? 'active' : '' %>">Замовники</a>
       <a href="/services" class="<%= currentPath.startsWith('/services') ? 'active' : '' %>">Товари та послуги</a>
       <a href="/settings" class="<%= currentPath === '/settings' ? 'active' : '' %>">Реквізити</a>
       <% if (user && user.role === 'admin') { %>

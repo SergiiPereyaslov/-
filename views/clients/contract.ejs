@@ -3,12 +3,12 @@
 
 <div class="page-head">
   <div>
-    <a href="/clients/<%= inst.id %>" class="back-link">← До картки закладу</a>
+    <a href="/clients/<%= inst.id %>" class="back-link">← До картки замовника</a>
     <h1>Договір</h1>
   </div>
 </div>
 
-<p class="muted section-hint">Заклад: <strong><%= inst.name %></strong></p>
+<p class="muted section-hint">Замовник: <strong><%= inst.name %></strong></p>
 
 <form method="post" action="/clients/<%= inst.id %>/contract">
   <div class="card">
@@ -29,7 +29,7 @@
   <div class="card">
     <div class="card-head"><h2>Текст договору</h2></div>
     <p class="muted section-hint">
-      Вставте сюди текст договору для цього закладу. Дані підставляться автоматично —
+      Вставте сюди текст договору для цього замовника. Дані підставляться автоматично —
       достатньо написати підстановку у фігурних дужках, наприклад <code>{{ЗАМОВНИК}}</code>.
     </p>
     <textarea name="contract_template" class="contract-area" rows="22"

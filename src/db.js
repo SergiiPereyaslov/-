@@ -69,7 +69,7 @@ function init() {
       FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
     );
 
-    -- Покупці (навчальні заклади).
+    -- Замовники (покупці у рахунках).
     CREATE TABLE IF NOT EXISTS clients (
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       name           TEXT NOT NULL,
@@ -83,7 +83,7 @@ function init() {
       contact_person TEXT NOT NULL DEFAULT '',
       phone          TEXT NOT NULL DEFAULT '',
       email          TEXT NOT NULL DEFAULT '',
-      -- договір закладу: власний шаблон, номер і дата (заповнюються вручну)
+      -- договір замовника: власний шаблон, номер і дата (заповнюються вручну)
       contract_template TEXT NOT NULL DEFAULT '',
       contract_number   TEXT NOT NULL DEFAULT '',
       contract_date     TEXT NOT NULL DEFAULT '',
@@ -154,7 +154,7 @@ function init() {
       FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
     );
 
-    -- Файли, прикріплені до закладу (сканы та Word-файли договорів, додаткові угоди).
+    -- Файли, прикріплені до замовника (скани та Word-файли договорів, додаткові угоди).
     CREATE TABLE IF NOT EXISTS client_files (
       id            INTEGER PRIMARY KEY AUTOINCREMENT,
       client_id     INTEGER NOT NULL,
@@ -233,7 +233,7 @@ function addColumns(table, cols) {
   }
 }
 
-// Одноразове завантаження компаній, закладів і товарів із seed-файлів.
+// Одноразове завантаження компаній, замовників і товарів із seed-файлів.
 function seedInitialData() {
   const seedDir = path.join(__dirname, '..', 'seed');
 
@@ -293,7 +293,7 @@ function seedInitialData() {
           ins.run({ name: c.name || '', code: c.code || '', short_name: c.short_name || '', category: c.category || '' });
         }
       });
-      console.log(`▶ Завантажено закладів освіти: ${list.length}.`);
+      console.log(`▶ Завантажено замовників: ${list.length}.`);
     }
   }
 

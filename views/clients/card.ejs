@@ -3,7 +3,7 @@
 
 <div class="page-head">
   <div>
-    <a href="/clients" class="back-link">← Усі заклади</a>
+    <a href="/clients" class="back-link">← Усі замовники</a>
     <h1><%= inst.name %></h1>
   </div>
   <div class="head-actions">
@@ -19,7 +19,7 @@
 
 <div class="grid-2">
   <section class="card">
-    <div class="card-head"><h2>Реквізити закладу</h2></div>
+    <div class="card-head"><h2>Реквізити замовника</h2></div>
     <table class="table kv">
       <tr><td class="kv-k">Коротка назва</td><td><%= inst.short_name || '—' %></td></tr>
       <tr><td class="kv-k">Код</td><td><%= inst.code || '—' %></td></tr>
@@ -55,7 +55,7 @@
         <a href="/clients/<%= inst.id %>/contract" class="btn btn-secondary btn-sm">Редагувати текст</a>
       </div>
     <% } else { %>
-      <p class="muted pad">Шаблон договору для цього закладу ще не додано.</p>
+      <p class="muted pad">Шаблон договору для цього замовника ще не додано.</p>
       <a href="/clients/<%= inst.id %>/contract" class="btn btn-primary btn-sm">Додати договір</a>
     <% } %>
 
@@ -69,7 +69,7 @@
 <div class="card">
   <div class="card-head">
     <h2>Файли договорів</h2>
-    <span class="muted small">Word, PDF або скани — зберігаються в папці закладу</span>
+    <span class="muted small">Word, PDF або скани — зберігаються в папці замовника</span>
   </div>
 
   <% if (files.length === 0) { %>
@@ -133,7 +133,7 @@
   <% if (invoices.length === 0) { %>
     <div class="empty-state small">
       <div class="empty-icon">🧾</div>
-      <p class="muted">По цьому закладу ще немає жодного рахунку.</p>
+      <p class="muted">По цьому замовнику ще немає жодного рахунку.</p>
       <a href="/invoices/new" class="btn btn-primary">Виставити рахунок</a>
     </div>
   <% } else { %>
@@ -178,20 +178,20 @@
 </div>
 
 <div class="card danger-zone">
-  <div class="card-head"><h2>Видалення закладу</h2></div>
+  <div class="card-head"><h2>Видалення замовника</h2></div>
   <% if (totals.cnt > 0) { %>
     <p class="muted">
-      По цьому закладу є документи (<%= totals.cnt %>), тому видалити його не можна —
-      інакше історія загубиться. Щоб прибрати заклад зі списку, скористайтеся архівом.
+      По цьому замовнику є документи (<%= totals.cnt %>), тому видалити його не можна —
+      інакше історія загубиться. Щоб прибрати замовника зі списку, скористайтеся архівом.
     </p>
     <form method="post" action="/clients/<%= inst.id %>/archive" class="inline">
       <button class="btn btn-secondary btn-sm">Перемістити в архів</button>
     </form>
   <% } else { %>
-    <p class="muted">По цьому закладу немає жодного документа — його можна видалити остаточно.</p>
+    <p class="muted">По цьому замовнику немає жодного документа — його можна видалити остаточно.</p>
     <form method="post" action="/clients/<%= inst.id %>/delete" class="inline"
-          onsubmit="return confirm('Видалити заклад «<%= inst.short_name || inst.name %>»? Дію не можна скасувати.');">
-      <button class="btn btn-danger btn-sm">Видалити заклад</button>
+          onsubmit="return confirm('Видалити замовника «<%= inst.short_name || inst.name %>»? Дію не можна скасувати.');">
+      <button class="btn btn-danger btn-sm">Видалити замовника</button>
     </form>
     <form method="post" action="/clients/<%= inst.id %>/archive" class="inline">
       <button class="btn btn-ghost btn-sm">Або в архів</button>

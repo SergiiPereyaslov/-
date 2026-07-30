@@ -11,8 +11,8 @@
 %>
 
 <div class="page-head">
-  <h1>Заклади освіти</h1>
-  <a href="/clients/new" class="btn btn-primary">+ Новий заклад</a>
+  <h1>Замовники</h1>
+  <a href="/clients/new" class="btn btn-primary">+ Новий замовник</a>
 </div>
 
 <div class="tabs">
@@ -40,7 +40,7 @@
 </form>
 
 <% if (typeof saved !== 'undefined' && saved === 'deleted') { %>
-  <div class="alert alert-ok">Заклад видалено.</div>
+  <div class="alert alert-ok">Замовника видалено.</div>
 <% } %>
 
 <div class="totals-row">
@@ -52,13 +52,13 @@
   <% if (clients.length === 0) { %>
     <div class="empty-state small">
       <div class="empty-icon">🏫</div>
-      <p class="muted"><%= (q || category) ? 'За вашим запитом нічого не знайдено.' : (showArchived ? 'В архіві порожньо.' : 'Ще немає жодного закладу.') %></p>
-      <% if (!showArchived && !q && !category) { %><a href="/clients/new" class="btn btn-primary">Додати заклад</a><% } %>
+      <p class="muted"><%= (q || category) ? 'За вашим запитом нічого не знайдено.' : (showArchived ? 'В архіві порожньо.' : 'Ще немає жодного замовника.') %></p>
+      <% if (!showArchived && !q && !category) { %><a href="/clients/new" class="btn btn-primary">Додати замовника</a><% } %>
     </div>
   <% } else { %>
     <table class="table">
       <thead>
-        <tr><th>Назва закладу</th><th>Коротка назва</th><th>Код</th><th>Категорія</th><th></th></tr>
+        <tr><th>Назва замовника</th><th>Коротка назва</th><th>Код</th><th>Категорія</th><th></th></tr>
       </thead>
       <tbody>
         <% clients.forEach(function(c) { %>

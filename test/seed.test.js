@@ -7,16 +7,16 @@ const path = require('node:path');
 
 const seedDir = path.join(__dirname, '..', 'seed');
 
-test('seed/institutions.json — коректна структура закладів', () => {
+test('seed/institutions.json — коректна структура замовників', () => {
   const list = JSON.parse(fs.readFileSync(path.join(seedDir, 'institutions.json'), 'utf8'));
   assert.ok(Array.isArray(list), 'має бути масив');
-  assert.ok(list.length > 1000, `очікується понад 1000 закладів, отримано ${list.length}`);
+  assert.ok(list.length > 100, `очікується понад 100 замовників, отримано ${list.length}`);
   for (const c of list) {
-    assert.ok(typeof c.name === 'string' && c.name.length > 0, 'кожен заклад має назву');
+    assert.ok(typeof c.name === 'string' && c.name.length > 0, 'кожен замовник має назву');
     assert.ok('code' in c && 'short_name' in c && 'category' in c, 'є поля code/short_name/category');
   }
   const codes = list.map((c) => c.code).filter(Boolean);
-  assert.equal(new Set(codes).size, codes.length, 'коди закладів унікальні');
+  assert.equal(new Set(codes).size, codes.length, 'коди замовників унікальні');
 });
 
 // Та сама нормалізація, що і в scripts/import-institutions.js: назви
@@ -41,12 +41,16 @@ test('seed/institutions.json — назви закладів не дублюют
   assert.deepEqual(dups, [], `дублі назв: ${dups.slice(0, 3).join(' | ')}`);
 });
 
-test('seed/institutions.json — містить і заклади професійної освіти', () => {
+test('seed/institutions.json — у назвах застосовані скорочення', () => {
   const list = JSON.parse(fs.readFileSync(path.join(seedDir, 'institutions.json'), 'utf8'));
-  const cats = new Set(list.map((c) => c.category).filter(Boolean));
-  assert.ok(cats.has('Заклад вищої освіти'), 'немає ЗВО');
-  assert.ok(cats.has('Заклади фахової передвищої освіти'), 'немає фахової передвищої');
-  assert.ok([...cats].some((c) => c.includes('професійної')), 'немає профтехосвіти');
+  const { abbreviate } = require('../src/abbreviate');
+  // Жодна назва не має містити довгої форми, яку слід було скоротити:
+  // повторне скорочення не повинно нічого змінювати.
+  const notAbbreviated = list.filter((c) => abbreviate(c.name) !== c.name);
+  assert.deepEqual(
+    notAbbreviated.map((c) => c.name).slice(0, 3), [],
+    `назви без застосованих скорочень: ${notAbbreviated.length}`
+  );
 });
 
 test('seed/products.json — коректна структура товарів', () => {

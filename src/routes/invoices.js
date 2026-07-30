@@ -54,7 +54,7 @@ function accountIdForBank(bankAccounts, iban, bankName) {
 }
 
 // Готує договір для друку разом із рахунком. Шаблон, номер і дата беруться
-// з картки закладу; порожні номер/дата лишають місце для запису від руки.
+// з картки замовника; порожні номер/дата лишають місце для запису від руки.
 function buildContractFor(invoice, company, pay, items) {
   if (!invoice.client_id) return null;
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(invoice.client_id);
@@ -149,7 +149,7 @@ router.post('/new', requireCompany, (req, res) => {
     company, fmt, action: '/invoices/new', error,
   });
 
-  if (!client) return rerender('Оберіть заклад (покупця) зі списку.');
+  if (!client) return rerender('Оберіть замовника зі списку.');
   if (items.length === 0) return rerender('Додайте хоча б одну позицію до рахунку.');
 
   const year = (invoiceDate ? Number(invoiceDate.slice(0, 4)) : 0) || new Date().getFullYear();
@@ -230,7 +230,7 @@ router.get('/:id/print-set', (req, res) => {
   const company = companySnapshotFromInvoice(invoice);
   const pay = resolvePayAccount(invoice);
 
-  // Договір друкуємо, лише якщо його ввімкнено для цього рахунку і в закладі є шаблон.
+  // Договір друкуємо, лише якщо його ввімкнено для цього рахунку і у замовника є шаблон.
   // ?contract=1|0 у посиланні дозволяє перевизначити разово.
   let withContract = invoice.print_with_contract === 1;
   if (req.query.contract === '1') withContract = true;
@@ -253,7 +253,7 @@ router.get('/:id/print-contract', (req, res) => {
   if (!contract) {
     return res.render('error', {
       title: 'Немає договору',
-      message: 'Для цього закладу ще не додано шаблон договору.',
+      message: 'Для цього замовника ще не додано шаблон договору.',
       linkHref: invoice.client_id ? `/clients/${invoice.client_id}/contract` : '/clients',
       linkText: 'Додати договір',
     });
@@ -305,7 +305,7 @@ router.post('/:id/edit', (req, res) => {
     company: companySnapshotFromInvoice(existing), fmt, action: `/invoices/${existing.id}/edit`, error,
   });
 
-  if (!client) return rerender('Оберіть заклад (покупця) зі списку.');
+  if (!client) return rerender('Оберіть замовника зі списку.');
   if (items.length === 0) return rerender('Додайте хоча б одну позицію до рахунку.');
 
   const total = itemsTotal(items);

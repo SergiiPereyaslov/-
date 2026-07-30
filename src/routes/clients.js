@@ -20,7 +20,7 @@ const SORTS = {
   category: 'category COLLATE NOCASE ASC, name COLLATE NOCASE ASC',
 };
 
-// JSON-пошук закладів для автодоповнення (у формі рахунку).
+// JSON-пошук замовників для автодоповнення (у формі рахунку).
 router.get('/search', (req, res) => {
   const q = (req.query.q || '').trim();
   if (!q) return res.json([]);
@@ -36,7 +36,7 @@ router.get('/search', (req, res) => {
   res.json(rows);
 });
 
-// Список закладів із пошуком, сортуванням і пагінацією.
+// Список замовників із пошуком, сортуванням і пагінацією.
 router.get('/', (req, res) => {
   const showArchived = req.query.archived === '1';
   const q = (req.query.q || '').trim();
@@ -70,7 +70,7 @@ router.get('/', (req, res) => {
   ).all().map((r) => r.category);
 
   res.render('clients/list', {
-    title: 'Заклади освіти',
+    title: 'Замовники',
     clients, showArchived, q, category, sort, categories,
     total, pages, currentPage,
     saved: req.query.saved || '',
@@ -78,13 +78,13 @@ router.get('/', (req, res) => {
 });
 
 router.get('/new', (req, res) => {
-  res.render('clients/form', { title: 'Новий заклад', inst: {}, action: '/clients/new' });
+  res.render('clients/form', { title: 'Новий замовник', inst: {}, action: '/clients/new' });
 });
 
-// Картка закладу: реквізити, договір та вся історія документів за датою.
+// Картка замовника: реквізити, договір та вся історія документів за датою.
 router.get('/:id', (req, res) => {
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
-  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Замовника не знайдено.' });
 
   // Сортування історії документів: спочатку нові (типово) або спочатку старі.
   const oldestFirst = req.query.sort === 'old';
@@ -124,12 +124,12 @@ router.get('/:id', (req, res) => {
   });
 });
 
-// ── Файли закладу (договори у Word/PDF, скани) ──────────────────────────────
+// ── Файли замовника (договори у Word/PDF, скани) ──────────────────────────────
 const cardUrl = (id, extra = '') => `/clients/${id}${extra}`;
 
 router.post('/:id/files', (req, res) => {
   const client = db.prepare('SELECT id FROM clients WHERE id = ?').get(req.params.id);
-  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Замовника не знайдено.' });
 
   uploads.upload.array('files', 10)(req, res, (err) => {
     if (err) {
@@ -182,14 +182,14 @@ router.post('/:id/files/:fileId/delete', (req, res) => {
 
 router.get('/:id/edit', (req, res) => {
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
-  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
-  res.render('clients/form', { title: 'Редагувати заклад', inst: client, action: `/clients/${client.id}/edit` });
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Замовника не знайдено.' });
+  res.render('clients/form', { title: 'Редагувати замовника', inst: client, action: `/clients/${client.id}/edit` });
 });
 
-// Договір закладу: шаблон, номер і дата (номер/дату менеджер вводить вручну).
+// Договір замовника: шаблон, номер і дата (номер/дату менеджер вводить вручну).
 router.get('/:id/contract', (req, res) => {
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
-  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Замовника не знайдено.' });
   res.render('clients/contract', {
     title: `Договір — ${client.short_name || client.name}`,
     inst: client, placeholders: PLACEHOLDERS,
@@ -228,7 +228,7 @@ router.post('/new', (req, res) => {
   const c = readClient(req.body);
   if (!c.name) {
     return res.render('clients/form', {
-      title: 'Новий заклад', inst: req.body, action: '/clients/new', error: 'Вкажіть назву закладу.',
+      title: 'Новий замовник', inst: req.body, action: '/clients/new', error: 'Вкажіть назву замовника.',
     });
   }
   db.prepare(
@@ -242,8 +242,8 @@ router.post('/:id/edit', (req, res) => {
   const c = readClient(req.body);
   if (!c.name) {
     return res.render('clients/form', {
-      title: 'Редагувати заклад', inst: { ...req.body, id: req.params.id },
-      action: `/clients/${req.params.id}/edit`, error: 'Вкажіть назву закладу.',
+      title: 'Редагувати замовника', inst: { ...req.body, id: req.params.id },
+      action: `/clients/${req.params.id}/edit`, error: 'Вкажіть назву замовника.',
     });
   }
   db.prepare(
@@ -261,15 +261,15 @@ router.post('/:id/archive', (req, res) => {
   res.redirect(to === 1 ? '/clients' : '/clients?archived=1');
 });
 
-// Видалення закладу. Якщо по ньому вже є документи — не видаляємо,
+// Видалення замовника. Якщо по ньому вже є документи — не видаляємо,
 // щоб не втратити історію; пропонуємо архів.
 router.post('/:id/delete', (req, res) => {
   const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
-  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Заклад не знайдено.' });
+  if (!client) return res.status(404).render('error', { title: 'Не знайдено', message: 'Замовника не знайдено.' });
 
   const docs = db.prepare('SELECT COUNT(*) AS n FROM invoices WHERE client_id = ?').get(client.id).n;
   if (docs > 0) {
-    const msg = `Заклад «${client.short_name || client.name}» видалити не можна: по ньому вже є документів — ${docs}. `
+    const msg = `Замовника «${client.short_name || client.name}» видалити не можна: по ньому вже є документів — ${docs}. `
       + 'Щоб прибрати його зі списку без втрати історії, скористайтеся кнопкою «В архів».';
     return res.redirect(`/clients/${client.id}?err=${encodeURIComponent(msg)}`);
   }
