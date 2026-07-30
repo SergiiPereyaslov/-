@@ -13,6 +13,22 @@ router.use(requireAuth);
 
 const PAGE_SIZE = 50;
 
+// Розбиває пошуковий запит на слова й будує умову WHERE, де кожне слово
+// (незалежно від порядку) має знайтися в назві, короткій назві або коді.
+// Так «Шепетівський ліцей» знаходить «Шепетівський ПРОФЕСІЙНИЙ ліцей» —
+// раніше пошук вимагав, щоб весь запит був суцільним підрядком.
+function buildNameSearch(q, prefix) {
+  const words = String(q || '').trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return { sql: '1=1', params: {} };
+  const params = {};
+  const clauses = words.map((w, i) => {
+    const key = `${prefix}${i}`;
+    params[key] = `%${w}%`;
+    return `(name LIKE @${key} OR short_name LIKE @${key} OR code LIKE @${key})`;
+  });
+  return { sql: clauses.join(' AND '), params };
+}
+
 const SORTS = {
   name: 'name COLLATE NOCASE ASC',
   name_desc: 'name COLLATE NOCASE DESC',
@@ -23,15 +39,14 @@ const SORTS = {
 router.get('/search', (req, res) => {
   const q = (req.query.q || '').trim();
   if (!q) return res.json([]);
-  const like = `%${q}%`;
+  const { sql, params } = buildNameSearch(q, 'w');
   const rows = db.prepare(
     `SELECT id, name, short_name, code, category
        FROM clients
-      WHERE archived = 0
-        AND (name LIKE ? OR short_name LIKE ? OR code LIKE ?)
+      WHERE archived = 0 AND ${sql}
       ORDER BY name COLLATE NOCASE
       LIMIT 25`
-  ).all(like, like, like);
+  ).all(params);
   res.json(rows);
 });
 
@@ -45,8 +60,9 @@ router.get('/', (req, res) => {
   const conditions = ['archived = @archived'];
   const params = { archived: showArchived ? 1 : 0 };
   if (q) {
-    conditions.push('(name LIKE @like OR short_name LIKE @like OR code LIKE @like)');
-    params.like = `%${q}%`;
+    const search = buildNameSearch(q, 'w');
+    conditions.push(search.sql);
+    Object.assign(params, search.params);
   }
   const where = `WHERE ${conditions.join(' AND ')}`;
 
