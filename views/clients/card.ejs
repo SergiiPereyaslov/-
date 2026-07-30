@@ -92,6 +92,7 @@
               <span class="small"><%= fmt.formatDateUk(String(f.created_at).slice(0, 10)) %></span>
             </td>
             <td class="right nowrap">
+              <a href="/clients/<%= inst.id %>/files/<%= f.id %>/view" target="_blank" class="link">Переглянути</a>
               <form method="post" action="/clients/<%= inst.id %>/files/<%= f.id %>/delete" class="inline"
                     onsubmit="return confirm('Видалити файл «<%= f.original_name %>»? Дію не можна скасувати.');">
                 <button class="linkbtn muted">Видалити</button>
@@ -134,7 +135,7 @@
     <div class="empty-state small">
       <div class="empty-icon">🧾</div>
       <p class="muted">По цьому замовнику ще немає жодного рахунку.</p>
-      <a href="/invoices/new" class="btn btn-primary">Виставити рахунок</a>
+      <a href="/invoices/new?client_id=<%= inst.id %>" class="btn btn-primary">Виставити рахунок</a>
     </div>
   <% } else { %>
     <table class="table">
@@ -168,6 +169,10 @@
               <a href="/invoices/<%= inv.id %>/print-set" target="_blank" class="link">Друк</a>
               <form method="post" action="/invoices/<%= inv.id %>/duplicate" class="inline">
                 <button class="linkbtn" title="Створити такий самий рахунок — відкриється на редагування">Копія</button>
+              </form>
+              <form method="post" action="/invoices/<%= inv.id %>/delete" class="inline"
+                    onsubmit="return confirm('Видалити рахунок «<%= inv.number %>»? Дію не можна скасувати.');">
+                <button class="linkbtn muted">Видалити</button>
               </form>
             </td>
           </tr>

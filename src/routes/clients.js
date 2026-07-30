@@ -2,11 +2,13 @@
 
 const express = require('express');
 const fs = require('node:fs');
+const path = require('node:path');
 const { db } = require('../db');
 const { requireAuth } = require('../auth');
 const fmt = require('../format');
 const { PLACEHOLDERS } = require('../contract');
 const uploads = require('../uploads');
+const preview = require('../preview');
 
 const router = express.Router();
 router.use(requireAuth);
@@ -176,12 +178,56 @@ router.get('/:id/files/:fileId', (req, res) => {
   res.download(full, row.original_name);
 });
 
+// Перегляд файлу прямо в браузері (без завантаження на диск). PDF і
+// зображення показуються як є; Word/Excel/RTF/ODT/TXT конвертуються в
+// PDF на льоту через LibreOffice (якщо він встановлений на сервері).
+router.get('/:id/files/:fileId/view', async (req, res) => {
+  const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
+    .get(req.params.fileId, req.params.id);
+  if (!row) return res.status(404).render('error', { title: 'Не знайдено', message: 'Файл не знайдено.' });
+
+  const full = uploads.filePath(row.stored_name);
+  if (!full || !fs.existsSync(full)) {
+    return res.status(404).render('error', {
+      title: 'Файл відсутній',
+      message: 'Запис про файл є, але сам файл не знайдено на диску.',
+    });
+  }
+
+  const ext = path.extname(row.stored_name).toLowerCase();
+  let result;
+  try {
+    result = await preview.previewPath(row.stored_name, ext);
+  } catch (err) {
+    console.error('Перегляд файлу не вдався:', row.original_name, err.message);
+    result = null;
+  }
+
+  if (!result) {
+    return res.redirect(cardUrl(req.params.id, `?err=${encodeURIComponent(
+      'Перегляд у браузері недоступний для цього файлу (не встановлено LibreOffice на сервері). Скористайтеся завантаженням.'
+    )}`));
+  }
+
+  // Для конвертованих файлів показуємо назву з розширенням .pdf (саме
+  // такий вміст і надсилається); для «рідних» PDF/зображень — як є.
+  const baseName = path.basename(row.original_name, path.extname(row.original_name));
+  const dispositionName = result.contentType === 'application/pdf' && ext !== '.pdf'
+    ? `${baseName}.pdf`
+    : row.original_name;
+
+  res.setHeader('Content-Type', result.contentType);
+  res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(dispositionName)}"`);
+  fs.createReadStream(result.file).pipe(res);
+});
+
 router.post('/:id/files/:fileId/delete', (req, res) => {
   const row = db.prepare('SELECT * FROM client_files WHERE id = ? AND client_id = ?')
     .get(req.params.fileId, req.params.id);
   if (row) {
     db.prepare('DELETE FROM client_files WHERE id = ?').run(row.id);
     uploads.removeFile(row.stored_name);
+    preview.removePreview(row.stored_name);
   }
   res.redirect(cardUrl(req.params.id, '?saved=file-deleted'));
 });

@@ -110,12 +110,19 @@ router.get('/new', requireCompany, (req, res) => {
   const company = req.company;
   const bankAccounts = bankAccountsForCompany(company.id);
   const seq = nextSeqForYear(company.id, new Date().getFullYear());
+  // Прийшли з картки замовника («Виставити рахунок») — підставляємо його,
+  // щоб не вводити назву повторно.
+  const preselected = req.query.client_id
+    ? db.prepare('SELECT id, name FROM clients WHERE id = ?').get(req.query.client_id)
+    : null;
   res.render('invoices/form', {
     title: 'Новий рахунок',
     invoice: {
       number: formatInvoiceNumber(company.invoice_prefix, seq),
       invoice_date: todayIso(),
-      client_id: '', client_name: '', notes: '', items: [],
+      client_id: preselected ? preselected.id : '',
+      client_name: preselected ? preselected.name : '',
+      notes: '', items: [],
     },
     services: servicesList(), bankAccounts,
     selectedAccountId: (defaultAccountForCompany(company.id) || {}).id || '',
@@ -394,10 +401,12 @@ router.post('/:id/duplicate', (req, res) => {
   res.redirect(`/invoices/${newId}/edit`);
 });
 
-// Видалення рахунку.
+// Видалення рахунку. Повертаємо в картку замовника — «Рахунки» більше
+// немає в навігації, а звідти зазвичай і видаляють.
 router.post('/:id/delete', (req, res) => {
+  const invoice = db.prepare('SELECT client_id FROM invoices WHERE id = ?').get(req.params.id);
   db.prepare('DELETE FROM invoices WHERE id = ?').run(req.params.id);
-  res.redirect('/invoices');
+  res.redirect(invoice && invoice.client_id ? `/clients/${invoice.client_id}` : '/clients');
 });
 
 module.exports = router;
