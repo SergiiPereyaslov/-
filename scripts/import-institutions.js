@@ -16,25 +16,13 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { db, init, transaction } = require('../src/db');
+const { normalizeName: norm } = require('../src/normalizeName');
 // Підключаємо одразу: якщо залежності не встановлені, впадемо ДО того,
 // як щось видалимо з бази.
 const uploads = require('../src/uploads');
 
 const dryRun = process.argv.includes('--dry');
 const replace = process.argv.includes('--replace');
-
-// Порівнюємо назви без огляду на лапки, апострофи, дефіси та регістр —
-// інакше «КЗ "Ліцей"» і «КЗ Ліцей» вважалися б різними закладами.
-function norm(s) {
-  return String(s || '')
-    .toLowerCase()
-    .replace(/[«»"“”„]/g, ' ')
-    .replace(/['’ʼ`´]/g, '')
-    .replace(/[–—−-]/g, ' ')
-    .replace(/[.,;:()]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 // Видаляє наявних замовників перед повторним заливанням (--replace).
 // Тих, по яких уже є рахунки, лишаємо: інакше історія документів

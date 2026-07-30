@@ -18,21 +18,11 @@ const fs = require('node:fs');
 const { db, init, transaction } = require('../src/db');
 const uploads = require('../src/uploads');
 const { abbreviate } = require('../src/abbreviate');
+const { normalizeName: norm } = require('../src/normalizeName');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry');
 const rootDir = args.find((a) => !a.startsWith('--'));
-
-function norm(s) {
-  return String(s || '')
-    .toLowerCase()
-    .replace(/[«»"“”„]/g, ' ')
-    .replace(/['’ʼ`´]/g, '')
-    .replace(/[–—−-]/g, ' ')
-    .replace(/[.,;:()]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 const ALLOWED = new Set(['.doc', '.docx', '.rtf', '.odt', '.pdf', '.xls', '.xlsx', '.txt', '.jpg', '.jpeg', '.png']);
 

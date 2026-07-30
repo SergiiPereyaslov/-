@@ -37,7 +37,10 @@ function decodeName(name) {
   const buf = Buffer.from(name, 'latin1');
   const utf8 = buf.toString('utf8');
   // Якщо після перекодування немає символів заміни — беремо його.
-  return utf8.includes('�') ? name : utf8;
+  const decoded = utf8.includes('�') ? name : utf8;
+  // macOS часто передає кириличні букви (ї, є, й) у розкладеній формі —
+  // normalize('NFC') робить назву однаковою незалежно від ОС.
+  return decoded.normalize('NFC');
 }
 
 const upload = multer({
