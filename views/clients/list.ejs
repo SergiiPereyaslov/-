@@ -3,7 +3,7 @@
 
 <%
   function qs(overrides) {
-    const p = Object.assign({ q, category, sort, archived: showArchived ? '1' : '' }, overrides);
+    const p = Object.assign({ q, sort, archived: showArchived ? '1' : '' }, overrides);
     return '/clients?' + Object.keys(p)
       .filter((k) => p[k] !== '' && p[k] != null)
       .map((k) => k + '=' + encodeURIComponent(p[k])).join('&');
@@ -22,22 +22,18 @@
 
 <form method="get" action="/clients" class="toolbar">
   <% if (showArchived) { %><input type="hidden" name="archived" value="1"><% } %>
-  <input type="text" name="q" value="<%= q %>" class="search" placeholder="Пошук за назвою, короткою назвою або кодом…" autofocus>
-  <select name="category">
-    <option value="">Усі категорії</option>
-    <% categories.forEach(function(c) { %>
-      <option value="<%= c %>" <%= category === c ? 'selected' : '' %>><%= c %></option>
-    <% }); %>
-  </select>
-  <select name="sort">
+  <input type="text" name="q" id="clientsSearch" value="<%= q %>" class="search" autocomplete="off"
+         placeholder="Пошук за назвою, короткою назвою або кодом…" autofocus>
+  <select name="sort" id="clientsSort">
     <option value="name" <%= sort === 'name' ? 'selected' : '' %>>За назвою (А→Я)</option>
     <option value="name_desc" <%= sort === 'name_desc' ? 'selected' : '' %>>За назвою (Я→А)</option>
     <option value="code" <%= sort === 'code' ? 'selected' : '' %>>За кодом</option>
-    <option value="category" <%= sort === 'category' ? 'selected' : '' %>>За категорією</option>
   </select>
   <button type="submit" class="btn btn-secondary">Показати</button>
-  <% if (q || category || (sort !== 'name')) { %><a href="<%= showArchived ? '/clients?archived=1' : '/clients' %>" class="btn btn-ghost">Скинути</a><% } %>
+  <% if (q || (sort !== 'name')) { %><a href="<%= showArchived ? '/clients?archived=1' : '/clients' %>" class="btn btn-ghost">Скинути</a><% } %>
 </form>
+
+<script src="/static/js/clients-search.js"></script>
 
 <% if (typeof saved !== 'undefined' && saved === 'deleted') { %>
   <div class="alert alert-ok">Замовника видалено.</div>
@@ -52,8 +48,8 @@
   <% if (clients.length === 0) { %>
     <div class="empty-state small">
       <div class="empty-icon">🏫</div>
-      <p class="muted"><%= (q || category) ? 'За вашим запитом нічого не знайдено.' : (showArchived ? 'В архіві порожньо.' : 'Ще немає жодного замовника.') %></p>
-      <% if (!showArchived && !q && !category) { %><a href="/clients/new" class="btn btn-primary">Додати замовника</a><% } %>
+      <p class="muted"><%= q ? 'За вашим запитом нічого не знайдено.' : (showArchived ? 'В архіві порожньо.' : 'Ще немає жодного замовника.') %></p>
+      <% if (!showArchived && !q) { %><a href="/clients/new" class="btn btn-primary">Додати замовника</a><% } %>
     </div>
   <% } else { %>
     <table class="table">

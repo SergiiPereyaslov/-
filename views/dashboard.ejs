@@ -72,7 +72,9 @@
       <a href="/invoices/new" class="qa"><span class="qa-ico">🧾</span><span>Новий рахунок</span></a>
       <a href="/clients/new" class="qa"><span class="qa-ico">🏫</span><span>Додати замовника</span></a>
       <a href="/services/new" class="qa"><span class="qa-ico">📦</span><span>Додати послугу</span></a>
-      <a href="/settings" class="qa"><span class="qa-ico">🏢</span><span>Реквізити</span></a>
+      <% if (user.role === 'admin') { %>
+        <a href="/settings" class="qa"><span class="qa-ico">🏢</span><span>Реквізити</span></a>
+      <% } %>
     </div>
     <div class="mini-stats">
       <div><span class="muted">Замовників у базі:</span> <strong><%= counts.clients %></strong></div>

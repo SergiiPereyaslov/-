@@ -9,8 +9,9 @@ const { requireCompany, bankAccountsForCompany } = require('../company');
 const router = express.Router();
 router.use(requireAuth);
 
-// ── Реквізити активної компанії ─────────────────────────────────────────────
-router.get('/', requireCompany, (req, res) => {
+// ── Реквізити активної компанії — лише для адміністратора ───────────────────
+// (Зміна власного пароля, маршрут /password нижче, доступна всім.)
+router.get('/', requireAdmin, requireCompany, (req, res) => {
   res.render('settings', {
     title: 'Реквізити', company: req.company, accounts: bankAccountsForCompany(req.company.id),
     saved: req.query.saved || '',
@@ -18,7 +19,7 @@ router.get('/', requireCompany, (req, res) => {
   });
 });
 
-router.post('/', requireCompany, (req, res) => {
+router.post('/', requireAdmin, requireCompany, (req, res) => {
   const b = req.body;
   db.prepare(
     `UPDATE companies SET
@@ -52,7 +53,7 @@ function readAccount(b) {
   };
 }
 
-router.post('/bank/new', requireCompany, (req, res) => {
+router.post('/bank/new', requireAdmin, requireCompany, (req, res) => {
   const a = readAccount(req.body);
   if (!a.iban && !a.bank_name) {
     return res.redirect('/settings?err=' + encodeURIComponent('Вкажіть IBAN або назву банку.'));
@@ -64,14 +65,14 @@ router.post('/bank/new', requireCompany, (req, res) => {
   res.redirect('/settings?saved=bank');
 });
 
-router.post('/bank/:id/edit', requireCompany, (req, res) => {
+router.post('/bank/:id/edit', requireAdmin, requireCompany, (req, res) => {
   const a = readAccount(req.body);
   db.prepare('UPDATE bank_accounts SET label=?, iban=?, bank_name=? WHERE id=? AND company_id=?')
     .run(a.label, a.iban, a.bank_name, req.params.id, req.company.id);
   res.redirect('/settings?saved=bank');
 });
 
-router.post('/bank/:id/default', requireCompany, (req, res) => {
+router.post('/bank/:id/default', requireAdmin, requireCompany, (req, res) => {
   const acc = db.prepare('SELECT id FROM bank_accounts WHERE id = ? AND company_id = ?').get(req.params.id, req.company.id);
   if (acc) {
     db.prepare('UPDATE bank_accounts SET is_default = 0 WHERE company_id = ?').run(req.company.id);
@@ -80,7 +81,7 @@ router.post('/bank/:id/default', requireCompany, (req, res) => {
   res.redirect('/settings?saved=bank');
 });
 
-router.post('/bank/:id/delete', requireCompany, (req, res) => {
+router.post('/bank/:id/delete', requireAdmin, requireCompany, (req, res) => {
   const acc = db.prepare('SELECT id, is_default FROM bank_accounts WHERE id = ? AND company_id = ?').get(req.params.id, req.company.id);
   if (acc) {
     db.prepare('DELETE FROM bank_accounts WHERE id = ?').run(acc.id);

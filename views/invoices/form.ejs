@@ -49,8 +49,10 @@
             </option>
           <% }); %>
         </select>
-      <% } else { %>
+      <% } else if (user.role === 'admin') { %>
         <div class="hint">Немає доданих рахунків. <a href="/settings" target="_blank">Додати банківський рахунок →</a></div>
+      <% } else { %>
+        <div class="hint">Немає доданих банківських рахунків. Зверніться до адміністратора.</div>
       <% } %>
     </label>
 

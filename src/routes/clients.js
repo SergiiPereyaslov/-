@@ -17,7 +17,6 @@ const SORTS = {
   name: 'name COLLATE NOCASE ASC',
   name_desc: 'name COLLATE NOCASE DESC',
   code: 'CAST(code AS INTEGER) ASC, code ASC',
-  category: 'category COLLATE NOCASE ASC, name COLLATE NOCASE ASC',
 };
 
 // JSON-пошук замовників для автодоповнення (у формі рахунку).
@@ -40,7 +39,6 @@ router.get('/search', (req, res) => {
 router.get('/', (req, res) => {
   const showArchived = req.query.archived === '1';
   const q = (req.query.q || '').trim();
-  const category = (req.query.category || '').trim();
   const sort = SORTS[req.query.sort] ? req.query.sort : 'name';
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
 
@@ -49,10 +47,6 @@ router.get('/', (req, res) => {
   if (q) {
     conditions.push('(name LIKE @like OR short_name LIKE @like OR code LIKE @like)');
     params.like = `%${q}%`;
-  }
-  if (category) {
-    conditions.push('category = @category');
-    params.category = category;
   }
   const where = `WHERE ${conditions.join(' AND ')}`;
 
@@ -65,13 +59,9 @@ router.get('/', (req, res) => {
     `SELECT * FROM clients ${where} ORDER BY ${SORTS[sort]} LIMIT ${PAGE_SIZE} OFFSET ${offset}`
   ).all(params);
 
-  const categories = db.prepare(
-    "SELECT DISTINCT category FROM clients WHERE category <> '' ORDER BY category"
-  ).all().map((r) => r.category);
-
   res.render('clients/list', {
     title: 'Замовники',
-    clients, showArchived, q, category, sort, categories,
+    clients, showArchived, q, sort,
     total, pages, currentPage,
     saved: req.query.saved || '',
   });
