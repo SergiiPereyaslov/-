@@ -19,12 +19,46 @@ const { db, init, transaction } = require('../src/db');
 const uploads = require('../src/uploads');
 const { abbreviate } = require('../src/abbreviate');
 const { normalizeName: norm } = require('../src/normalizeName');
+const { tokenize, diceCoefficient } = require('../src/fuzzyMatch');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry');
 const rootDir = args.find((a) => !a.startsWith('--'));
 
+// Нижче цього — підказка вже не інформативна, надто мало спільних слів.
+const SUGGEST_MIN_SCORE = 0.45;
+// Вище цього — майже напевно той самий замовник, просто інакше набраний
+// (лапки, пробіли, часткове скорочення), а не інша схожа установа.
+const LIKELY_SAME_SCORE = 0.85;
+
 const ALLOWED = new Set(['.doc', '.docx', '.rtf', '.odt', '.pdf', '.xls', '.xlsx', '.txt', '.jpg', '.jpeg', '.png']);
+
+// Людська назва для символу — щоб показати саме те місце, де розходяться
+// нормалізовані рядки, коли схожість висока, але не 100%.
+const CHAR_NAMES = {
+  0x0020: 'звичайний пробіл', 0x00a0: 'нерозривний пробіл (частий гість у macOS)',
+  0xfeff: 'невидимий символ (BOM)', 0x200b: 'невидимий символ нульової ширини',
+  0x2019: 'права одинарна лапка', 0x0027: 'апостроф', 0x02bc: 'апостроф-модифікатор',
+  0x2116: 'знак «№»',
+};
+function describeChar(ch) {
+  if (ch === undefined) return '(тут рядок закінчується)';
+  const code = ch.codePointAt(0);
+  const hex = `U+${code.toString(16).toUpperCase().padStart(4, '0')}`;
+  const named = CHAR_NAMES[code];
+  return `«${ch}» (${hex}${named ? ', ' + named : ''})`;
+}
+
+// Перше місце, де нормалізовані назви папки й кандидата розходяться —
+// щоб не гадати за скріншотом, а точно показати різницю.
+function firstDifference(a, b) {
+  const len = Math.min(a.length, b.length);
+  let i = 0;
+  while (i < len && a[i] === b[i]) i++;
+  if (i === a.length && i === b.length) return null;
+  const context = a.slice(Math.max(0, i - 12), i);
+  return `  …«${context}» → у папці ${describeChar(a[i])}, у базі ${describeChar(b[i])}`;
+}
 
 // Усі файли всередині папки замовника, включно з вкладеними підпапками.
 function filesIn(dir) {
@@ -58,6 +92,12 @@ function main() {
     index.set(norm(c.name), c);
     index.set(norm(abbreviate(c.name)), c);
   }
+  // Для підказок за непрямим збігом — набір слів кожного замовника.
+  // Лише підказка: два різних замовники в базі можуть мати схожість слів
+  // понад 0.9 (наприклад, різні відділення того самого університету),
+  // тож автоматично прикріплювати за схожістю небезпечно — можна
+  // помилково приписати договір не тому замовнику.
+  const withTokens = clients.map((c) => ({ ...c, tokens: tokenize(c.name) }));
 
   const folders = fs.readdirSync(rootDir, { withFileTypes: true })
     .filter((d) => d.isDirectory())
@@ -76,7 +116,18 @@ function main() {
 
   for (const folder of folders) {
     const client = index.get(norm(folder)) || index.get(norm(abbreviate(folder)));
-    if (!client) { unmatched.push(folder); continue; }
+    if (!client) {
+      // Точного збігу немає — шукаємо до двох найближчих замовників за
+      // спільними словами, лише для підказки (не прикріплюємо автоматично).
+      const query = new Set([...tokenize(folder), ...tokenize(abbreviate(folder))]);
+      const ranked = withTokens
+        .map((c) => ({ name: c.name, score: diceCoefficient(query, c.tokens) }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 2)
+        .filter((c) => c.score >= SUGGEST_MIN_SCORE);
+      unmatched.push({ folder, suggestions: ranked });
+      continue;
+    }
 
     const files = filesIn(path.join(rootDir, folder));
     if (files.length === 0) { empty++; continue; }
@@ -110,10 +161,25 @@ function main() {
   if (unmatched.length) {
     console.log('');
     console.log(`Не знайдено замовника для ${unmatched.length} папок:`);
-    unmatched.forEach((f) => console.log(`  ✗ ${f}`));
+    for (const { folder, suggestions } of unmatched) {
+      console.log(`  ✗ ${folder}`);
+      for (const s of suggestions) {
+        const label = s.score >= LIKELY_SAME_SCORE
+          ? 'ймовірно той самий замовник, інакше набраний'
+          : 'можливо';
+        console.log(`      ${label}: ${s.name}  (схожість ${s.score.toFixed(2)})`);
+        if (s.score >= LIKELY_SAME_SCORE) {
+          const diff = firstDifference(norm(abbreviate(folder)), norm(s.name));
+          if (diff) console.log(diff);
+        }
+      }
+    }
     console.log('');
-    console.log('Створіть цих замовників у розділі «Замовники» або перевірте назву папки,');
-    console.log('після чого запустіть команду ще раз — уже прикріплені файли не дублюються.');
+    console.log('Підказки — лише орієнтир, автоматично нічого не прикріплено: два різних');
+    console.log('замовники можуть мати дуже схожі назви (напр. різні відділення того самого');
+    console.log('університету), тож переплутати їх легко. Перевірте назву замовника і');
+    console.log('прикріпіть файл вручну через його картку, або перейменуйте папку точно');
+    console.log('як у базі та запустіть команду ще раз — уже прикріплені файли не дублюються.');
   }
   if (dryRun) console.log('\n--dry: нічого не змінено.');
 }
