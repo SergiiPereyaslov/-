@@ -19,7 +19,7 @@ const { db, init, transaction } = require('../src/db');
 const uploads = require('../src/uploads');
 const { abbreviate } = require('../src/abbreviate');
 const { normalizeName: norm } = require('../src/normalizeName');
-const { tokenize, diceCoefficient } = require('../src/fuzzyMatch');
+const { tokenize, diceCoefficient, findUniquePrefixMatch } = require('../src/fuzzyMatch');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry');
@@ -30,6 +30,13 @@ const SUGGEST_MIN_SCORE = 0.45;
 // Вище цього — майже напевно той самий замовник, просто інакше набраний
 // (лапки, пробіли, часткове скорочення), а не інша схожа установа.
 const LIKELY_SAME_SCORE = 0.85;
+// Найдовші назви установ macOS іноді обрізає при розпакуванні (той самий
+// ліміт довжини шляху, через який 17 папок не розпакувалися на Linux —
+// тут поріг просто трохи вищий). Якщо назва папки — точний префікс
+// РІВНО ОДНОГО замовника в базі, довжиною від цього порогу — вважаємо
+// це впевненим збігом: випадковий збіг такого довгого початку назви з
+// РЕАЛЬНОЮ, ІНШОЮ установою практично неможливий.
+const PREFIX_MATCH_MIN_LEN = 30;
 
 const ALLOWED = new Set(['.doc', '.docx', '.rtf', '.odt', '.pdf', '.xls', '.xlsx', '.txt', '.jpg', '.jpeg', '.png']);
 
@@ -110,7 +117,7 @@ function main() {
   // понад 0.9 (наприклад, різні відділення того самого університету),
   // тож автоматично прикріплювати за схожістю небезпечно — можна
   // помилково приписати договір не тому замовнику.
-  const withTokens = clients.map((c) => ({ ...c, tokens: tokenize(c.name) }));
+  const withTokens = clients.map((c) => ({ ...c, tokens: tokenize(c.name), normName: norm(c.name) }));
 
   const folders = fs.readdirSync(rootDir, { withFileTypes: true })
     .filter((d) => d.isDirectory())
@@ -124,11 +131,16 @@ function main() {
      VALUES (@client_id, @original_name, @stored_name, @size, '', NULL)`
   );
 
-  let attached = 0, skipped = 0, empty = 0;
+  let attached = 0, skipped = 0, empty = 0, truncated = 0;
   const unmatched = [];
 
   for (const folder of folders) {
-    const client = index.get(norm(folder)) || index.get(norm(abbreviate(folder)));
+    let client = index.get(norm(folder)) || index.get(norm(abbreviate(folder)));
+    if (!client) {
+      client = findUniquePrefixMatch(norm(abbreviate(folder)), withTokens, PREFIX_MATCH_MIN_LEN)
+        || findUniquePrefixMatch(norm(folder), withTokens, PREFIX_MATCH_MIN_LEN);
+      if (client) truncated++;
+    }
     if (!client) {
       // Точного збігу немає — шукаємо до двох найближчих замовників за
       // спільними словами, лише для підказки (не прикріплюємо автоматично).
@@ -167,6 +179,7 @@ function main() {
   console.log('');
   console.log(`Папок у каталозі:        ${folders.length}`);
   console.log(`Зіставлено із замовником: ${folders.length - unmatched.length}`);
+  if (truncated) console.log(`  з них за обрізаною назвою: ${truncated}`);
   console.log(`Файлів ${dryRun ? 'буде прикріплено' : 'прикріплено'}: ${attached}`);
   if (skipped) console.log(`Пропущено (уже прикріплені): ${skipped}`);
   if (empty) console.log(`Папок без договорів:      ${empty}`);

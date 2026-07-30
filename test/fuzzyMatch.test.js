@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
-const { tokenize, diceCoefficient, bestMatch } = require('../src/fuzzyMatch');
+const { tokenize, diceCoefficient, bestMatch, findUniquePrefixMatch } = require('../src/fuzzyMatch');
 
 test('tokenize відкидає короткі та службові слова', () => {
   const t = tokenize('ДНЗ Вище професійне училище №7 м. Вінниця');
@@ -43,4 +43,29 @@ test('bestMatch обирає кандидата з найвищим коефіц
 
 test('bestMatch повертає null для порожнього списку кандидатів', () => {
   assert.equal(bestMatch(tokenize('щось'), []), null);
+});
+
+test('findUniquePrefixMatch знаходить установу за обрізаною назвою', () => {
+  const candidates = [
+    { name: 'ВСП Політехнічний фаховий коледж Кременчуцького національного університету імені Михайла Остроградського', normName: 'всп політехнічний фаховий коледж кременчуцького національного університету імені михайла остроградського' },
+    { name: 'ВСП Політехнічний фаховий коледж Криворізького національного університету', normName: 'всп політехнічний фаховий коледж криворізького національного університету' },
+  ];
+  // Обрізано на «Остро» — саме так macOS обрізає найдовші назви папок.
+  const truncated = 'всп політехнічний фаховий коледж кременчуцького національного університету імені михайла остро';
+  const match = findUniquePrefixMatch(truncated, candidates, 30);
+  assert.equal(match.name, 'ВСП Політехнічний фаховий коледж Кременчуцького національного університету імені Михайла Остроградського');
+});
+
+test('findUniquePrefixMatch не обирає нічого, якщо префікс спільний для кількох', () => {
+  const candidates = [
+    { name: 'А', normName: 'криворізький фаховий коледж торгівлі' },
+    { name: 'Б', normName: 'криворізький фаховий коледж будівництва' },
+  ];
+  assert.equal(findUniquePrefixMatch('криворізький фаховий коледж', candidates, 10), null);
+});
+
+test('findUniquePrefixMatch ігнорує закороткі запити — ризик випадкового збігу', () => {
+  const candidates = [{ name: 'А', normName: 'криворізький національний університет' }];
+  // Запит коротший за поріг — навіть якщо збіг єдиний, це занадто ризиковано.
+  assert.equal(findUniquePrefixMatch('криворізький', candidates, 30), null);
 });

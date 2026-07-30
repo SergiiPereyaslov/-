@@ -41,4 +41,15 @@ function bestMatch(queryTokens, candidates) {
   return best;
 }
 
-module.exports = { tokenize, diceCoefficient, bestMatch };
+// Обрізана назва (найдовші назви установ macOS іноді обрізає при
+// розпакуванні) — точний префікс РІВНО ОДНОГО кандидата? candidates —
+// масив об'єктів із полем normName (нормалізована повна назва).
+// Довжина запиту має бути не меншою за minLen: короткий префікс
+// («Криворізький») міг би випадково збігтися з кількома установами.
+function findUniquePrefixMatch(normQuery, candidates, minLen) {
+  if (normQuery.length < minLen) return null;
+  const matches = candidates.filter((c) => c.normName.startsWith(normQuery));
+  return matches.length === 1 ? matches[0] : null;
+}
+
+module.exports = { tokenize, diceCoefficient, bestMatch, findUniquePrefixMatch };
