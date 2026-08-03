@@ -85,6 +85,14 @@ npm start
 менеджери заходять у браузері за його адресою. Дані — у файлі `data/invoices.db`
 (режим WAL для одночасної роботи).
 
+**Windows/macOS не має значення для менеджерів** — після розгортання на
+спільному сервері вони просто відкривають адресу в браузері (Chrome, Edge,
+Safari — будь-який), незалежно від того, яка ОС на їхньому комп'ютері.
+Сам застосунок (Node.js), LibreOffice і Document Server теж однаково
+працюють і на macOS, і на Windows, і на Linux — ОС сервера обирає
+IT-фахівець. Команди нижче з `bash` і `PowerShell` наведені паралельно
+там, де синтаксис відрізняється (в основному — для локального тестування).
+
 ### Доступ з будь-якої точки світу (для IT-фахівця)
 
 Щоб менеджери заходили не лише з офісної мережі, а й ззовні, застосунок має
@@ -177,6 +185,11 @@ brew install --cask libreoffice
 sudo apt install libreoffice
 ```
 
+```powershell
+# Windows (PowerShell) — можна й просто встановити .exe із libreoffice.org
+winget install --id TheDocumentFoundation.LibreOffice -e
+```
+
 Якщо LibreOffice не встановлено, кнопка «Переглянути» для таких файлів
 покаже зрозуміле повідомлення й запропонує звичайне завантаження — нічого
 не ламається. Перша конвертація файлу займає кілька секунд, результат
@@ -211,10 +224,22 @@ docker run -d -p 8082:80 --name onlyoffice-ds --restart unless-stopped onlyoffic
 **3. Запустіть застосунок з двома змінними оточення:**
 
 ```bash
+# macOS/Linux (bash/zsh)
 ONLYOFFICE_URL=http://localhost:8082 \
 ONLYOFFICE_CALLBACK_URL=http://host.docker.internal:3000 \
 npm start
 ```
+
+```powershell
+# Windows (PowerShell)
+$env:ONLYOFFICE_URL="http://localhost:8082"
+$env:ONLYOFFICE_CALLBACK_URL="http://host.docker.internal:3000"
+npm start
+```
+
+`host.docker.internal` працює однаково на Docker Desktop для Mac, Windows
+і Linux — саме так контейнер звертається до застосунку, що працює поза
+контейнером, незалежно від ОС.
 
 - `ONLYOFFICE_URL` — адреса Document Server, яку відкриває **браузер**
   менеджера (щоб завантажити сам редактор).

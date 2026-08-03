@@ -27,15 +27,19 @@ const CONTENT_TYPES = {
 
 // «soffice» на PATH працює на Linux-серверах і якщо LibreOffice стояв
 // через `brew install --cask` (він додає символьне посилання в PATH).
-// Але звичайне встановлення на macOS (перетягнути .app у Programs) PATH
-// не чіпає — бінарник лишається лише всередині пакета застосунку, тож
-// перевіряємо і типові прямі шляхи.
+// Але звичайне встановлення через інсталятор (macOS: перетягнути .app у
+// Programs; Windows: майстер встановлення) PATH не чіпає — бінарник
+// лишається лише в теці програми, тож перевіряємо і типові прямі шляхи
+// для обох ОС (менеджери працюють і на Mac, і на Windows). Кандидат, що
+// не існує на поточній ОС, просто швидко провалюється — нешкідливо.
 const CANDIDATE_COMMANDS = [
   'soffice',
   '/Applications/LibreOffice.app/Contents/MacOS/soffice',
   '/opt/homebrew/bin/soffice',
   '/usr/local/bin/soffice',
   '/usr/bin/soffice',
+  'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+  'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
 ];
 
 let resolvedCommand = null; // кешуємо лише підтверджений робочий шлях.

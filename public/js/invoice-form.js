@@ -45,7 +45,11 @@
     row.querySelectorAll('.num').forEach((inp) => {
       inp.addEventListener('input', recalcAll);
       inp.addEventListener('blur', () => {
-        if (inp.name === 'item_price[]') inp.value = formatMoney(parseNum(inp.value));
+        // Порожнє поле лишаємо порожнім — форматуємо лише те, що менеджер
+        // справді ввів, щоб «0,00» не з'являлося саме собою.
+        if (inp.name === 'item_price[]' && inp.value.trim() !== '') {
+          inp.value = formatMoney(parseNum(inp.value));
+        }
         recalcAll();
       });
     });
@@ -56,7 +60,8 @@
     if (prefill) {
       row.querySelector('[name="item_name[]"]').value = prefill.name || '';
       row.querySelector('[name="item_unit[]"]').value = prefill.unit || 'шт';
-      row.querySelector('[name="item_price[]"]').value = formatMoney(prefill.price || 0);
+      // Ціну з каталогу навмисно не підставляємо: вона орієнтовна і
+      // відрізняється за регіонами, менеджер щоразу вводить свою.
     }
     body.appendChild(row);
     const appended = body.lastElementChild;
@@ -79,10 +84,10 @@
     const opt = catalogSelect.selectedOptions[0];
     if (!catalogSelect.value || !opt) return;
     let text = opt.textContent.trim();
-    let name = text, unit = 'шт', price = 0;
+    let name = text, unit = 'шт';
     const m = text.match(/^(.*?)\s+—\s+([\d\s]+,[\d]+)\s*₴\/(.+)$/);
-    if (m) { name = m[1].trim(); price = parseNum(m[2]); unit = m[3].trim(); }
-    const row = addRow({ name, unit, price });
+    if (m) { name = m[1].trim(); unit = m[3].trim(); }
+    const row = addRow({ name, unit });
     row.querySelector('[name="item_qty[]"]').focus();
     row.querySelector('[name="item_qty[]"]').select();
     catalogSelect.value = '';

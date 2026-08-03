@@ -76,6 +76,7 @@ body {
 .signs-nakl .sign-line { flex: 1; width: auto; min-width: 28mm; }
 /* Відступ 1,5 см під «Відпустив». */
 .signs-nakl .doc-place { margin-top: 15mm; }
+.signs-nakl .doc-poa { margin-top: 4mm; font-size: 11px; }
 
 /* ── Друк ────────────────────────────────────────────────────────────────── */
 @page { size: A4 portrait; margin: 8mm; }
