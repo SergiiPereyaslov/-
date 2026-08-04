@@ -1,0 +1,151 @@
+# Platform-wide configuration — applies to every vertical.
+# Vertical-specific content lives in config/verticals/*.yaml.
+# Economic figures trace to core/constraints.md. Do not edit them here without
+# updating that file and the ADR that justified them.
+
+platform:
+  name: AI Voice Sales Platform
+  default_timezone: Europe/Kyiv
+
+# ---------------------------------------------------------------------------
+# Calling schedule — client-supplied
+# ---------------------------------------------------------------------------
+schedule:
+  timezone: Europe/Kyiv
+  days: [mon, tue, wed, thu, fri]
+  windows:
+    - "09:00-13:00"
+    - "14:00-18:00"        # 13:00-14:00 excluded by client decision
+  effective_hours_per_day: 8
+
+  # Multi-country readiness: when a vertical calls outside Ukraine, the window
+  # is resolved against the CALLEE's local time, not this timezone. Enforced in
+  # core, not per vertical.
+  resolve_window_in: callee_local_time
+
+# ---------------------------------------------------------------------------
+# Volume
+# ---------------------------------------------------------------------------
+volume:
+  dials_per_day: 100
+  calls_per_hour: 13              # derived: 100 / 8, rounded up
+  max_concurrent_lines: 2         # derived; 1 suffices, 2 for headroom
+
+# ---------------------------------------------------------------------------
+# Economic gate — see core/constraints.md for derivation
+# ---------------------------------------------------------------------------
+economics:
+  max_cost_per_lead_usd: 5.00
+  daily_budget_usd: 12.50
+  max_cost_per_answered_call_usd: 0.139
+
+  cost_per_minute_usd:
+    target: 0.07
+    planning: 0.09
+    hard_cutoff: 0.14
+
+  funnel_baseline:                # client-supplied, human performance
+    answer_rate: 0.90
+    ab_lead_rate: 0.025
+    source: client
+  funnel_pessimistic:             # mandatory second evaluation scenario
+    ab_lead_rate: 0.0125
+    rationale: "half of human baseline; an automated agent should not be assumed to match an experienced human before tuning"
+
+  # Hard stop. A runaway dialler must be stoppable without a deploy.
+  daily_spend_cap_usd: 20.00
+  on_cap_exceeded: halt_campaign_and_alert
+
+# ---------------------------------------------------------------------------
+# Model tiering — structural, see core/constraints.md §3
+# ---------------------------------------------------------------------------
+models:
+  cheap_tier:
+    used_for: [ANSWERED_IDENTIFY, GATEKEEPER, HANDOFF, CALLBACK, CLOSE]
+    provider: null       # TODO(RESEARCH) — selected in P2
+    model: null
+  strong_tier:
+    used_for: [DM_ENGAGED]
+    provider: null       # TODO(RESEARCH) — selected in P2
+    model: null
+  scoring_tier:
+    used_for: [POST_CALL]
+    note: "off the latency path; optimise for accuracy, not speed"
+    provider: null       # TODO(RESEARCH)
+    model: null
+
+# ---------------------------------------------------------------------------
+# Stack — every entry resolved during P2 Market Research.
+# Nothing here may be filled from memory. See core/epistemics.md.
+# ---------------------------------------------------------------------------
+stack:
+  telephony:
+    provider: null       # TODO(RESEARCH)
+    requires:
+      - realtime_media_stream      # non-negotiable: call control alone cannot run a live agent
+      - outbound_to_ukraine
+      - local_caller_id
+      - warm_transfer
+      - concurrency: 2
+  stt:
+    provider: null       # TODO(RESEARCH)
+    requires: [streaming, ukrainian, partial_results]
+  tts:
+    provider: null       # TODO(RESEARCH)
+    requires: [streaming, ukrainian, barge_in_interruptible]
+  llm:
+    note: "see models: above"
+
+# ---------------------------------------------------------------------------
+# Dialogue time budgets — enforced, not advisory. Asserted in tests.
+# ---------------------------------------------------------------------------
+time_budgets_seconds:
+  answered_identify: { soft: 8,   hard: 15 }
+  gatekeeper:        { soft: 30,  hard: 45 }
+  dm_engaged:        { soft: 120, hard: 210 }
+  handoff:           { soft: 20,  hard: 45 }
+  callback:          { soft: 25,  hard: 45 }
+  voicemail:         { soft: 10,  hard: 20 }
+  close:             { soft: 10,  hard: 15 }
+  target_avg_answered_call: 90
+
+# ---------------------------------------------------------------------------
+# Retry policy by dial outcome
+# ---------------------------------------------------------------------------
+retry:
+  no_answer:      { attempts: 3, backoff_hours: [4, 24, 72], vary_time_of_day: true }
+  busy:           { attempts: 3, backoff_hours: [1, 4, 24] }
+  voicemail:      { attempts: 2, backoff_hours: [24, 96] }
+  carrier_failure:{ attempts: 2, backoff_hours: [1, 24] }
+  invalid_number: { attempts: 0 }
+  soft_refusal:   { attempts: 1, backoff_hours: [2160] }   # ~90 days
+  hard_refusal:   { attempts: 0 }
+  hostile:        { attempts: 0, suppress: true }
+
+# ---------------------------------------------------------------------------
+# Suppression — survives list re-import. Security veto condition if it does not.
+# ---------------------------------------------------------------------------
+suppression:
+  storage: persistent
+  keys: [phone_e164, edrpou]
+  survives_reimport: true
+  sources: [hard_refusal, hostile, opt_out, invalid_number, existing_crm_client]
+
+  # Calling an existing client with a cold script is an avoidable embarrassment.
+  dedupe_against_crm: true
+
+# ---------------------------------------------------------------------------
+# Channels
+# ---------------------------------------------------------------------------
+channels:
+  voice: { enabled: true }
+  email: { enabled: false }        # client decision; switch retained for later
+
+# ---------------------------------------------------------------------------
+# Data handling
+# ---------------------------------------------------------------------------
+data:
+  store_recordings: true
+  store_transcripts: true
+  retention_days: null             # TODO(BLOCKER) — client decision
+  deletion_path: required          # Security veto condition if absent

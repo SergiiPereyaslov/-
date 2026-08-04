@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dniprograf.local/ai-voice-sales-platform/vertical.schema.json",
+  "title": "Vertical Configuration",
+  "description": "Everything that differs between businesses. Adding a business means adding one file conforming to this schema and touching nothing under core/. If a change to core/ is required to onboard a vertical, that is an Architect veto condition.",
+  "type": "object",
+  "required": ["vertical", "language", "business", "call_goal", "decision_maker", "gatekeeper", "qualification", "objections", "crm", "scoring", "kpi", "channels"],
+  "additionalProperties": false,
+  "properties": {
+    "vertical": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Stable identifier. Used in telemetry, CRM tagging and file paths."
+    },
+    "status": {
+      "enum": ["draft", "discovery-incomplete", "ready", "live", "paused"],
+      "description": "A vertical may not go live while any TODO(BLOCKER) remains in this file."
+    },
+    "language": {
+      "type": "object",
+      "required": ["primary"],
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "type": "string", "description": "BCP-47, e.g. uk-UA" },
+        "fallback": { "type": "array", "items": { "type": "string" } },
+        "voice_id": { "type": ["string", "null"], "description": "Set after TTS vendor is selected in P2. Null until then." }
+      }
+    },
+    "business": {
+      "type": "object",
+      "required": ["legal_name", "short_name", "what_we_sell"],
+      "properties": {
+        "legal_name": { "type": "string" },
+        "short_name": { "type": "string", "description": "How the agent names the company aloud." },
+        "edrpou": { "type": ["string", "null"] },
+        "city": { "type": ["string", "null"] },
+        "what_we_sell": { "type": "string", "description": "One sentence, in the language the agent speaks." },
+        "products": { "type": "array", "items": { "type": "string" } },
+        "avg_deal_uah": { "type": ["number", "null"] },
+        "seasonality": {
+          "type": "array",
+          "description": "Periods of elevated demand. Drives campaign timing, since outreach must lead procurement.",
+          "items": {
+            "type": "object",
+            "required": ["period", "products", "outreach_lead_time_weeks"],
+            "properties": {
+              "period": { "type": "string" },
+              "products": { "type": "array", "items": { "type": "string" } },
+              "outreach_lead_time_weeks": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "lead_source": {
+      "type": "object",
+      "description": "Where the calling list comes from for this vertical.",
+      "properties": {
+        "adapter": { "enum": ["youcontrol-export", "web-scraper", "manual-csv", "registry"] },
+        "filters": { "type": "object", "additionalProperties": true },
+        "expected_list_size": { "type": ["integer", "null"], "description": "Drives list-exhaustion planning. Null means unmeasured." },
+        "notes": { "type": "string" }
+      }
+    },
+    "call_goal": {
+      "type": "object",
+      "required": ["primary", "fallback"],
+      "properties": {
+        "primary": { "type": "string" },
+        "fallback": { "type": "string" },
+        "handoff_condition": { "type": "string", "description": "When to attempt transfer to a human." }
+      }
+    },
+    "decision_maker": {
+      "type": "object",
+      "required": ["roles"],
+      "properties": {
+        "roles": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "By function, as a gatekeeper would recognise them." },
+        "not_decision_maker": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "gatekeeper": {
+      "type": "object",
+      "required": ["reason_for_call", "target_roles", "identity_disclosure"],
+      "properties": {
+        "reason_for_call": { "type": "string", "description": "One sentence, plain speech, no pitch." },
+        "target_roles": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "on_send_by_email": { "enum": ["capture", "decline"] },
+        "existing_supplier_probe": { "type": "string" },
+        "identity_disclosure": { "type": "string", "description": "What the agent says when asked what it is. Evasion is prohibited." }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "required": ["criteria"],
+      "properties": {
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "question", "qualifies_if"],
+            "properties": {
+              "id": { "type": "string" },
+              "question": { "type": "string" },
+              "qualifies_if": { "type": "string" },
+              "weight": { "type": "number" }
+            }
+          }
+        },
+        "disqualifiers": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "objections": {
+      "type": "array",
+      "description": "Sourced from real manager call recordings where available, not invented.",
+      "items": {
+        "type": "object",
+        "required": ["trigger", "response", "exit"],
+        "properties": {
+          "trigger": { "type": "string" },
+          "response": { "type": "string" },
+          "exit": { "type": "string", "description": "How the agent leaves if the response does not land. Every objection needs an exit, not only a rebuttal." },
+          "source": { "enum": ["call-recording", "client-supplied", "TODO"] }
+        }
+      }
+    },
+    "knowledge_base": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "citations_required": { "type": "boolean", "default": true }
+      }
+    },
+    "crm": {
+      "type": "object",
+      "required": ["provider"],
+      "properties": {
+        "provider": { "enum": ["keycrm"] },
+        "pipeline_id": { "type": ["integer", "null"] },
+        "status_map": {
+          "type": "object",
+          "description": "Tier to CRM status id.",
+          "properties": {
+            "A": { "type": ["integer", "null"] },
+            "B": { "type": ["integer", "null"] },
+            "C": { "type": ["integer", "null"] },
+            "D": { "type": ["integer", "null"] },
+            "X": { "type": ["integer", "null"] }
+          }
+        },
+        "field_map": { "type": "object", "additionalProperties": { "type": "string" } },
+        "write_transcript": { "type": "boolean", "default": true },
+        "write_recording_url": { "type": "boolean", "default": true }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "required": ["confidence_floor"],
+      "properties": {
+        "confidence_floor": { "type": "number", "minimum": 0, "maximum": 1, "description": "Below this, queue for human review instead of writing a scored lead." },
+        "tier_weights": {
+          "type": "object",
+          "description": "Reporting weights only. Never summed into a single leads figure — see core/conversation/scoring-engine.md.",
+          "properties": { "A": { "type": "number" }, "B": { "type": "number" }, "C": { "type": "number" } }
+        }
+      }
+    },
+    "kpi": {
+      "type": "object",
+      "properties": {
+        "target_answer_rate": { "type": ["number", "null"] },
+        "target_ab_lead_rate": { "type": ["number", "null"] },
+        "target_c_capture_rate": { "type": ["number", "null"] },
+        "max_cost_per_lead_usd": { "type": ["number", "null"] },
+        "max_avg_handle_time_seconds": { "type": ["integer", "null"] }
+      }
+    },
+    "channels": {
+      "type": "object",
+      "required": ["voice"],
+      "properties": {
+        "voice": { "type": "object", "properties": { "enabled": { "type": "boolean" } } },
+        "email": {
+          "type": "object",
+          "description": "Disabled by client decision. The switch exists so enabling it later is a config change, not a rebuild.",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "provider": { "type": ["string", "null"] },
+            "templates_path": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "managers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "endpoint": { "type": "string" },
+              "hours": { "type": "string" }
+            }
+          }
+        },
+        "availability_source": { "enum": ["static_schedule", "pbx_api", "queue_state"] },
+        "bridge_timeout_seconds": { "type": "integer" },
+        "announcement": { "type": "string" },
+        "fallback": { "enum": ["callback"] }
+      }
+    }
+  }
+}

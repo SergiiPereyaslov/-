@@ -1,0 +1,98 @@
+# Vertical: SmartEcoPack
+# Conforms to config/schema.json
+#
+# PROVENANCE NOTICE
+# Nothing is known about this business beyond its name. There is no data for it
+# in this repository. Every substantive field is TODO(BLOCKER).
+#
+# The company name suggests packaging, and possibly ecological packaging. That
+# is a guess from a brand name and is deliberately NOT recorded as a fact
+# anywhere below. Per core/epistemics.md, a plausible inference is still an
+# invention until the client confirms it.
+#
+# This file exists as a valid skeleton so the platform can be built and tested
+# against two verticals rather than one — which is what proves the core/config
+# boundary actually holds.
+
+vertical: smartecopack
+status: discovery-incomplete
+
+language:
+  primary: uk-UA
+  fallback: []
+  voice_id: null                      # TODO(RESEARCH) — after TTS selection in P2
+
+business:
+  legal_name: null                    # TODO(BLOCKER)
+  short_name: "SmartEcoPack"
+  edrpou: null                        # TODO(BLOCKER)
+  city: null                          # TODO(BLOCKER)
+  what_we_sell: null                  # TODO(BLOCKER)
+  products: []                        # TODO(BLOCKER)
+  avg_deal_uah: null                  # TODO(BLOCKER)
+  seasonality: []                     # TODO(BLOCKER) — if any
+
+lead_source:
+  adapter: youcontrol-export
+  filters:
+    kved: []                          # TODO(BLOCKER)
+    region: []                        # TODO(BLOCKER)
+  expected_list_size: null            # TODO(BLOCKER)
+  notes: "Чи є ЦА відкритим ринком компаній, чи закритим переліком, як у Дніпрографа?"
+
+call_goal:
+  primary: null                       # TODO(BLOCKER)
+  fallback: "зʼясувати, хто ухвалює рішення, та як з ним звʼязатися"
+  handoff_condition: null             # TODO(BLOCKER)
+
+decision_maker:
+  roles: ["TODO(BLOCKER)"]
+  not_decision_maker: []
+
+gatekeeper:
+  reason_for_call: null               # TODO(BLOCKER)
+  target_roles: ["TODO(BLOCKER)"]
+  on_send_by_email: capture
+  existing_supplier_probe: null       # TODO(BLOCKER)
+  identity_disclosure: null           # TODO(BLOCKER)
+
+qualification:
+  criteria: []                        # TODO(BLOCKER)
+  disqualifiers: []
+
+objections: []                        # TODO(BLOCKER)
+
+knowledge_base:
+  path: ./kb/smartecopack/
+  citations_required: true
+
+crm:
+  provider: keycrm
+  pipeline_id: null                   # TODO(BLOCKER) — separate pipeline from Дніпрограф?
+  status_map: { A: null, B: null, C: null, D: null, X: null }
+  field_map: {}
+  write_transcript: true
+  write_recording_url: true
+
+scoring:
+  confidence_floor: 0.7
+  tier_weights: { A: 1.0, B: 0.5, C: 0.15 }
+
+kpi:
+  target_answer_rate: null            # TODO(BLOCKER) — do not reuse Дніпрограф's funnel
+  target_ab_lead_rate: null           # TODO(BLOCKER) — different market, different conversion
+  target_c_capture_rate: null
+  max_cost_per_lead_usd: 5.00
+  max_avg_handle_time_seconds: 90
+
+channels:
+  voice: { enabled: true }
+  email: { enabled: false, provider: null, templates_path: null }
+
+handoff:
+  enabled: false
+  managers: []                        # TODO(BLOCKER)
+  availability_source: null           # TODO(BLOCKER)
+  bridge_timeout_seconds: 20
+  announcement: null                  # TODO(BLOCKER)
+  fallback: callback
