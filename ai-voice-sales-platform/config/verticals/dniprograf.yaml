@@ -1,19 +1,15 @@
 # Vertical: Дніпрограф
 # Conforms to config/schema.json
 #
-# Дніпрограф is a PRINTING HOUSE (друкарня): printing services and printed
-# products. Target audience is B2B — any enterprise that uses printed materials
-# in its operations. `[CLIENT]`
+# Дніпрограф is a printing house (оперативна поліграфія). Target audience is
+# B2B — any enterprise that uses printed materials. `[CLIENT]`
 #
-# NOTE: an earlier revision of this file inferred a different business from
-# seed data in this repository. That seed data belongs to a separate project
-# for a different company and has no bearing on this vertical. All inferences
-# drawn from it have been removed.
+# Provenance labels: `[CLIENT]` answered directly · `[WEB]` public sources,
+# see notes · `DRAFT` proposed by the agent, awaiting client approval ·
+# TODO(BLOCKER) genuinely unknown, must not be guessed.
 #
-# Fields below are TODO(BLOCKER) because they are genuinely unknown. Per
-# core/epistemics.md they must not be filled with plausible guesses — a printing
-# house's script depends entirely on what it prints, to whom, and why a
-# prospect would leave their current printer.
+# Seed data in this repository belongs to a separate project for a different
+# company and is NOT a source for this file.
 
 vertical: dniprograf
 status: discovery-incomplete
@@ -26,46 +22,87 @@ language:
 business:
   legal_name: "ТОВ «Дніпрограф»"
   short_name: "Дніпрограф"
-  edrpou: null                        # TODO(BLOCKER) — confirm from client, not from repo seed data
-  city: null                          # TODO(BLOCKER)
-  what_we_sell: "поліграфічні послуги та виготовлення поліграфічної продукції"
-  products: []                        # TODO(BLOCKER) — the actual product mix drives everything downstream
+  edrpou: null                        # TODO(BLOCKER) — confirm with client
+  city: "м. Дніпро"                   # [WEB] пр. Олександра Поля, 82-Г
+  what_we_sell: "оперативна поліграфія — друк рекламної продукції, етикеток, бланків та широкоформату"
+
+  # [CLIENT] — direct answer
+  products:
+    - "рекламна поліграфія (буклети, каталоги, листівки, візитівки)"
+    - "етикетки та наліпки"
+    - "бланки та офісна поліграфія"
+    - "широкоформатний друк, POS-матеріали"
+
+  # [CLIENT] — explicitly NOT offered. These are disqualifiers, not gaps.
+  does_not_offer:
+    - "пакування (коробки, тара)"
+    - "друк на тканині"
+
+  # [WEB] supporting services — useful as qualification hooks
+  services:
+    - "дизайн / підготовка макета"
+    - "ламінування"
+    - "експрес-друк"
+
+  delivery: "Нова пошта по всій Україні"   # [WEB] — supports nationwide calling
+
   avg_deal_uah: null                  # TODO(BLOCKER)
-  min_order_uah: null                 # TODO(BLOCKER) — a floor here is a disqualifier in qualification
+  min_order_uah: null                 # TODO(BLOCKER) — becomes a disqualifier once known
   seasonality: []                     # TODO(BLOCKER)
 
 lead_source:
   adapter: youcontrol-export
-  # Open B2B market — a КВЕД + region export is the appropriate instrument here.
   filters:
     kved: []                          # TODO(BLOCKER)
-    region: []                        # TODO(BLOCKER) — constrained by delivery reach?
+    region: ["Україна"]               # [CLIENT] — nationwide; delivery does not constrain
   expected_list_size: null            # TODO(BLOCKER)
-  notes: "B2B, відкритий ринок. Вичерпання бази малоймовірне при 100 дзвінках/день."
+  notes: "Відкритий B2B-ринок. Вичерпання бази при 100 дзвінках/день не загрожує."
 
 call_goal:
-  primary: null                       # TODO(BLOCKER)
+  primary: "отримати ТЗ на прорахунок — що друкувати, тираж, терміни, чи є макет"   # [CLIENT]
   fallback: "зʼясувати, хто відповідає за замовлення поліграфії, та як з ним звʼязатися"
-  handoff_condition: null             # TODO(BLOCKER)
+  handoff_condition: null             # TODO(BLOCKER) — за яких умов переводити на менеджера одразу
 
 decision_maker:
-  roles: []                           # TODO(BLOCKER) — varies sharply with company size
+  roles:                              # [CLIENT]
+    - "закупівлі / постачання"
+    - "власник / директор"
   not_decision_maker:
     - "приймальня"
     - "охорона"
 
 gatekeeper:
-  reason_for_call: null               # TODO(BLOCKER)
-  target_roles: []                    # TODO(BLOCKER)
+  reason_for_call: null               # TODO(BLOCKER) — потрібне ваше формулювання, одним реченням
+  target_roles:                       # [CLIENT]
+    - "той, хто займається закупівлями"
+    - "керівник"
   on_send_by_email: capture
-  existing_supplier_probe: null       # TODO(BLOCKER) — the central objection in this market
-  identity_disclosure: null           # TODO(BLOCKER)
+  existing_supplier_probe: null       # TODO(BLOCKER) — залежить від відповіді на «чим перебиваємо»
+  identity_disclosure: null           # TODO(BLOCKER) — що агент каже, коли питають, чи він робот
 
 qualification:
-  criteria: []                        # TODO(BLOCKER)
-  disqualifiers: []                   # TODO(BLOCKER)
+  # DRAFT — derived from the agreed call goal. Printing is quoted, not sold off
+  # a price list, so these four parameters are what a quote actually requires.
+  # Confirm or correct before use.
+  criteria:
+    - id: product_type
+      question: "Що саме потрібно друкувати?"
+      qualifies_if: "названо позицію з products; якщо це пакування або друк на тканині — дискваліфікація"
+    - id: quantity
+      question: "Який приблизно тираж?"
+      qualifies_if: "названо кількість"
+    - id: deadline
+      question: "На коли потрібно?"
+      qualifies_if: "названо термін або період"
+    - id: artwork
+      question: "Макет у вас готовий, чи потрібна підготовка?"
+      qualifies_if: "будь-яка відповідь — обидві ведуть до прорахунку, друга ще й до послуги дизайну"
 
-objections: []                        # TODO(BLOCKER) — source: call-recording, once supplied
+  disqualifiers:                      # [CLIENT] — outside what the company does
+    - "потрібне пакування (коробки, тара)"
+    - "потрібен друк на тканині"
+
+objections: []                        # TODO(BLOCKER) — джерело: записи розмов менеджерів
 
 knowledge_base:
   path: ./kb/dniprograf/
