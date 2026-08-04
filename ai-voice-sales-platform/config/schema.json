@@ -150,6 +150,20 @@
           }
         },
         "field_map": { "type": "object", "additionalProperties": { "type": "string" } },
+        "task_map": {
+          "type": "object",
+          "description": "Promise type to CRM task. Every promise the agent is allowed to make must appear here; a promise with no task type must not be made. See core/conversation/scoring-engine.md.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["title"],
+            "properties": {
+              "title": { "type": "string" },
+              "due_hours": { "type": "integer" },
+              "assignee": { "type": ["string", "null"] },
+              "required_payload": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
         "write_transcript": { "type": "boolean", "default": true },
         "write_recording_url": { "type": "boolean", "default": true }
       }

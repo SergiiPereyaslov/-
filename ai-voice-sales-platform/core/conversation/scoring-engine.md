@@ -79,6 +79,11 @@ commitment:            # only when tier == A
   time: local time
   our_party: string
   their_party: string
+tasks:                 # every promise made on the call, one entry each
+  - type: string       # key from the vertical config's crm.task_map
+    due: ISO-8601
+    payload: {}        # what the human needs in order to do it
+    assignee: string | null
 qualification:
   <criterion>: true | false | unknown    # keys from vertical config
 suppress: true | false
@@ -90,6 +95,30 @@ review rather than written as a scored lead. A confidently wrong tier is
 worse than an unscored call: it enters the CRM and someone acts on it.
 
 ---
+
+## Promises become tasks
+
+The agent cannot send anything, schedule anything, or follow up on anything by
+itself. Everything it promises on a call is performed later by a human.
+
+**Rule: every promise made during a call emits a task.** If the agent said
+"the manager will send it", a task exists in the CRM with the recipient, the
+subject and everything needed to act on it. No exceptions, and no promise the
+config has no task type for — an agent that can promise something the system
+cannot record is an agent that lies on a schedule.
+
+This is why an outbound channel does not need to be automated for a promise to
+be safe. A task has an owner and is visibly overdue when neglected; an unsent
+email is invisible. The task route is the more accountable of the two.
+
+**Invariant:** a scored call whose transcript contains a promise, with an empty
+`tasks` array, is a defect. QA asserts this — it is cheap to test and it is
+the failure the customer notices, because from their side it looks exactly like
+being lied to.
+
+Task types are declared in the vertical config under `crm.task_map`. A promise
+the agent has no task type for must not be made; the objection response is
+rewritten instead.
 
 ## What the engine must never do
 

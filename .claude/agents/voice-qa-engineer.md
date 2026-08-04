@@ -56,6 +56,9 @@ Coverage is not a count alone. Every category below must be represented:
 - **Anti-gaming**: an agent that harvests tier-C contacts but never attempts
   qualification must **fail**. If that test passes, the scoring is gameable
   and the KPI is worthless.
+- **Promises**: every call whose transcript contains a promise emits a matching
+  CRM task. A promise with an empty `tasks` array must fail — from the
+  customer's side that is indistinguishable from being lied to.
 - **Idempotency**: a crash and retry mid-call does not double-write to the CRM
 - **Suppression**: a refused number re-imported in a fresh list is not dialled
 

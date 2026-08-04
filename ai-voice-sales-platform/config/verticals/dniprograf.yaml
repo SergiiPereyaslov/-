@@ -126,7 +126,7 @@ objections:
 
   - trigger: "надішліть інформацію на пошту"
     response: "Добре, передам менеджеру, він надішле. Щоб надіслати саме по вашій темі, а не загальний прайс — підкажіть, що ви зазвичай друкуєте?"
-    exit: "Записати адресу та імʼя. Якщо специфіки не дають — C. Пообіцяне має бути надіслане менеджером, інакше це зіпсована обіцянка."
+    exit: "Записати адресу та імʼя, поставити задачу send_offer. Якщо специфіки не дають — C, задача все одно ставиться."
     source: agent-draft
 
   - trigger: "зараз нічого не потрібно"
@@ -163,6 +163,26 @@ crm:
   pipeline_id: null                   # TODO(BLOCKER)
   status_map: { A: null, B: null, C: null, D: null, X: null }
   field_map: {}                       # TODO(BLOCKER)
+
+  # [CLIENT] — агент не надсилає нічого сам, він ставить задачу менеджеру.
+  # Обіцянка, якої тут немає, не може бути дана в розмові.
+  task_map:
+    send_offer:
+      title: "Надіслати інформацію на пошту"
+      due_hours: 4
+      assignee: null                  # TODO(BLOCKER) — конкретний менеджер чи спільна черга
+      required_payload: ["email", "contact_name", "company", "що цікавить"]
+    prepare_quote:
+      title: "Прорахувати тираж"
+      due_hours: 24
+      assignee: null                  # TODO(BLOCKER)
+      required_payload: ["product_type", "quantity", "deadline", "artwork", "contact"]
+    call_back:
+      title: "Передзвонити клієнту"
+      due_hours: null                 # береться з домовленого часу
+      assignee: null                  # TODO(BLOCKER)
+      required_payload: ["contact_name", "phone", "домовлений час"]
+
   write_transcript: true
   write_recording_url: true
 
