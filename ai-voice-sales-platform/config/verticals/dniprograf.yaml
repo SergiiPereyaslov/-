@@ -170,17 +170,17 @@ crm:
     send_offer:
       title: "Надіслати інформацію на пошту"
       due_hours: 4
-      assignee: null                  # TODO(BLOCKER) — конкретний менеджер чи спільна черга
+      assignee: null                  # [CLIENT] — спільна черга, менеджери розбирають самі
       required_payload: ["email", "contact_name", "company", "що цікавить"]
     prepare_quote:
       title: "Прорахувати тираж"
       due_hours: 24
-      assignee: null                  # TODO(BLOCKER)
+      assignee: null                  # [CLIENT] — спільна черга
       required_payload: ["product_type", "quantity", "deadline", "artwork", "contact"]
     call_back:
       title: "Передзвонити клієнту"
       due_hours: null                 # береться з домовленого часу
-      assignee: null                  # TODO(BLOCKER)
+      assignee: null                  # [CLIENT] — спільна черга
       required_payload: ["contact_name", "phone", "домовлений час"]
 
   write_transcript: true

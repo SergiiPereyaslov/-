@@ -159,7 +159,7 @@
             "properties": {
               "title": { "type": "string" },
               "due_hours": { "type": "integer" },
-              "assignee": { "type": ["string", "null"] },
+              "assignee": { "type": ["string", "null"], "description": "null means the shared queue — unassigned, managers pick tasks up themselves. A shared queue has no owner, so queue depth and the age of the oldest unclaimed task must be monitored." },
               "required_payload": { "type": "array", "items": { "type": "string" } }
             }
           }

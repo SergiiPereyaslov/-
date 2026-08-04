@@ -175,7 +175,13 @@ stoppable in one action by someone who is not the engineer who built it.
 
 Track: latency · hallucination signals · interruption rate · cost per call ·
 token usage · success rate · conversion by tier · failed calls by cause ·
-answer rate · average handle time by state.
+answer rate · average handle time by state · **task queue depth and age of the
+oldest unclaimed task**.
+
+That last one matters because tasks go to a shared queue with no named owner.
+Work nobody is assigned is work nobody is late on, so the promise the agent
+made on the call decays silently. Queue age is the only signal that it is
+happening.
 
 **Exit criteria:** cost per call and lead tier mix are visible without manual
 computation; alerts fire on spend anomaly and on tier-mix drift.
