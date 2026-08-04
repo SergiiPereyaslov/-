@@ -15,7 +15,11 @@
 # boundary actually holds.
 
 vertical: smartecopack
-status: discovery-incomplete
+status: parked
+
+# PARKED by client decision — focus is on Дніпрограф alone until it works.
+# The file is retained deliberately: a second vertical skeleton is what keeps
+# the core/config boundary honest. It is not being developed.
 
 language:
   primary: uk-UA

@@ -121,7 +121,7 @@
           "trigger": { "type": "string" },
           "response": { "type": "string" },
           "exit": { "type": "string", "description": "How the agent leaves if the response does not land. Every objection needs an exit, not only a rebuttal." },
-          "source": { "enum": ["call-recording", "client-supplied", "TODO"] }
+          "source": { "enum": ["call-recording", "client-supplied", "agent-draft", "TODO"] }
         }
       }
     },
