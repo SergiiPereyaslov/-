@@ -12,10 +12,10 @@ P0 Discovery is substantially complete. The project is stopped at the P1 gate
 awaiting client answers to `artifacts/OPEN-QUESTIONS.md`.
 
 **Why stopped rather than proceeding to P2:** P2 does not strictly depend on
-the open questions, but Q1 (the true target audience for Дніпрограф) may change
-the lead-source architecture, and Q9 (manager availability signal) may
-constrain carrier selection. Researching a stack before those are settled risks
-selecting against the wrong requirements.
+most open questions, but Q11 (manager availability signal) may constrain carrier
+selection, and Q1–Q4 determine the conversation design that the stack must
+support. Researching a stack before those are settled risks selecting against
+the wrong requirements.
 
 ---
 

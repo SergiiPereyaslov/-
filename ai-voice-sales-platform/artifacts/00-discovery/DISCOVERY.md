@@ -51,9 +51,13 @@ This single fact drives the two-stage dialogue design in
 buy, so reaching the decision maker is a separate task from selling to them,
 with its own economics and its own time budget.
 
-**Open concern — see OPEN-QUESTIONS Q1.** For Дніпрограф the audience appears
-to be a closed, fully enumerable market rather than an open population of
-companies, which would make a КВЕД-filtered export the wrong instrument.
+**Verticals.** Дніпрограф is a printing house serving an open B2B market — any
+enterprise that uses printed materials. A КВЕД + region export is therefore the
+appropriate lead-source instrument, and list exhaustion is not a concern at 100
+dials/day. `[CLIENT]`
+
+Seed data present in this repository belongs to a separate project for a
+different company and must not be used to infer anything about either vertical.
 
 ---
 

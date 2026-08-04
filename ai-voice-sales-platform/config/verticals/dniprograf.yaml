@@ -1,14 +1,19 @@
 # Vertical: Дніпрограф
 # Conforms to config/schema.json
 #
-# PROVENANCE NOTICE
-# Fields marked [INFERRED] were derived from seed data in this repository's
-# invoicing system (seed/products.json, seed/institutions.json,
-# seed/companies.json) — i.e. from who Дніпрограф actually invoices today.
-# That is strong evidence, but it is evidence about the past, not a statement
-# from the client. Every [INFERRED] field must be confirmed before this vertical
-# leaves `status: discovery-incomplete`.
-# Fields marked TODO(BLOCKER) have no basis at all and must not be guessed.
+# Дніпрограф is a PRINTING HOUSE (друкарня): printing services and printed
+# products. Target audience is B2B — any enterprise that uses printed materials
+# in its operations. `[CLIENT]`
+#
+# NOTE: an earlier revision of this file inferred a different business from
+# seed data in this repository. That seed data belongs to a separate project
+# for a different company and has no bearing on this vertical. All inferences
+# drawn from it have been removed.
+#
+# Fields below are TODO(BLOCKER) because they are genuinely unknown. Per
+# core/epistemics.md they must not be filled with plausible guesses — a printing
+# house's script depends entirely on what it prints, to whom, and why a
+# prospect would leave their current printer.
 
 vertical: dniprograf
 status: discovery-incomplete
@@ -21,82 +26,44 @@ language:
 business:
   legal_name: "ТОВ «Дніпрограф»"
   short_name: "Дніпрограф"
-  edrpou: "21864213"
-  city: "м. Дніпро"
-
-  # [INFERRED] from seed/products.json — the full invoiced product list
-  what_we_sell: "друк документів про освіту для навчальних закладів"
-  products:
-    - "Студентський квиток"
-    - "Учнівський квиток"
-    - "Диплом бакалавра"
-    - "Диплом магістра"
-    - "Диплом спеціаліста"
-    - "Диплом молодшого спеціаліста"
-    - "Диплом доктора філософії"
-    - "Дублікати дипломів (усі рівні)"
-    - "Додаток до диплому"
-    - "Академічна довідка"
-    - "Залікова книжка"
-    - "Індивідуальний навчальний план"
-
+  edrpou: null                        # TODO(BLOCKER) — confirm from client, not from repo seed data
+  city: null                          # TODO(BLOCKER)
+  what_we_sell: "поліграфічні послуги та виготовлення поліграфічної продукції"
+  products: []                        # TODO(BLOCKER) — the actual product mix drives everything downstream
   avg_deal_uah: null                  # TODO(BLOCKER)
-
-  # [INFERRED] from the product mix — the academic calendar drives procurement.
-  # Outreach must lead procurement, not coincide with it. CONFIRM WITH CLIENT.
-  seasonality:
-    - period: "лютий–травень"
-      products: ["дипломи", "додатки до дипломів", "академічні довідки"]
-      outreach_lead_time_weeks: 8
-      note: "[INFERRED] підготовка до випуску"
-    - period: "червень–серпень"
-      products: ["студентські квитки", "залікові книжки", "індивідуальні навчальні плани"]
-      outreach_lead_time_weeks: 6
-      note: "[INFERRED] підготовка до нового набору"
+  min_order_uah: null                 # TODO(BLOCKER) — a floor here is a disqualifier in qualification
+  seasonality: []                     # TODO(BLOCKER)
 
 lead_source:
-  adapter: registry
-  # IMPORTANT — see artifacts/OPEN-QUESTIONS.md Q1.
-  # The audience appears to be a CLOSED, FULLY ENUMERABLE market (educational
-  # institutions), not an open population of companies. If so, filtering a
-  # YouControl export by КВЕД + region is the wrong instrument: the correct list
-  # is the register of educational institutions, and 238 of them are already
-  # present in seed/institutions.json.
+  adapter: youcontrol-export
+  # Open B2B market — a КВЕД + region export is the appropriate instrument here.
   filters:
-    institution_types: ["університет", "академія", "інститут", "фаховий коледж", "коледж"]
-  expected_list_size: null            # TODO(BLOCKER) — decides whether 100 dials/day exhausts the market
-  notes: "238 закладів уже є в seed/institutions.json цього репозиторію"
+    kved: []                          # TODO(BLOCKER)
+    region: []                        # TODO(BLOCKER) — constrained by delivery reach?
+  expected_list_size: null            # TODO(BLOCKER)
+  notes: "B2B, відкритий ринок. Вичерпання бази малоймовірне при 100 дзвінках/день."
 
 call_goal:
   primary: null                       # TODO(BLOCKER)
-  fallback: "зʼясувати, хто в закладі відповідає за замовлення документів про освіту, та як з ним звʼязатися"
+  fallback: "зʼясувати, хто відповідає за замовлення поліграфії, та як з ним звʼязатися"
   handoff_condition: null             # TODO(BLOCKER)
 
 decision_maker:
-  # [INFERRED] candidates only — these are plausible role names for a Ukrainian
-  # higher-education institution, NOT confirmed. The client knows who their
-  # managers actually end up speaking to. CONFIRM BEFORE USE.
-  roles:
-    - "навчальна частина / навчально-методичний відділ"
-    - "проректор з науково-педагогічної роботи"
-    - "відповідальний секретар приймальної комісії"
-    - "відділ закупівель / тендерний комітет"
+  roles: []                           # TODO(BLOCKER) — varies sharply with company size
   not_decision_maker:
-    - "приймальня ректора"
+    - "приймальня"
     - "охорона"
-    - "загальний відділ"
 
 gatekeeper:
-  reason_for_call: null               # TODO(BLOCKER) — one plain sentence, client's wording
-  target_roles:
-    - "той, хто замовляє бланки документів про освіту"
-  on_send_by_email: capture           # email channel disabled, but the address is a tier-C artefact
-  existing_supplier_probe: null       # TODO(BLOCKER)
-  identity_disclosure: null           # TODO(BLOCKER) — what the agent says when asked what it is
+  reason_for_call: null               # TODO(BLOCKER)
+  target_roles: []                    # TODO(BLOCKER)
+  on_send_by_email: capture
+  existing_supplier_probe: null       # TODO(BLOCKER) — the central objection in this market
+  identity_disclosure: null           # TODO(BLOCKER)
 
 qualification:
-  criteria: []                        # TODO(BLOCKER) — extract from manager call recordings
-  disqualifiers: []
+  criteria: []                        # TODO(BLOCKER)
+  disqualifiers: []                   # TODO(BLOCKER)
 
 objections: []                        # TODO(BLOCKER) — source: call-recording, once supplied
 
@@ -119,7 +86,7 @@ scoring:
 kpi:
   target_answer_rate: 0.90
   target_ab_lead_rate: 0.025
-  target_c_capture_rate: null         # unmeasured — this is the upside to establish in the pilot
+  target_c_capture_rate: null         # unmeasured — establish in pilot
   max_cost_per_lead_usd: 5.00
   max_avg_handle_time_seconds: 90
 
@@ -128,9 +95,9 @@ channels:
   email: { enabled: false, provider: null, templates_path: null }
 
 handoff:
-  enabled: false                      # cannot enable until managers/endpoints supplied
+  enabled: false
   managers: []                        # TODO(BLOCKER)
-  availability_source: null           # TODO(BLOCKER) — largest design impact, must be settled in P2
+  availability_source: null           # TODO(BLOCKER)
   bridge_timeout_seconds: 20
   announcement: null                  # TODO(BLOCKER)
   fallback: callback
