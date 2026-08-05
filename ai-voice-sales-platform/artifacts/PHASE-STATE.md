@@ -6,16 +6,23 @@ required signature from `core/roles.md` is recorded here.
 
 ---
 
-## Current phase: **P1 — Questions gate**
+## Current phase: **P1 closed → P2 Market Research is next**
 
-P0 Discovery is substantially complete. The project is stopped at the P1 gate
-awaiting client answers to `artifacts/OPEN-QUESTIONS.md`.
+P0 Discovery is complete for the MVP. P1 cleared: the client answered every
+question that gated conversation design, and deferred the rest deliberately.
 
-**Why stopped rather than proceeding to P2:** P2 does not strictly depend on
-most open questions, but Q11 (manager availability signal) may constrain carrier
-selection, and Q1–Q4 determine the conversation design that the stack must
-support. Researching a stack before those are settled risks selecting against
-the wrong requirements.
+**Scope narrowed by client direction** — see `artifacts/MVP-SCOPE.md`. Build the
+dialer first: numbers in, calls out, scored leads back. CRM integration, warm
+transfer, email and the second vertical are all deferred. Whether warm transfer
+is worth building at all is now research question R6, not an assumption.
+
+**Next action:** run P2. The dialer cannot be built without choosing what dials,
+listens, thinks and speaks.
+
+**Constraint discovered:** this environment blocks `curl` and WebFetch to vendor
+hosts; only WebSearch works. P2 therefore proceeds on search-sourced figures,
+labelled `[SEARCH]`, with direct vendor confirmation required before committing.
+See the research brief.
 
 ---
 

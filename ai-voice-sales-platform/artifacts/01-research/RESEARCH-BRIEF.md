@@ -9,6 +9,27 @@ violate `core/epistemics.md` at the exact point where the rule matters most —
 vendor pricing and model lineups change monthly, so a recalled figure is a
 fabrication even when it happens to be close.
 
+### Access reality in this environment — measured 2026-08
+
+| Channel | Status |
+|---------|--------|
+| `curl` to vendor hosts | **blocked** — gateway rejects CONNECT for every vendor tested |
+| WebFetch on vendor pages | **blocked** — 403 |
+| WebSearch | **works**, returns figures with source URLs |
+
+Consequence: research proceeds, but figures come from **search results citing
+vendor pages**, not from reading those pages directly. This is weaker evidence
+than a primary-source read and must be labelled as such.
+
+Confidence labels for this phase:
+- `[SEARCH: <url>, <date>]` — figure obtained via search citing that page;
+  good enough to shortlist, **not** good enough to sign a contract on
+- `[VERIFIED: <url>, <date>]` — page read directly (currently unavailable)
+
+Any stack shortlisted on `[SEARCH]` evidence alone carries a mandatory
+follow-up: confirm pricing directly with the vendor before committing. State
+this in the shortlist rather than quietly treating search figures as verified.
+
 ---
 
 ## The question P2 must answer
@@ -61,6 +82,34 @@ Assumption A-004 holds that a cheap fast model can handle gatekeeper
 navigation. Establish which models are candidates, their streaming latency and
 their per-token cost. If no cheap tier is meaningfully cheaper for this
 workload, the primary cost lever is gone and P3 must be re-planned.
+
+### R6 — Is immediate warm transfer worth building at all?
+
+`[CLIENT]` asked this directly: research whether transferring to a manager
+mid-call is worth it, rather than assuming it.
+
+The question is not technical feasibility — most platforms support transfer.
+It is whether it pays here, given this project's specific numbers: 2.5 leads a
+day, a shared task queue with no named owner, and managers who are not sitting
+waiting for calls.
+
+Establish:
+1. What transfer costs to build and operate: availability signalling, bridge
+   handling, the failure path when nobody answers. Note that a live PBX
+   availability signal may **constrain carrier choice**, so this interacts with
+   R1 and R2 — it cannot be settled after the stack is picked.
+2. What the alternative costs: a `call_back` task in the queue, actioned by a
+   manager later.
+3. Evidence on whether immediate transfer converts materially better than a
+   prompt callback in outbound B2B. Look for published data; where none exists,
+   say so rather than asserting a number.
+4. The failure mode: a botched transfer strands the single most valuable
+   outcome the system produces. At 2.5 leads a day, losing one to a failed
+   bridge is a large proportional loss.
+
+**Default position pending evidence:** callback via task queue, since it is
+already built into the promise-to-task mechanism, has no bridge to fail, and
+imposes no constraint on carrier selection. Transfer must earn its place.
 
 ### R5 — Fixed versus variable cost at this volume
 
