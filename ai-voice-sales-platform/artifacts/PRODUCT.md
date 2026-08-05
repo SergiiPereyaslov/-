@@ -156,6 +156,82 @@ purpose, not of build.
 
 ---
 
+## KeyCall's actual price, and what it forces
+
+`[CLIENT]` KeyCall charges **4.50 ₴ per connected conversation** — defined as a
+dialogue lasting more than 10 seconds. Not per lead. The customer pays for the
+connection whatever comes of it.
+
+At ₴44.78/USD that is **$0.100 per answered call**, or ₴405 per 100 dials at a
+90% answer rate.
+
+### The uncomfortable comparison
+
+| | Per answered call |
+|---|---|
+| KeyCall **price to the customer** | **$0.100** |
+| Our **cost** at the planning gate ($0.13/min × 1.5 min) | $0.195 |
+
+**Their selling price is roughly half our cost.** A scripted robot on Google
+Speech is simply a cheaper machine than a live model with premium synthesis,
+and no amount of engineering closes a 2× gap of that kind.
+
+**Conclusion: per-connection pricing is closed to us permanently.** Not
+difficult — closed. Any plan that involves charging per dialogue puts us above
+a competitor's price while offering a product the buyer cannot yet evaluate.
+
+That leaves per-lead pricing as the only viable model, which is what was
+chosen. It also means the entire business case rests on a single proposition:
+
+> A conversational agent converts enough better than a scripted one to be worth
+> several times the price per contact.
+
+### The number that decides everything — and we do not have it
+
+**What does a scripted robot actually convert at?** Everything follows from it,
+and inventing it would be worse than useless.
+
+The arithmetic, for whichever value turns out to be true:
+
+- KeyCall's customer pays ₴405 per 100 dials regardless of outcome.
+- At 1% conversion that is ₴405 per lead. At 0.5%, ₴810. At 2%, ₴203.
+- Our cost per lead at 2.5% conversion sits between ₴113 and ₴459 depending on
+  where the stack and handle time land (table below).
+
+So the wedge exists only if a scripted robot converts materially worse than
+2.5%. If it converts at 2%, there is no business here.
+
+**How to find out cheaply — and this is worth doing before building further.**
+Дніпрограф is tenant #1 and the batch-tagging mechanism already exists. Run
+KeyCall on one batch and our agent on another from the same КВЕД segment, and
+compare. A hundred dials through KeyCall costs about ₴405. That buys a real
+competitor conversion number instead of a guess, and it is the cheapest
+decision-grade evidence available anywhere in this project.
+
+### Cost per lead against the levers
+
+At 2.5% conversion, 90 answered calls per 100 dials:
+
+| Stack cost | 1.0 min avg | 1.5 min avg |
+|---|---|---|
+| $0.19/min | $6.84 (₴306) | $10.26 (₴459) |
+| $0.13/min | $4.68 (₴210) | $7.02 (₴314) |
+| **$0.10/min** | **$3.60 (₴161)** | $5.40 (₴242) |
+| $0.07/min | $2.52 (₴113) | $3.78 (₴169) |
+
+### The target this sets
+
+Two levers, multiplicative:
+
+**Cost per minute ≤ $0.10** and **average handle time ≤ 1 minute** puts our cost
+per answered call at $0.100 — level with KeyCall's *selling* price. At that
+point we buy a conversation for what they charge for one, and sell the outcome
+rather than the connection.
+
+Handle time is the lever we fully control, and it is probably better than
+previously assumed — see A-001, revised. Cost per minute is what Stage 2 is
+for.
+
 ## Open questions this raises
 
 1. **What do we charge per lead?** Needs the market rate and what KeyCall

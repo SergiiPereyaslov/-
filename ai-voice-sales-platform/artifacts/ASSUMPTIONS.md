@@ -10,18 +10,40 @@ this?* → RESEARCH.
 
 ---
 
-### A-001 — Average answered call is ~90 seconds
+### A-001 — Average answered call is ~60 seconds *(revised down from 90 s)*
 
-**Assumption:** mean handle time across all answered calls is approximately 90
-seconds, dominated by short gatekeeper conversations.
-**Rationale:** ~97% of answered calls never reach a decision maker and are
-capped at 45 s in the gatekeeper state; the small remainder run longer. The
-figure sets the $0.093/min planning target in `core/constraints.md`.
-**Impact if wrong:** the entire cost-per-minute gate shifts. At 2.5 min average
-the allowed rate falls to $0.056/min, which materially narrows vendor options.
+**Assumption:** mean handle time across all answered calls is approximately 60
+seconds.
+
+**Revision.** The original 90-second figure was set before the state time
+budgets existed. Working it through against the budgets now in
+`config/platform.yaml` gives a lower number:
+
+```
+97.5% of answered calls never reach a decision maker:
+  identify 8 s + gatekeeper ~30 s + close 10 s          ≈ 50 s
+ 2.5% reach a decision maker:
+  identify 8 + gatekeeper 30 + DM 120 + callback 25 + close 10  ≈ 190 s
+
+weighted:  0.975 × 50 + 0.025 × 190                     ≈ 54 s
+```
+
+Rounded to 60 s to leave headroom for ring time and imperfect adherence.
+
+**Why it matters more than it used to.** Under per-lead pricing, handle time
+multiplies directly into cost per lead, and it is the lever we fully control —
+unlike the price of a vendor's minute. At $0.10/min, 1.0 minute average puts
+cost per answered call at $0.100, level with KeyCall's *selling* price. At 1.5
+minutes it is $0.150 and the competitive position weakens sharply.
+
+**Impact if wrong:** at a true 1.5 min average, cost per lead rises from ~₴161
+to ~₴242 at the same stack cost. Not fatal, but it removes the margin that
+makes the business model work.
+
 **Invalidated by:** measured handle-time distribution from the first 200 pilot
-calls.
-**Review at:** P8 Optimization, and immediately after pilot.
+calls, or a gatekeeper cap that proves unenforceable in real conversation.
+
+**Review at:** P8, and immediately after the first pilot batch.
 
 ---
 

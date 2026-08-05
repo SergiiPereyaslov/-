@@ -107,7 +107,9 @@ time_budgets_seconds:
   callback:          { soft: 25,  hard: 45 }
   voicemail:         { soft: 10,  hard: 20 }
   close:             { soft: 10,  hard: 15 }
-  target_avg_answered_call: 90
+  # Revised from 90 s — see ASSUMPTIONS A-001. Handle time multiplies directly
+  # into cost per lead and is the lever we fully control, unlike vendor pricing.
+  target_avg_answered_call: 60
 
 # ---------------------------------------------------------------------------
 # Retry policy by dial outcome
