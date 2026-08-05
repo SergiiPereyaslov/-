@@ -1,4 +1,16 @@
-# MVP Scope — «Дзвонилка»
+# MVP Scope — pilot for tenant #1
+
+> **Re-baselined.** The project is now a service sold to businesses — see
+> `artifacts/PRODUCT.md`. Дніпрограф is customer number one and the pilot.
+>
+> The MVP itself is unchanged: numbers in, calls out, scored leads back. What
+> changed is its purpose. It is no longer an internal tool but the proof that
+> the service works on one real business before it is sold to a second.
+>
+> One addition follows from the new model: **per-tenant cost attribution must
+> be built in from the start.** Under per-lead pricing we carry the cost of
+> every failed call, so knowing which client is unprofitable is not reporting —
+> it is the business. Retrofitting it means never knowing.
 
 Client direction: build the dialer first. One thing, working end to end, before
 anything is integrated around it.

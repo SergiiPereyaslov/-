@@ -83,6 +83,27 @@ navigation. Establish which models are candidates, their streaming latency and
 their per-token cost. If no cheap tier is meaningfully cheaper for this
 workload, the primary cost lever is gone and P3 must be re-planned.
 
+### R7 — What does the market pay for a cold-call lead?
+
+Added by the product re-baseline (`artifacts/PRODUCT.md`). Monetisation is per
+successful conversation, so the gate now needs an **upper** reference as well as
+a lower one: without a price, margin cannot be computed.
+
+Establish:
+1. What KeyCall and comparable Ukrainian services charge per successful
+   conversation or lead. Published rates if any; otherwise the shape of the
+   pricing, e.g. per-lead vs per-brief vs minimum campaign.
+2. Whether they charge a setup fee, a minimum campaign size, or a prepayment —
+   this is how a per-lead service protects itself from a client whose offer does
+   not convert, and we need the same protection.
+3. What comparable services charge outside Ukraine, as a ceiling reference for
+   a higher-quality product.
+
+**Note the constraint this sits under.** Our cost per lead for Дніпрограф is
+about $6.98 at present figures. If the market rate is near that, the model does
+not work at 2.5% conversion and either the price, the conversion, or the cost
+has to move. Establish the number before designing around it.
+
 ### R6 — Is immediate warm transfer worth building at all?
 
 `[CLIENT]` asked this directly: research whether transferring to a manager

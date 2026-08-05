@@ -11,10 +11,20 @@ required signature from `core/roles.md` is recorded here.
 P0 Discovery is complete for the MVP. P1 cleared: the client answered every
 question that gated conversation design, and deferred the rest deliberately.
 
-**Scope narrowed by client direction** — see `artifacts/MVP-SCOPE.md`. Build the
-dialer first: numbers in, calls out, scored leads back. CRM integration, warm
-transfer, email and the second vertical are all deferred. Whether warm transfer
-is worth building at all is now research question R6, not an assumption.
+**RE-BASELINED — read `artifacts/PRODUCT.md` first.** The project is a service
+sold to businesses per successful conversation, positioned against KeyCall on
+conversation quality rather than volume. Дніпрограф is tenant #1 and the pilot.
+Delivery is agency-model: we configure each client's agent.
+
+The build does not change; its purpose does. Consequences that do change the
+work: per-tenant cost attribution from day one, and a Stage 2 gate that
+**tightens** rather than relaxes, because under per-lead pricing cost is not
+passed through to the customer.
+
+**Scope for the pilot** — see `artifacts/MVP-SCOPE.md`. Numbers in, calls out,
+scored leads back. CRM integration, warm transfer, email and the second vertical
+are deferred. Whether warm transfer is worth building at all is research
+question R6, not an assumption.
 
 **P2 started.** Preliminary figures gathered via search — see
 `01-research/FINDINGS.md`. A manual verification checklist has been handed to

@@ -57,6 +57,34 @@ Between $0.13 and $0.19 an option is **conditional**: viable only if average
 handle time is held under the corresponding row above, and that must then
 become an asserted test, not an intention.
 
+### Second lens: this is now a service, and the gate does not relax
+
+The project became a service sold per successful conversation
+(`artifacts/PRODUCT.md`). That changes what these numbers mean without changing
+the numbers themselves.
+
+Under per-minute billing, cost of goods is passed through and an expensive
+stack is survivable. **Under per-lead billing nothing is passed through** — we
+pay for every failed call and are paid only for the successful ones, so cost
+per minute lands directly on margin.
+
+```
+cost per lead = (dials × cost per dial) ÷ conversion rate
+margin        = price per lead − cost per lead
+```
+
+Дніпрограф worked through: 100 dials, 90 answered, 2.5 leads at $0.194 per
+answered call → **$6.98 of cost per lead**, against a $7.00 ceiling. Break-even
+as an internal tool; as a service, that is the whole revenue with nothing left.
+
+So the gate below is not a budget any more — it is the floor of a margin. Treat
+every threshold as tighter than it was, not looser.
+
+**Second consequence:** the funnel figures here are *tenant #1's*. Another
+client converts differently, and under per-lead pricing that variance is our
+risk, not theirs. Every tenant needs its own funnel measured, and its own
+economics evaluated separately, before it is priced.
+
 ### Why the ceiling moved
 
 $3 → $5 → $7, each raised by the client as the economics became clearer. The
