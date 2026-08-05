@@ -17,9 +17,9 @@ is being sold changes; the shape of a successful ending does not.
 
 | Exit | What is agreed | The value that must be captured |
 |---|---|---|
-| `book_meeting` | менеджер поговорить із лідом | **time** |
-| `send_offer` | менеджер надішле пропозицію | **email** |
-| `call_back` | передзвонити пізніше | **time** |
+| `book_meeting` | менеджер поговорить із лідом | **date + time** |
+| `send_offer` | менеджер надішле пропозицію | **consent + channel** (number already known) |
+| `call_back` | передзвонити пізніше | **date + time** |
 
 Read the right-hand column. Three different conversations, one mechanism:
 
@@ -43,25 +43,82 @@ whether a lead is passed on. The commitment does.
 
 ## The hard part is not the selling
 
-All three exits terminate in capturing **one precise value over an 8 kHz line**:
-a time, or an email address.
+All three exits terminate in capturing **one precise value over an 8 kHz line**.
+`AUDIO-ANALYSIS.md` established the channel is narrowband telephony, so capture
+accuracy — not persuasion — is the critical path.
 
-`AUDIO-ANALYSIS.md` established the channel is narrowband telephony. Against
-that, the riskiest moments of the entire product are:
+### `send_offer`: the messenger removes the hardest problem entirely
 
-- **an email spelled aloud in Ukrainian** — «ес-ем-ай-ті собака…», letter by
-  letter, latin letters named in Ukrainian, over 8 kHz. This is the single
-  most error-prone operation in the system.
-- **a time** — «у вівторок після обіду», «десь після третьої», «краще зранку
-  в четвер». Relative, vague, and requiring a calendar to resolve.
+`[CLIENT 2026-08-05]` «можна замінити пошту на телеграм/вайбер/ватсап»
 
-An agent that persuades beautifully and then writes down the wrong address has
-produced nothing. Worse than nothing: a manager spends time on a dead task and
-the lead concludes nobody called back.
+Correct, and the gain is larger than it looks. An email spelled aloud — latin
+letters named in Ukrainian over 8 kHz — was the single most error-prone
+operation in the product. A messenger deletes it, because:
 
-**Therefore: capture accuracy is the critical path, not persuasion.** It is
-where the engineering effort goes, and it is why the STT test scores digits and
-spelling above everything else (`STT-TEST.md`).
+> **We already have the number. We just dialled it.**
+
+The capture collapses from a spelled string to a yes/no:
+
+```
+   «Скину вам у Вайбер на цей номер, добре?»            → boolean
+```
+
+Nothing to mis-hear. This is the largest single reduction in technical risk
+available to us, and it came from the client.
+
+**Two caveats that shape the implementation.**
+
+1. **Telegram cannot be pushed to.** A Telegram bot cannot start a conversation
+   — the user must message it first. That is a platform anti-spam rule, not
+   something to engineer around. Telegram is therefore an *inbound* channel
+   only: the agent can invite («напишіть нам у телеграм»), which reverses the
+   direction and loses most leads. Do not offer it as the primary.
+   `[SEARCH: core.telegram.org/bots/faq, 2026-08-05]`
+
+2. **WhatsApp needs opt-in and pre-approved templates** for business-initiated
+   messages, and cold sends risk the number being blocked. **Viber Business
+   Messages** is the practical Ukrainian channel, sold with automatic **SMS
+   fallback** when Viber does not deliver — TurboSMS, AlphaSMS and eSputnik all
+   offer it behind one API. Indicative: ~0.63 UAH per Viber transactional
+   message, ~0.98 UAH per SMS.
+   `[SEARCH: turbosms.ua/price, 2026-08-05]`
+
+**MVP decision:** the agent captures *consent + channel*; the **manager sends**,
+exactly as the existing `[CLIENT]` rule requires — «агент не надсилає нічого
+сам, він ставить задачу менеджеру». Automated sending needs an approved sender
+and message templates, which is a separate integration and does not belong in
+the pilot.
+
+**When a different number is needed** — the dialled line is a switchboard, or
+the decision maker is on a mobile — we fall back to capturing digits. Still far
+safer than latin letters, and the read-back rule below applies. Email stays
+available for the minority who ask for it, but it is no longer the default.
+
+### `book_meeting` / `call_back`: a concrete time, never a vague one
+
+`[CLIENT 2026-08-05]` «треба щоб агент фіксував конкретний час»
+
+Accepted as a hard rule. «Після обіду», «десь після третьої», «краще зранку
+десь у четвер» are **not** valid captures and must not close a call.
+
+The mechanism is to **propose, not parse**. Offering two concrete slots is both
+more reliable technically and better salesmanship than an open question:
+
+```
+   «Вівторок о 14:00 чи о 16:00 — як вам зручніше?»
+```
+
+Rules:
+
+- the result must resolve to a **date + time** in `Europe/Kyiv`
+- it must fall inside the configured calling window (`platform.yaml`), so the
+  agent never books a slot the managers do not work
+- a vague answer gets one narrowing attempt, then a proposed slot
+- if the lead still will not name a time, this is **not** `book_meeting`. It is
+  tier B with a reason code — interest without a commitment
+
+An agent that persuades beautifully and then records «якось на тижні» has
+produced a task nobody can action.
 
 ---
 
@@ -72,7 +129,7 @@ repeats the captured value and waits for confirmation.
 
 ```
    «Записую: четвер, друга година дня, і я передам Олені Петрівні. Все вірно?»
-   «Пошта — office@dniprograf.ua, я правильно почув?»
+   «Скидаю у Вайбер на цей номер, 067-123-45-67 — правильно?»
 ```
 
 Three reasons this is a core rule rather than a nice touch:

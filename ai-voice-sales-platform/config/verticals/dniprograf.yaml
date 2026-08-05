@@ -94,13 +94,13 @@ call_goal:
     - id: book_meeting
       desc: "домовитись про час, коли з лідом поговорить менеджер"
     - id: send_offer
-      desc: "домовитись, що менеджер надішле пропозицію — потрібна пошта"
+      desc: "домовитись, що менеджер надішле пропозицію у месенджер на цей номер"
     - id: call_back
       desc: "зафіксувати, коли передзвонити (ліду зараз незручно)"
   fallback: "зʼясувати, хто відповідає за замовлення поліграфії, та як з ним звʼязатися"
 
   # Умова передачі — зобовʼязання, а не зібрані поля.
-  handoff_condition: "ОПР погодився на один із трьох exits І названо час або пошту"
+  handoff_condition: "ОПР погодився на один із трьох exits І зафіксовано конкретний час АБО згоду на месенджер"
 
 decision_maker:
   roles:                              # [CLIENT]
@@ -212,10 +212,15 @@ crm:
   # Обіцянка, якої тут немає, не може бути дана в розмові.
   task_map:
     send_offer:
-      title: "Надіслати інформацію на пошту"
+      # [CLIENT 2026-08-05] пошта → месенджер. Номер уже відомий — ми його
+      # набирали, тому захоплювати нічого не треба, лише згоду.
+      # Telegram НЕ пропонувати первинним: бот не може написати першим.
+      title: "Надіслати пропозицію в месенджер"
       due_hours: 4
       assignee: null                  # [CLIENT] — спільна черга, менеджери розбирають самі
-      required_payload: ["email", "contact_name", "company", "що цікавить"]
+      channel_preference: ["viber", "whatsapp", "sms", "email"]
+      required_payload: ["contact_name", "company", "channel", "що цікавить"]
+      alt_number_if_different: true   # цифри, з обов'язковим повтором уголос
     book_meeting:
       # [CLIENT 2026-08-05] замінив prepare_quote. Агент не ставить задачу
       # «прорахувати» — він ставить задачу «поговорити», з часом.
@@ -224,12 +229,14 @@ crm:
       title: "Зустріч / дзвінок менеджера з лідом"
       due_hours: null                 # береться з домовленого часу
       assignee: null                  # [CLIENT] — спільна черга
-      required_payload: ["contact_name", "phone", "company", "домовлений час"]
+      # конкретні дата+час у Europe/Kyiv, у межах вікна обдзвону.
+      # «після обіду» / «якось на тижні» — НЕ приймається, це tier B.
+      required_payload: ["contact_name", "phone", "company", "datetime_exact"]
     call_back:
       title: "Передзвонити клієнту"
       due_hours: null                 # береться з домовленого часу
       assignee: null                  # [CLIENT] — спільна черга
-      required_payload: ["contact_name", "phone", "домовлений час"]
+      required_payload: ["contact_name", "phone", "datetime_exact"]
 
   write_transcript: true
   write_recording_url: true
