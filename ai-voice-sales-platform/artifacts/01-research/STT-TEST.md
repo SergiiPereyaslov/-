@@ -83,6 +83,7 @@ Not word error rate. Four things that decide whether a lead is usable:
 | # | Criterion | Why it decides the deal |
 |---|---|---|
 | **1** | **Цифри** — тираж, кількість, дати | «п'ятсот» heard as «п'ять тисяч» produces a wrong quote, discovered only after a manager has called. This is the single most expensive error class. |
+| **1b** | **Пошта по літерах** — an email address spelled aloud | Promoted to joint-first by `core/conversation/commitment.md`: `send_offer` is one of only three ways a call can succeed, and it lives or dies on this. Latin letters named in Ukrainian over 8 kHz is the hardest capture in the product. |
 | **2** | **Суржик** — does it break when the speaker mixes UK/RU mid-sentence | Half of real business calls. No vendor publishes this. |
 | **3** | **Терміни** — офсет, ламінація, тираж, макет, візитки, банер | Domain vocabulary. If these come out as noise, qualification is impossible. |
 | **4** | **Деградація** — how much worse on the three noisy files vs the clean two | A model that only works on good lines is not usable on a cold base. |
@@ -92,8 +93,8 @@ Not word error rate. Four things that decide whether a lead is usable:
 Per vendor, per criterion: **2** = fine, **1** = usable with errors, **0** =
 broken.
 
-| Vendor | Цифри | Суржик | Терміни | Деградація | Σ /8 |
-|---|---|---|---|---|---|
+| Vendor | Цифри | Пошта | Суржик | Терміни | Деградація | Σ /10 |
+|---|---|---|---|---|---|---|
 | Soniox | | | | | |
 | ElevenLabs | | | | | |
 | Gladia | | | | | |
@@ -103,8 +104,9 @@ broken.
 **Decision rule, set before seeing results so it cannot be rationalised
 afterwards:**
 
-- **Цифри = 0 disqualifies outright**, whatever the total. A model that
-  mis-hears quantities cannot produce a quote, and that is the product.
+- **Цифри або Пошта = 0 disqualifies outright**, whatever the total. Two of
+  the three ways a call can succeed end in capturing a time or an address; a
+  model that loses either cannot close a call.
 - Otherwise highest Σ wins.
 - Ties break toward the one that degrades least (criterion 4), not the one that
   scores best on the clean files.

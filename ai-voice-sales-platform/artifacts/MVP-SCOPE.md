@@ -44,14 +44,19 @@ anything is integrated around it.
 2. **Dial** — outbound call within the configured window, retry by outcome.
 3. **Converse** — the two-stage dialogue: identify who answered → gatekeeper →
    decision maker. Barge-in, silence handling, voicemail detection.
-4. **Qualify** — the four quote parameters: product, quantity, deadline,
-   artwork.
-5. **Produce a lead** — transcript, summary, tier A/B/C/D/X, decision-maker
-   contact, qualification answers, cost. Stored in the system's own store and
-   exportable.
+4. **Secure a commitment** — `[CLIENT 2026-08-05]` one of three exits, each
+   ending in a captured value: meeting (time), offer (email), callback (time).
+   The agent does not compute quotes and does not collect a spec as a
+   condition. Qualification questions enrich the lead; they no longer gate it.
+   See `core/conversation/commitment.md`.
+5. **Produce a lead** — transcript, summary, tier A/B/C/D/X, the exit and its
+   captured value, decision-maker contact, whatever qualification answers were
+   gathered, cost. Stored in the system's own store and exportable.
+   Non-successes carry a **reason code**, not a bare «не цікаво».
 
 That is the whole MVP. It is a cold-calling manager: it dials, it talks, it
-qualifies, it hands back a scored lead.
+turns a cold lead into a warm one, and it hands back a commitment with a date
+on it.
 
 ---
 
