@@ -36,6 +36,19 @@ recognition, not price. Ukrainian TTS is confirmed available at real-time
 latency; Ukrainian STT in a *conversational* model is not yet confirmed
 anywhere.
 
+**P2 cannot be closed by desk research.** No vendor, and no independent
+benchmark, publishes Ukrainian telephony figures — the Open ASR Leaderboard's
+multilingual track excludes Ukrainian entirely. P2 now closes on a **test
+against real recordings**, not on vendor claims. Sequencing in
+`artifacts/PLAN.md`; vendor directory in `01-research/VENDOR-LINKS.md`.
+
+**Client supplied their KeyCall account, 2026-08-05.** Two years of real
+funnel data on the real audience — see `01-research/KEYCALL-BASELINE.md`. It
+replaces the estimated funnel, gives the first real market price per lead
+($2.63, assumption flagged), and confirms end-of-turn detection as the
+competitor's failure mode in the client's own words. The account is dormant:
+zero calls this month, script untouched since Aug 2024.
+
 **Constraint discovered:** this environment blocks `curl` and WebFetch to vendor
 hosts; only WebSearch works. P2 therefore proceeds on search-sourced figures,
 labelled `[SEARCH]`, with direct vendor confirmation required before committing.
