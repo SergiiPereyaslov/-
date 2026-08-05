@@ -138,3 +138,64 @@ Where a claim is retained with less than full confidence, label it inline:
 - `[UNVERIFIED]` — must not appear in a signed-off artifact
 
 An artifact containing `[UNVERIFIED]` cannot pass a gate.
+
+---
+
+## Communication rule: never leave an evaluation implied
+
+`[CLIENT 2026-08-05]` «це погано чи добре. Завжди пояснюй»
+
+Raised against a real lapse. Reporting the messenger decision, the agent wrote:
+
+> «Я планував зміцнювати найслабше місце — ви його прибрали.»
+
+True, and useless as written. It reads as praise, as self-criticism, or as a
+neutral remark depending on the reader, and the client had to ask which was
+meant.
+
+**Rule.** Any statement carrying an evaluation must say, in the same breath,
+**whether it is good or bad, and for whom**. This applies to:
+
+- comparisons between what was planned and what happened
+- notes about who found a problem or a solution
+- schedule and estimate changes
+- anything phrased as an observation but functioning as a judgement
+
+A rhetorical flourish that leaves the reader guessing is a defect, not style.
+It costs a round trip and, worse, invites the client to assume the least
+flattering reading.
+
+---
+
+## Design rule: question the requirement before engineering around it
+
+The same episode produced a lesson worth keeping, because the failure was real
+even though the outcome was good.
+
+The agent identified email capture over 8 kHz as the riskiest operation in the
+product and moved directly to mitigation: read-back, a spelling alphabet,
+confidence thresholds. All sound. All aimed at the wrong question.
+
+The client asked the question one level up — **does it have to be email at
+all?** — and the answer removed the operation entirely, because the phone
+number was already known.
+
+> **Mitigating a problem is worth less than deleting it. Before designing a
+> defence, ask whether the requirement that creates the risk is real.**
+
+This failure mode is specific and recurring: efficiently solving a problem that
+did not need to exist. It is invisible from the inside, because the mitigation
+work looks competent and progresses normally.
+
+Practical trigger — whenever something is identified as *the hardest part* of a
+design, that is the signal to challenge the requirement behind it before
+building the defence, not after.
+
+### Corollary about where good ideas come from
+
+The client saw it because they know how their customers actually communicate;
+the agent did not because it was reasoning inside the frame it had been given.
+That division is expected and healthy. **If the agent were producing all the
+good ideas, that would be the warning sign** — it would mean the design was
+being driven by what is technically convenient rather than by how the business
+works.
