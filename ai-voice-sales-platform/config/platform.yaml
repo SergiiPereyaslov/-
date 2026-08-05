@@ -116,11 +116,43 @@ retry:
   no_answer:      { attempts: 3, backoff_hours: [4, 24, 72], vary_time_of_day: true }
   busy:           { attempts: 3, backoff_hours: [1, 4, 24] }
   voicemail:      { attempts: 2, backoff_hours: [24, 96] }
-  carrier_failure:{ attempts: 2, backoff_hours: [1, 24] }
+  carrier_failure: { attempts: 2, backoff_hours: [1, 24] }
   invalid_number: { attempts: 0 }
   soft_refusal:   { attempts: 1, backoff_hours: [2160] }   # ~90 days
   hard_refusal:   { attempts: 0 }
   hostile:        { attempts: 0, suppress: true }
+
+# ---------------------------------------------------------------------------
+# Import — lists arrive pre-filtered; the system tags and measures them.
+# ---------------------------------------------------------------------------
+import:
+  # Every import becomes a batch. Every call and every lead carries its batch id,
+  # so conversion can be compared between segments. This is what makes segment
+  # testing (e.g. comparing КВЕД groups) possible at all — without it there are
+  # only aggregate numbers and no way to tell which segment produced them.
+  batch:
+    required_metadata:
+      - batch_id
+      - label            # what is being tested, e.g. the КВЕД group
+      - source_file
+      - imported_at
+      - row_count
+    propagate_to: [call_record, lead_record, cost_telemetry]
+
+  # Reported per batch, not only in aggregate.
+  per_batch_metrics:
+    - answer_rate
+    - reached_decision_maker_rate
+    - ab_lead_rate
+    - c_capture_rate
+    - cost_per_answered_call
+    - cost_per_ab_lead
+
+  validation:
+    normalise_phone_to: e164
+    drop_invalid_numbers: true
+    dedupe_within_batch: true
+    dedupe_against_previous_batches: true
 
 # ---------------------------------------------------------------------------
 # Suppression — survives list re-import. Security veto condition if it does not.

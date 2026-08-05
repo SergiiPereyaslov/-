@@ -13,7 +13,7 @@
       "description": "Stable identifier. Used in telemetry, CRM tagging and file paths."
     },
     "status": {
-      "enum": ["draft", "discovery-incomplete", "ready", "live", "paused"],
+      "enum": ["draft", "discovery-incomplete", "parked", "ready", "live", "paused"],
       "description": "A vertical may not go live while any TODO(BLOCKER) remains in this file."
     },
     "language": {
@@ -58,6 +58,8 @@
       "properties": {
         "adapter": { "enum": ["youcontrol-export", "web-scraper", "manual-csv", "registry"] },
         "filters": { "type": "object", "additionalProperties": true },
+        "pre_filtered": { "type": "boolean", "description": "True when the list arrives already filtered upstream. The system then applies no segment filtering of its own." },
+        "batch_tagging": { "enum": ["required", "optional"], "description": "Every import is tagged as a batch and every call and lead carries its batch id. Required whenever segments are being compared — without it, per-segment conversion cannot be measured and segment testing is impossible." },
         "expected_list_size": { "type": ["integer", "null"], "description": "Drives list-exhaustion planning. Null means unmeasured." },
         "notes": { "type": "string" }
       }

@@ -46,15 +46,35 @@ business:
 
   delivery: "Нова пошта по всій Україні"   # [WEB] — supports nationwide calling
 
-  avg_deal_uah: null                  # TODO(BLOCKER)
+  # [CLIENT] — 3400 грн за період 01.01.2026–04.08.2026.
+  # ВАЖЛИВО: це змішаний показник, у якому переважає B2C. Цільова аудиторія
+  # цього проєкту — B2B, де чек вищий. Отже 3400 занижує економіку проєкту і
+  # НЕ є базою для оцінки окупності. Потрібен окремий B2B-чек — див.
+  # artifacts/OPEN-QUESTIONS.md.
+  avg_deal_uah: 3400
+  avg_deal_note: "змішаний B2B+B2C, переважає B2C; період 01.01.2026–04.08.2026"
+  avg_deal_b2b_uah: null              # TODO(BLOCKER) — саме це число визначає, чи виправдана стеля $5
+  repeat_orders_per_year: null        # TODO(BLOCKER) — B2B-клієнт друкарні зазвичай повторний; від цього залежить справжня цінність ліда
+
   min_order_uah: null                 # TODO(BLOCKER) — becomes a disqualifier once known
   seasonality: []                     # TODO(BLOCKER)
 
 lead_source:
   adapter: youcontrol-export
+
+  # [CLIENT] — фільтрація за КВЕД відбувається ДО завантаження. Система
+  # отримує вже відфільтрований список і сама за КВЕД не фільтрує.
+  pre_filtered: true
+
   filters:
-    kved: []                          # TODO(BLOCKER)
+    kved: []                          # не застосовується системою — фільтр зовнішній
     region: ["Україна"]               # [CLIENT] — nationwide; delivery does not constrain
+
+  # [CLIENT] — «будемо тестувати КВЕДи». Щоб це було можливо, кожне
+  # завантаження помічається партією, і конверсія рахується в розрізі партій.
+  # Без цього порівняти КВЕДи між собою неможливо — будуть лише загальні цифри.
+  batch_tagging: required
+
   expected_list_size: null            # TODO(BLOCKER)
   notes: "Відкритий B2B-ринок. Вичерпання бази при 100 дзвінках/день не загрожує."
 

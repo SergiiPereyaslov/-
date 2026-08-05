@@ -64,7 +64,10 @@ speaks. That is P2. Concretely, before a line of code:
 
 ## Definition of done for the MVP
 
-- [ ] A list of numbers is imported, deduplicated, and queued
+- [ ] A list of numbers is imported, deduplicated, queued, and **tagged as a
+      batch**, so conversion can be compared between segments
+- [ ] Per-batch metrics are reported, not only aggregates — otherwise segment
+      testing is impossible
 - [ ] The system places calls only inside the calling window
 - [ ] It reaches a decision maker or captures their contact, and knows which
 - [ ] It extracts the four quote parameters when it gets that far
