@@ -1,4 +1,4 @@
-# AI Voice Sales Platform — Core Meta Prompt
+# LeadRadar — Core Meta Prompt
 
 > This file is the operating manual for the agent that builds and runs the
 > platform. It is **vertical-agnostic**. It contains no business logic for any
