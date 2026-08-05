@@ -6,7 +6,7 @@ required signature from `core/roles.md` is recorded here.
 
 ---
 
-## Current phase: **P1 closed → P2 Market Research is next**
+## Current phase: **P2 — Market Research (in progress)**
 
 P0 Discovery is complete for the MVP. P1 cleared: the client answered every
 question that gated conversation design, and deferred the rest deliberately.
@@ -16,8 +16,15 @@ dialer first: numbers in, calls out, scored leads back. CRM integration, warm
 transfer, email and the second vertical are all deferred. Whether warm transfer
 is worth building at all is now research question R6, not an assumption.
 
-**Next action:** run P2. The dialer cannot be built without choosing what dials,
-listens, thinks and speaks.
+**P2 started.** Preliminary figures gathered via search — see
+`01-research/FINDINGS.md`. A manual verification checklist has been handed to
+the client (`01-research/VERIFY-CHECKLIST.md`) because this environment cannot
+read vendor pages directly.
+
+**Headline finding so far:** the binding constraint looks like Ukrainian speech
+recognition, not price. Ukrainian TTS is confirmed available at real-time
+latency; Ukrainian STT in a *conversational* model is not yet confirmed
+anywhere.
 
 **Constraint discovered:** this environment blocks `curl` and WebFetch to vendor
 hosts; only WebSearch works. P2 therefore proceeds on search-sourced figures,
@@ -31,8 +38,8 @@ See the research brief.
 | Phase | Status | Signatures | Notes |
 |-------|--------|-----------|-------|
 | P0 Discovery | ● substantially complete | — pending | volume, schedule, economics, lead tiers, funnel baseline settled; 11 BLOCKERs open |
-| P1 Questions | ◐ **open — awaiting client** | — | see OPEN-QUESTIONS.md |
-| P2 Research | ○ not started | — | brief written; hard precondition: live source access |
+| P1 Questions | ● closed | — | client answered or deliberately deferred every gating item |
+| P2 Research | ◐ **in progress** | — | preliminary findings written; awaiting client's manual verification |
 | P3 Architecture | ○ not started | — | |
 | P4 Review | ○ not started | — | |
 | P5 Risk | ○ not started | — | |

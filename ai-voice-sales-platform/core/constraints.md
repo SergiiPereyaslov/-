@@ -15,7 +15,7 @@ Provenance is labelled. Nothing here is estimated.
 | Effective calling hours per day | 8 | derived |
 | Answer rate | 90% → 90 answered calls/day | `[CLIENT]`, human baseline |
 | Lead rate, tiers A+B | 2.5% of dials → 2.5 leads/day | `[CLIENT]`, human baseline |
-| Maximum cost per lead | $5.00 | `[CLIENT]` |
+| Maximum cost per lead | **$7.00** | `[CLIENT]` — raised from $5.00, and from $3.00 before that |
 
 Tier C (decision-maker contact captured without expressed interest) is **not**
 included in the 2.5%. It is treated as upside, never as budget justification.
@@ -25,19 +25,21 @@ included in the 2.5%. It is treated as upside, never as budget justification.
 ## Derived budget
 
 ```
-daily budget      = 2.5 leads × $5.00              = $12.50 / day
-per answered call = $12.50 / 90                    = $0.139
-monthly (21 days) = $12.50 × 21                    = $262.50  (~52 leads)
+daily budget      = 2.5 leads × $7.00              = $17.50 / day
+per answered call = $17.50 / 90                    = $0.194
+monthly (21 days) = $17.50 × 21                    = $367.50  (~52 leads)
 ```
+
+At ₴44.78/USD `[SEARCH: minfin.com.ua, 2026-08-04]`, $7.00 ≈ **₴313 per lead**.
 
 Cost per minute is a function of average handle time:
 
 | Avg. answered call | Minutes/day | Max cost/minute, all-in |
 |--------------------|-------------|-------------------------|
-| 1.0 min | 90 | $0.139 |
-| **1.5 min** | **135** | **$0.093** |
-| 2.0 min | 180 | $0.069 |
-| 2.5 min | 225 | $0.056 |
+| 1.0 min | 90 | $0.194 |
+| **1.5 min** | **135** | **$0.130** |
+| 2.0 min | 180 | $0.097 |
+| 2.5 min | 225 | $0.078 |
 
 "All-in" means telephony + STT + LLM + TTS + hosting, summed.
 
@@ -47,13 +49,25 @@ Cost per minute is a function of average handle time:
 
 | Threshold | Value | Meaning |
 |-----------|-------|---------|
-| Target | **≤ $0.07 / min** | comfortable; leaves margin for conversion shortfall |
-| Planning | **≤ $0.09 / min** | the number architectures are designed against |
-| Hard cutoff | **> $0.14 / min** | rejected outright, no further evaluation |
+| Target | **≤ $0.10 / min** | comfortable; leaves margin for conversion shortfall |
+| Planning | **≤ $0.13 / min** | the number architectures are designed against |
+| Hard cutoff | **> $0.19 / min** | rejected outright, no further evaluation |
 
-Between $0.09 and $0.14 an option is **conditional**: viable only if average
+Between $0.13 and $0.19 an option is **conditional**: viable only if average
 handle time is held under the corresponding row above, and that must then
 become an asserted test, not an intention.
+
+### Why the ceiling moved
+
+$3 → $5 → $7, each raised by the client as the economics became clearer. The
+$7 figure is still anchored on a single order, and the client's own data
+suggests that understates it: a printing house sells a **returning** B2B
+customer, not one job. Once repeat frequency is known (`avg_deal_b2b_uah` and
+`repeat_orders_per_year` in the vertical config), the justified ceiling may be
+higher again.
+
+Do not treat $7 as a permanent constraint. Treat it as the current best
+estimate of what a lead is worth, and re-derive it when the repeat data lands.
 
 ---
 
@@ -65,9 +79,9 @@ it, especially before tuning.
 
 ```
 pessimistic lead rate = 1.25%  (half of human baseline)
-daily budget          = 1.25 × $5.00 = $6.25
-per answered call     = $6.25 / 90   = $0.069
-max cost/min @1.5 min = $6.25 / 135  = $0.046
+daily budget          = 1.25 × $7.00 = $8.75
+per answered call     = $8.75 / 90   = $0.097
+max cost/min @1.5 min = $8.75 / 135  = $0.065
 ```
 
 Every architecture is reported against **both** scenarios:

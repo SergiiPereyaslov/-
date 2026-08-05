@@ -35,14 +35,14 @@ volume:
 # Economic gate — see core/constraints.md for derivation
 # ---------------------------------------------------------------------------
 economics:
-  max_cost_per_lead_usd: 5.00
-  daily_budget_usd: 12.50
-  max_cost_per_answered_call_usd: 0.139
+  max_cost_per_lead_usd: 7.00        # [CLIENT] raised from 5.00; ≈ ₴313 at 44.78
+  daily_budget_usd: 17.50
+  max_cost_per_answered_call_usd: 0.194
 
   cost_per_minute_usd:
-    target: 0.07
-    planning: 0.09
-    hard_cutoff: 0.14
+    target: 0.10
+    planning: 0.13
+    hard_cutoff: 0.19
 
   funnel_baseline:                # client-supplied, human performance
     answer_rate: 0.90
