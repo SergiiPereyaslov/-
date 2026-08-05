@@ -153,3 +153,24 @@ fixed infrastructure cost thinly. A self-hosted stack with a low per-minute
 rate can still lose to a managed platform once servers and operator time are
 counted. Every cost model must include fixed costs amortised over actual
 projected volume, not per-minute rates alone.
+
+
+---
+
+## Pricing constraint: improvement is never metered
+
+Added 2026-08-05 from `artifacts/01-research/KEYCALL-BASELINE.md`.
+
+Дніпрограф's KeyCall campaign stopped not from disappointment but because the
+fix they had already diagnosed cost extra: «ми прослухали усі дзвінки і
+зрозуміли, що треба переробляти скрипт, а це додаткові кошти» `[CLIENT]`.
+
+That is a second meter firing exactly when the customer becomes competent.
+
+**LeadRadar therefore never charges for a config, script, objection or
+qualification change — not per change, not per hour, not per version.** Revenue
+comes from leads delivered, and only from leads delivered.
+
+This is load-bearing: `core/learning-loop.md` assumes changes are free to
+apply. Metering them would make the loop decorative and reproduce the exact
+failure we are selling against.

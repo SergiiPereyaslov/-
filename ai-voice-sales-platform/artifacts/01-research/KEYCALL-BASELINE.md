@@ -98,9 +98,40 @@ That belongs in the pricing decision, not discovered during it.
 `04.02_ua` and reached 110/191. The last script version is dated **13.08.2024**
 — two years untouched, though all three versions are marked «Узгоджено».
 
-Дніпрограф bought this, ran it, and stopped. That is a harder verdict than any
-conversion rate, and it is the actual brief for LeadRadar: not «зробити
-дешевше», but «зробити те, чим користуватимуться далі ніж півроку».
+**Why it stopped — corrected by the client, 2026-08-05.** My first reading was
+that Дніпрограф ran it and lost interest. Wrong, and the truth is worse for
+KeyCall:
+
+> «Ми прослухали усі дзвінки і зрозуміли, що треба переробляти скрипт, **а це
+> додаткові кошти**.» `[CLIENT]`
+
+The project is not abandoned. It is **stalled at a paywall**, and the paywall
+sits at exactly the wrong place in the cycle.
+
+Дніпрограф did the expensive half of the learning loop by hand: listened to
+the calls, found what the script gets wrong, wrote it into the comment box.
+That is the part no vendor can do for you. Then the cheap half — applying the
+fix — turned out to be the metered one, and everything stopped.
+
+So KeyCall's model has a **second meter that fires precisely when the customer
+becomes competent**. The better your diagnosis, the more it costs to act on
+it. Improvement is billed as an extra, so it does not happen, so the campaign
+degrades, so the account goes quiet. Two years of frozen script is not
+neglect — it is the predictable output of that pricing.
+
+### Consequence for LeadRadar's pricing — a hard constraint, not a preference
+
+> **We never charge for a config, script, objection or question change.
+> Not per change, not per hour, not per version. Ever.**
+
+If we ever meter improvement, we rebuild the trap we are selling against, and
+`core/learning-loop.md` becomes decoration. The self-service config editor in
+`MVP-SCOPE.md` is therefore not a convenience feature — it is the mechanism
+that keeps the system alive past month six, and it is load-bearing for the
+whole product thesis.
+
+The real brief for LeadRadar, restated: not «зробити дешевше», and not even
+«зробити розумніше» — **зробити так, щоб покращення нічого не коштувало**.
 
 ### 2. The client already diagnosed the failure — in KeyCall's own comment box
 
@@ -126,6 +157,11 @@ this interface. Nobody knows the real split — including KeyCall.
 That unknown is the size of our prize. If even a fifth of «не цікаво» is bot
 failure rather than genuine rejection, the reachable lead pool is roughly five
 times the 294 KeyCall found.
+
+**Except it may not be unknown to Дніпрограф.** They listened to the calls —
+that is how they concluded the script needed rewriting. So the estimate that
+KeyCall's interface cannot produce may already exist as a judgement in the
+client's head, and it is worth asking for directly rather than deriving.
 
 ---
 
@@ -176,3 +212,19 @@ it by ear, in a comment box, and nobody answered.
    i.e. the minimum import schema.
 4. **A «не цікаво» call and a «дзвінок менеджера» call, listened to end to
    end** — to estimate the misclassification rate by hand.
+
+5. **The rewrite that was never bought — highest value of all.** The client
+   listened to the calls and worked out what the script gets wrong. That
+   conclusion was never paid for, so it was never applied, so it exists only
+   in their heads and in three unanswered comments.
+
+   It is two years of listening compressed into a diagnosis, and it is the
+   single best input to LeadRadar's Дніпрограф config — better than anything a
+   discovery call produces, because it was derived from real failures rather
+   than imagined ones.
+
+   Ask plainly: **що саме ви зрозуміли, що треба переробити?** Rough notes,
+   voice message, anything. It goes straight into
+   `config/verticals/dniprograf.yaml` as opening lines, objection handling and
+   qualification order — and unlike at KeyCall, changing it afterwards costs
+   nothing.
