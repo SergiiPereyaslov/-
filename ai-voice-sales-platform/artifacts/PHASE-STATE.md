@@ -49,6 +49,13 @@ replaces the estimated funnel, gives the first real market price per lead
 competitor's failure mode in the client's own words. The account is dormant:
 zero calls this month, script untouched since Aug 2024.
 
+**Recordings received 2026-08-05** — 37 real calls from the cold-base campaign.
+Acoustic analysis complete and it settled four things without any transcription:
+`01-research/AUDIO-ANALYSIS.md`. The STT comparison itself cannot run in this
+environment — egress policy returns 403 for every vendor API host and for
+HuggingFace, so neither hosted nor local models are reachable. Protocol handed
+to the client instead: `01-research/STT-TEST.md`, 8 files, ~30 minutes.
+
 **Constraint discovered:** this environment blocks `curl` and WebFetch to vendor
 hosts; only WebSearch works. P2 therefore proceeds on search-sourced figures,
 labelled `[SEARCH]`, with direct vendor confirmation required before committing.
