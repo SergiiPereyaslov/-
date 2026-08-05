@@ -55,6 +55,28 @@ qualifies, it hands back a scored lead.
 
 ---
 
+## Web interface — in scope, minimally
+
+`[CLIENT]` The platform has a web interface. For the MVP it is the thin layer
+that makes the dialer usable by a person rather than a terminal:
+
+1. **Upload a list** — file in, batch labelled, validation and duplicates shown
+2. **Campaign control** — start, pause, stop; current state and today's spend
+3. **Calls** — list with outcome, tier, duration, cost; transcript and recording
+   for each
+4. **Leads** — the scored results, filterable, exportable
+5. **Per-batch comparison** — the numbers that make КВЕД testing possible
+6. **Config editing** — the vertical config through a form rather than YAML,
+   with every change versioned
+
+Item 6 is the one that matters most and is easiest to under-build. It is the
+answer to paying $250 for a script change: the wording, the objections and the
+qualification questions must be editable by the client, with the version
+recorded against every call that used it (see `core/learning-loop.md`).
+
+Explicitly not in the MVP interface: user management beyond a single login,
+tenant switching, billing, dashboards beyond the numbers listed above.
+
 ## Explicitly out of scope for now
 
 | Deferred | Why |
@@ -63,7 +85,7 @@ qualifies, it hands back a scored lead.
 | **Warm transfer to a manager** | `[CLIENT]` — **not built until research says it is worth building.** See R6 in the research brief. |
 | **Email channel** | `[CLIENT]` — disabled; the switch remains in config. |
 | **Second vertical (SmartEcoPack)** | `[CLIENT]` — parked. |
-| **Dashboards, queue-age monitoring** | Premature. Cost and outcome telemetry is emitted from the start, but nothing is built to display it until there is traffic to display. |
+| **Queue-age monitoring, analytics dashboards** | Premature. Cost and outcome telemetry is emitted from the start, but nothing elaborate is built to display it until there is traffic to display. |
 | **Recording retention policy** | `[CLIENT]` — deferred with CRM. Becomes blocking again at deployment, not before. |
 
 Deferring is not deleting. Each of these has a config switch or an interface
