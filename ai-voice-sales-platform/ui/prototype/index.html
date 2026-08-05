@@ -1,0 +1,841 @@
+<title>LeadRadar — прототип інтерфейсу</title>
+<style>
+:root{
+  --ink:#14202C; --ink-2:#3A4C5E; --ink-3:#6B7F92;
+  --paper:#EEF1F4; --surface:#FFFFFF; --surface-2:#F7F9FA;
+  --line:#DCE3E9; --line-2:#C6D1DA;
+  --ember:#D9642B; --ember-soft:#F3E0D5;
+  --amber:#C08A2E; --amber-soft:#F2E8D4;
+  --cold:#5A7C99; --cold-soft:#E0E8EF;
+  --ok:#2C8168; --ok-soft:#DCEBE5;
+  --alert:#A8433A; --alert-soft:#F2DEDC;
+  --shadow:0 1px 2px rgba(20,32,44,.06), 0 8px 24px -12px rgba(20,32,44,.18);
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#E4EBF1; --ink-2:#A8BAC9; --ink-3:#76899A;
+    --paper:#101923; --surface:#18232F; --surface-2:#1E2B39;
+    --line:#2A3947; --line-2:#394B5C;
+    --ember:#F0834A; --ember-soft:#33231A;
+    --amber:#D8A548; --amber-soft:#2E2718;
+    --cold:#7EA3C2; --cold-soft:#1C2A36;
+    --ok:#4FAE8E; --ok-soft:#16291F;
+    --alert:#D4685C; --alert-soft:#2E1B1A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E4EBF1; --ink-2:#A8BAC9; --ink-3:#76899A;
+  --paper:#101923; --surface:#18232F; --surface-2:#1E2B39;
+  --line:#2A3947; --line-2:#394B5C;
+  --ember:#F0834A; --ember-soft:#33231A;
+  --amber:#D8A548; --amber-soft:#2E2718;
+  --cold:#7EA3C2; --cold-soft:#1C2A36;
+  --ok:#4FAE8E; --ok-soft:#16291F;
+  --alert:#D4685C; --alert-soft:#2E1B1A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+:root[data-theme="light"]{
+  --ink:#14202C; --ink-2:#3A4C5E; --ink-3:#6B7F92;
+  --paper:#EEF1F4; --surface:#FFFFFF; --surface-2:#F7F9FA;
+  --line:#DCE3E9; --line-2:#C6D1DA;
+  --ember:#D9642B; --ember-soft:#F3E0D5;
+  --amber:#C08A2E; --amber-soft:#F2E8D4;
+  --cold:#5A7C99; --cold-soft:#E0E8EF;
+  --ok:#2C8168; --ok-soft:#DCEBE5;
+  --alert:#A8433A; --alert-soft:#F2DEDC;
+  --shadow:0 1px 2px rgba(20,32,44,.06), 0 8px 24px -12px rgba(20,32,44,.18);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.015em;font-weight:640}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--ember);outline-offset:2px;border-radius:3px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:216px 1fr;min-height:100vh}
+.rail{background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:2px;padding:18px 12px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:baseline;gap:8px;padding:4px 10px 20px}
+.brand b{font-size:17px;letter-spacing:-.03em;font-weight:680}
+.brand .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ember);border:1px solid var(--ember);
+  border-radius:3px;padding:1px 4px}
+.nav{display:flex;flex-direction:column;gap:1px}
+.nav button{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 10px;border-radius:6px;color:var(--ink-2);font-size:14px;text-align:left;
+  transition:background .12s,color .12s}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="true"]{background:var(--cold-soft);color:var(--ink);font-weight:600}
+.nav .count{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.rail-foot{margin-top:auto;padding:10px;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:8px}
+.themebtn{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-3);padding:3px 0}
+.themebtn:hover{color:var(--ink)}
+
+.main{padding:26px 30px 70px;max-width:1180px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;
+  gap:20px;flex-wrap:wrap;margin-bottom:6px}
+.page-head h1{font-size:25px}
+.page-sub{color:var(--ink-3);font-size:13.5px;margin:3px 0 22px;max-width:66ch}
+
+/* ---------- campaign strip ---------- */
+.strip{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:11px 15px;margin-bottom:22px;box-shadow:var(--shadow)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none;
+  box-shadow:0 0 0 0 var(--ok);animation:p 2.4s infinite}
+@keyframes p{0%{box-shadow:0 0 0 0 rgba(44,129,104,.5)}70%{box-shadow:0 0 0 7px rgba(44,129,104,0)}100%{box-shadow:0 0 0 0 rgba(44,129,104,0)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+.strip .sep{width:1px;height:22px;background:var(--line)}
+.strip .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);display:block}
+.strip .val{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--line-2);border-radius:6px;padding:5px 12px;font-size:13px;
+  background:var(--surface);transition:border-color .12s,background .12s}
+.btn:hover{border-color:var(--ink-3);background:var(--surface-2)}
+.btn.primary{background:var(--ember);border-color:var(--ember);color:#fff;font-weight:560}
+.btn.primary:hover{filter:brightness(1.07)}
+
+/* ---------- cards & stats ---------- */
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:15px 16px;box-shadow:var(--shadow)}
+.card h3{font-size:13.5px;margin-bottom:2px}
+.card .hint{font-size:12px;color:var(--ink-3);margin-bottom:13px}
+
+.stat{text-align:left;width:100%;display:block;position:relative;
+  transition:border-color .13s,transform .13s}
+.stat:hover{border-color:var(--ember);transform:translateY(-1px)}
+.stat:hover .drill{opacity:1}
+.stat .v{font-family:var(--mono);font-size:29px;font-weight:620;
+  font-variant-numeric:tabular-nums;letter-spacing:-.035em;line-height:1.1;margin-top:7px}
+.stat .d{font-size:12px;color:var(--ink-3);margin-top:3px}
+.drill{position:absolute;top:13px;right:13px;font-size:11px;color:var(--ember);
+  opacity:0;transition:opacity .13s;font-family:var(--mono)}
+
+/* ---------- funnel ---------- */
+.funnel{display:flex;flex-direction:column;gap:7px}
+.frow{display:grid;grid-template-columns:132px 1fr 96px;align-items:center;gap:12px;
+  width:100%;text-align:left;padding:3px 5px;border-radius:5px;transition:background .12s}
+.frow:hover{background:var(--surface-2)}
+.frow .fl{font-size:13px}
+.bar{height:20px;border-radius:3px;background:var(--surface-2);overflow:hidden;position:relative}
+.bar i{display:block;height:100%;border-radius:3px}
+.frow .fn{font-family:var(--mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.frow .fp{color:var(--ink-3);font-size:11.5px}
+
+/* ---------- tier / pills ---------- */
+.pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:20px;
+  border:1px solid transparent;white-space:nowrap;font-weight:560}
+.t-A{background:var(--ember-soft);color:var(--ember);border-color:var(--ember)}
+.t-B{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}
+.t-C{background:var(--cold-soft);color:var(--cold);border-color:var(--cold)}
+.t-D{background:var(--surface-2);color:var(--ink-3);border-color:var(--line-2)}
+.t-X{background:var(--alert-soft);color:var(--alert);border-color:var(--alert)}
+.t-ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:var(--surface);
+  box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:720px}
+th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;
+  padding:9px 13px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-2)}
+td{padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover{background:var(--surface-2)}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.co{font-weight:560}
+.co small{display:block;font-weight:400;color:var(--ink-3);font-size:11.5px;
+  font-family:var(--mono)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;align-items:center}
+.chip{border:1px solid var(--line-2);border-radius:20px;padding:3.5px 11px;font-size:12.5px;
+  color:var(--ink-2);background:var(--surface);transition:.12s}
+.chip:hover{border-color:var(--ink-3)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filters .n{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(10,18,26,.42);backdrop-filter:blur(2px);
+  opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(660px,100%);z-index:50;
+  background:var(--surface);border-left:1px solid var(--line);overflow-y:auto;
+  transform:translateX(100%);transition:transform .22s cubic-bezier(.32,.72,0,1)}
+.drawer.on{transform:none}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.dhead{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);
+  padding:16px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;z-index:2}
+.dbody{padding:20px 22px 60px;display:flex;flex-direction:column;gap:22px}
+.x{font-size:20px;line-height:1;color:var(--ink-3);padding:2px 6px;border-radius:5px}
+.x:hover{background:var(--surface-2);color:var(--ink)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13.5px}
+.kv dt{color:var(--ink-3);font-family:var(--mono);font-size:11px;letter-spacing:.07em;
+  text-transform:uppercase;padding-top:3px}
+.kv dd{margin:0;font-weight:520}
+
+.wave{width:100%;height:74px;display:block;border-radius:6px;background:var(--surface-2)}
+.wkey{display:flex;gap:15px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);
+  margin-top:7px;flex-wrap:wrap}
+.wkey span{display:flex;align-items:center;gap:5px}
+.sw{width:9px;height:9px;border-radius:2px;flex:none}
+
+.turns{display:flex;flex-direction:column;gap:9px}
+.turn{display:grid;grid-template-columns:52px 1fr;gap:11px;font-size:13.5px;line-height:1.5}
+.turn .ts{font-family:var(--mono);font-size:11px;color:var(--ink-3);padding-top:3px;
+  font-variant-numeric:tabular-nums}
+.turn .tx{padding:7px 12px;border-radius:8px}
+.turn.agent .tx{background:var(--cold-soft);border:1px solid var(--line)}
+.turn.lead .tx{background:var(--surface-2);border:1px solid var(--line)}
+.turn .who{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);display:block;margin-bottom:2px}
+.flag{display:inline-block;font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;
+  background:var(--ember-soft);color:var(--ember);margin-left:6px;letter-spacing:.04em}
+
+.why{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--ember);
+  border-radius:7px;padding:12px 14px}
+.why p{margin:5px 0 0;font-size:13px;color:var(--ink-2)}
+
+/* ---------- config ---------- */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:15px}
+.field label{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3)}
+.field .help{font-size:12px;color:var(--ink-3)}
+input[type=text],textarea,select{font:inherit;font-size:13.5px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line-2);border-radius:6px;padding:7px 10px;
+  width:100%;resize:vertical}
+textarea{min-height:64px;line-height:1.5}
+.vhist{display:flex;flex-direction:column;gap:0}
+.vrow{display:grid;grid-template-columns:78px 1fr auto;gap:12px;padding:9px 0;
+  border-bottom:1px solid var(--line);font-size:13px;align-items:baseline}
+.vrow:last-child{border-bottom:none}
+.vrow .vn{font-family:var(--mono);font-size:12px;color:var(--ember);font-weight:600}
+.vrow .vd{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- upload ---------- */
+.drop{border:1.5px dashed var(--line-2);border-radius:10px;padding:34px 20px;text-align:center;
+  background:var(--surface);transition:.15s}
+.drop:hover{border-color:var(--ember);background:var(--surface-2)}
+.drop .big{font-size:15px;font-weight:580}
+.drop .sm{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+
+.note{background:var(--ember-soft);border:1px solid var(--ember);border-radius:8px;
+  padding:12px 15px;font-size:13px;color:var(--ink)}
+.note b{color:var(--ember)}
+
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.legendbar{display:flex;height:26px;border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.legendbar i{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:12px;color:var(--ink-2)}
+.legend span{display:flex;align-items:center;gap:6px}
+
+@media(max-width:940px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}
+  .brand{padding:0 12px 0 4px}
+  .nav{flex-direction:row;flex-wrap:wrap}
+  .rail-foot{margin:0 0 0 auto;border:none;padding:0}
+  .g4,.g3,.g2,.cmp{grid-template-columns:1fr}
+  .main{padding:20px 16px 60px}
+}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><b>LeadRadar</b><span class="tag">прототип</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="rail-foot">
+      <button class="themebtn" id="theme">◐ Тема</button>
+      <div class="eyebrow">Дніпрограф · пілот</div>
+    </div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Деталі"></aside>
+
+<script>
+"use strict";
+
+/* ===== real waveform envelopes, extracted from the client's own recordings ===== */
+const ENV = {
+clean:{dur:31.8,env:[0.388,0.809,0.282,0.306,0.309,0.103,0.004,0.366,0.519,0.332,0.011,0.001,0.001,0.004,0.098,0.101,0.125,0.335,0.422,0.121,0.242,0.274,0.228,0.217,0.191,0.083,0.015,0.267,0.33,0.323,0.302,0.203,0.163,0.169,0.482,0.33,0.423,0.274,0.256,0.244,0.299,0.427,0.205,0.215,0.542,0.28,0.197,0.198,0.098,0.047,0.137,0.162,0.304,0.276,0.302,0.072,0.379,0.384,0.259,0.217,0.247,0.216,0.235,0.101,0.016,0.004,0.147,0.39,0.386,0.22,0.109,0.035,0.01,0.019,0.046,0.016,0.006,0.008,0.001,0.006,0.03,0.095,0.168,0.114,0.061,0.023,0.013,0.005,0.003,0.001,0.002,0.048,0.119,0.278,0.148,0.265,0.216,0.316,0.269,0.28,0.288,0.062,0.198,0.408,0.957,0.999,1,0.44,0.427,0.257,0.507,0.401,0.367,0.468,0.273,0.271,0.445,0.259,0.396,0.226,0.736,0.24,0.304,0.098,0.029,0.451,0.483,0.48,0.306,0.299,0.642,0.335,0.002,0.001,0.256,0.466,0.009,0.011,0.001,0.001,0.001,0.001,0.001,0.086,0.562,0.449,0.331,0.023,0.183,0.421,0.325,0.244,0.224,0.187,0.224,0.032,0.207,0.475,0.219,0.27]},
+long:{dur:63.1,env:[0.524,0.518,0.417,0.045,0.131,0.179,0.025,0.018,0.175,0.411,0.571,0.445,0.38,0.286,0.289,0.599,0.456,0.246,0.75,0.625,0.423,0.567,0.51,0.76,0.309,0.234,0.063,0.475,0.395,0.576,0.495,0.439,0.362,0.106,0.023,0.271,0.34,0.276,0.051,0.014,0.016,0.024,0.027,0.023,0.023,0.023,0.022,0.325,0.416,0.399,0.485,0.461,0.404,0.955,0.922,0.585,0.751,0.79,0.777,0.729,0.63,1,0.404,0.056,0.839,0.709,0.948,0.121,0.02,0.015,0.033,0.018,0.011,0.013,0.532,0.462,0.433,0.425,0.429,0.215,0.268,0.24,0.009,0.006,0.006,0.006,0.009,0.009,0.181,0.395,0.266,0.311,0.374,0.339,0.361,0.388,0.304,0.367,0.196,0.339,0.566,0.431,0.255,0.551,0.351,0.255,0.496,0.522,0.63,0.641,0.527,0.338,0.531,0.495,0.487,0.48,0.398,0.077,0.008,0.007,0.031,0.455,0.336,0.298,0.432,0.268,0.347,0.148,0.384,0.104,0.178,0.158,0.265,0.277,0.297,0.077,0.006,0.006,0.006,0.007,0.007,0.007,0.006,0.006,0.009,0.462,0.362,0.678,0.754,0.492,0.59,0.566,0.837,0.545,0.519,0.36,0.498,0.134,0.715,0.79]},
+noisy:{dur:8.5,env:[0.261,0.36,0.435,0.453,0.439,0.415,0.533,0.115,0.496,0.184,0.436,0.594,0.306,0.201,0.52,0.418,0.395,0.462,0.415,0.175,0.401,0.548,0.264,0.219,0.044,0.029,0.151,0.083,0.042,0.021,0.009,0.084,0.132,0.038,0.117,0.057,0.125,0.063,0.015,0.058,0.281,0.508,0.2,0.109,0.115,0.168,0.448,0.196,0.398,0.252,0.107,0.013,0.005,0.003,0.002,0.002,0.002,0.003,0.002,0.002,0.002,0.003,0.061,0.099,0.137,0.274,0.442,0.281,0.282,0.191,0.127,0.035,0.316,0.074,0.037,0.336,0.695,0.682,0.789,0.471,0.423,0.393,0.522,0.206,0.239,0.501,0.514,0.648,0.508,0.42,0.441,0.441,0.47,0.111,0.311,0.463,0.253,0.541,0.446,0.361,0.141,0.469,0.519,0.511,0.345,0.28,0.361,0.356,0.218,0.161,0.203,0.125,0.127,0.568,0.479,0.557,0.389,0.521,0.149,0.439,0.532,0.503,0.038,0.539,0.386,0.447,0.101,0.302,0.438,0.051,0.314,0.272,0.118,0.044,0.267,0.113,0.041,0.866,1,0.184,0.154,0.718,0.318,0.413,0.064,0.297,0.741,0.619,0.648,0.253,0.543,0.095,0.362,0.373,0.288,0.353,0.395,0.322,0.303,0.294]}
+};
+
+/* ===== reference data ===== */
+const REASONS = {
+  own_printing:"Має власну друкарню",
+  has_supplier:"Є постачальник, влаштовує",
+  no_need:"Не друкує взагалі",
+  not_dm:"Не той, хто вирішує",
+  out_of_scope:"Пакування / тканина",
+  bad_timing:"Не зараз, без конкретики",
+  hostile:"Різка відмова"
+};
+const EXITS = {
+  book_meeting:{t:"Зустріч із менеджером",v:"дата + час"},
+  send_offer:{t:"Пропозиція в месенджер",v:"згода + канал"},
+  call_back:{t:"Передзвонити",v:"дата + час"}
+};
+
+const CALLS = [
+ {id:"LR-4821",co:"ТОВ «Агротек Дніпро»",kved:"46.61",who:"Ірина, офіс-менеджер → Сергій Луценко",
+  t:"14:12",dur:52,tier:"A",exit:"book_meeting",cap:"чт 07.08, 15:00",kept:"kept",cost:2.14,
+  wave:"long",gate:true,conf:0.94,
+  why:"ОПР назвав конкретний час після другої пропозиції слотів. Повтор уголос підтверджено дослівно («так, четвер о третій»). Домовленість потрапляє в робоче вікно, тому зарахована рівнем A.",
+  turns:[
+   [0,"a","Доброго дня! Компанія Дніпрограф, друкарня з Дніпра. Підкажіть, будь ласка, з ким у вас можна поговорити щодо замовлення поліграфії?"],
+   [7,"l","А що саме вас цікавить?"],
+   [9,"a","Ми друкуємо етикетку, пакувальні вкладиші, каталоги. Хотіли б запропонувати прорахунок як другого постачальника."],
+   [16,"l","Це до Сергія Володимировича. Хвилинку.",null,"передача"],
+   [24,"a","Сергію Володимировичу, доброго дня. Дніпрограф, друкарня. Ми працюємо з агросектором по етикетці й каталогах.",null,"ОПР"],
+   [32,"l","У нас уже є друкарня, ми в Києві друкуємо."],
+   [35,"a","Це зрозуміло, і я не пропоную нікого міняти. Зазвичай нас беруть другим варіантом — коли основна завантажена або горять терміни. Можемо просто прорахувати наступний тираж, щоб було з чим порівняти?"],
+   [46,"l","Ну давайте, можна поговорити."],
+   [48,"a","Вам зручніше в четвер о 15:00 чи о 17:00?"],
+   [52,"l","Давайте о третій."],
+   [54,"a","Записую: четвер, сьоме серпня, 15:00. Наш менеджер зателефонує. Все вірно?",null,"повтор"],
+   [60,"l","Так, все вірно."]
+  ]},
+ {id:"LR-4819",co:"ПП «Медсервіс Плюс»",kved:"46.46",who:"Оксана Гриценко, закупівлі",
+  t:"14:04",dur:38,tier:"A",exit:"send_offer",cap:"Viber, цей номер",kept:"pending",cost:1.61,
+  wave:"clean",gate:false,conf:0.91,
+  why:"Згода на месенджер отримана прямо, номер уже відомий із бази — захоплювати нічого не треба. Повтор уголос підтверджено. Задача менеджеру поставлена з дедлайном 4 години.",
+  turns:[
+   [0,"a","Доброго дня! Компанія Дніпрограф, друкарня з Дніпра. Підкажіть, з ким можна поговорити щодо друку?"],
+   [6,"l","Це я, Оксана. Слухаю."],
+   [8,"a","Ми друкуємо інструкції, вкладиші, упаковку для фарм- і медтоварів. Хотіли б показати умови."],
+   [15,"l","Зараз не дуже зручно розмовляти, у мене нарада."],
+   [18,"a","Тоді не займатиму час. Скину коротку пропозицію у Вайбер на цей номер, добре?"],
+   [24,"l","Так, давайте у вайбер."],
+   [26,"a","Скидаю у Вайбер на цей номер, 067-4XX-XX-12 — правильно?",null,"повтор"],
+   [32,"l","Так, правильно."],
+   [34,"a","Дякую, гарного дня!"]
+  ]},
+ {id:"LR-4817",co:"ТОВ «Будпостач-Січ»",kved:"46.73",who:"приймальня",
+  t:"13:58",dur:29,tier:"C",exit:null,reason:"not_dm",cap:"Андрій Ковальчук, 050-XXX",kept:null,cost:1.23,
+  wave:"clean",gate:true,conf:0.88,
+  why:"Секретар не з'єднала, але назвала ім'я та прямий номер відповідального. Це не відмова — це маршрут. Контакт записано, номер поставлено в чергу на повторний дзвінок.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня з Дніпра. З ким можна поговорити щодо замовлення поліграфії?"],
+   [7,"l","Він зараз не на місці."],
+   [9,"a","А підкажіть, як його звати і коли зручніше набрати?"],
+   [13,"l","Андрій Ковальчук, це наш комерційний. Краще після обіду на мобільний."],
+   [20,"a","Дякую. Записав: Андрій Ковальчук. Номер підкажете?"],
+   [24,"l","050... запишіть, зараз продиктую."]
+  ]},
+ {id:"LR-4814",co:"ФОП Романюк І.В.",kved:"47.71",who:"Ігор Романюк, власник",
+  t:"13:51",dur:22,tier:"D",exit:null,reason:"own_printing",kept:null,cost:0.91,
+  wave:"noisy",gate:false,conf:0.96,
+  why:"Причина названа однозначно: власне обладнання. Це стала характеристика компанії, а не тимчасова обставина, тому номер виключено з майбутніх кампаній назавжди, а не поставлено на ретрай.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня з Дніпра. З ким можна поговорити щодо друку?"],
+   [6,"l","Та ми самі друкуємо, у нас свій цех."],
+   [10,"a","Зрозумів, тоді не буду відволікати. А етикетку теж самі?"],
+   [15,"l","І етикетку самі, все своє."],
+   [18,"a","Дякую за відповідь, гарного дня."]
+  ]},
+ {id:"LR-4811",co:"ТОВ «Схід-Логістик»",kved:"52.29",who:"Наталя, адміністратор",
+  t:"13:44",dur:41,tier:"B",exit:null,reason:"bad_timing",cap:"—",kept:null,cost:1.72,
+  wave:"clean",gate:true,conf:0.72,
+  why:"Інтерес підтверджено словами, але від конкретного часу співрозмовниця ухилилась двічі («якось на тижні»). За правилом конкретного часу це НЕ зустріч — рівень B, ретрай через 5 днів. Низька впевненість: на 26-й секунді розпізнавання дало неоднозначний фрагмент.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня з Дніпра. Підкажіть, хто у вас займається замовленням поліграфії?"],
+   [7,"l","Ну я можу передати. А що там?"],
+   [11,"a","Бланки, наклейки на паллети, фірмові конверти. Хотіли б прорахувати ваш наступний тираж."],
+   [19,"l","Та можна, в принципі. Але я зараз не скажу коли."],
+   [26,"a","Давайте я запропоную: вівторок об 11:00 чи в середу о 14:00?"],
+   [32,"l","Слухайте, ну десь на тижні, я не можу зараз сказати."],
+   [38,"a","Добре, тоді я передзвоню на початку наступного тижня. Дякую!"]
+  ]},
+ {id:"LR-4808",co:"ТОВ «Крокус Пак»",kved:"22.22",who:"Володимир, виробництво",
+  t:"13:37",dur:19,tier:"D",exit:null,reason:"out_of_scope",kept:null,cost:0.78,
+  wave:"noisy",gate:false,conf:0.93,
+  why:"Компанії потрібні гофрокоробки. Це в конфігу Дніпрографа стоїть як дискваліфікатор, тому агент не витрачав час на продаж і завершив розмову за 19 секунд.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня. З ким можна поговорити щодо поліграфії?"],
+   [6,"l","А ви коробки робите? Нам гофротара потрібна."],
+   [11,"a","На жаль, гофротару ми не виробляємо — тільки друк. Не буду вас затримувати, дякую."],
+   [17,"l","Ага, зрозуміло."]
+  ]},
+ {id:"LR-4805",co:"ТОВ «Аква-Дніпро»",kved:"11.07",who:"Тетяна Бондар, маркетинг",
+  t:"13:29",dur:47,tier:"A",exit:"call_back",cap:"пн 11.08, 10:30",kept:"kept",cost:1.94,
+  wave:"long",gate:true,conf:0.89,
+  why:"Співрозмовниця у відрядженні, але сама назвала конкретний день і час. Агент звузив до точного часу і підтвердив. Зараховано рівнем A, бо час конкретний і потрапляє у вікно обдзвону.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня з Дніпра. Хто у вас відповідає за етикетку?"],
+   [7,"l","Це я. Але я у відрядженні до п'ятниці."],
+   [12,"a","Тоді не буду зараз відволікати. Коли краще набрати — у понеділок зранку?"],
+   [19,"l","Давайте в понеділок, тільки не рано."],
+   [24,"a","О пів на одинадцяту зручно?"],
+   [27,"l","Так, о пів на одинадцяту нормально."],
+   [31,"a","Записую: понеділок, одинадцяте серпня, 10:30. Наберу вас особисто. Все вірно?",null,"повтор"],
+   [39,"l","Так, домовились."]
+  ]},
+ {id:"LR-4802",co:"ПП «Гарант-Сервіс»",kved:"68.32",who:"—",
+  t:"13:22",dur:14,tier:"X",exit:null,reason:"hostile",kept:null,cost:0.58,
+  wave:"noisy",gate:false,conf:0.97,
+  why:"Пряма вимога не телефонувати. Номер одразу внесено до стоп-листа і виключено з усіх майбутніх кампаній без можливості ретраю.",
+  turns:[
+   [0,"a","Доброго дня! Дніпрограф, друкарня з Дніпра…"],
+   [4,"l","Не телефонуйте нам більше, видаліть номер."],
+   [9,"a","Зрозумів, вибачте за турботу. Номер видаляю, більше не потурбуємо."]
+  ]}
+];
+
+const FUNNEL=[
+ {k:"Набрано",n:1247,c:"var(--ink-3)",f:null},
+ {k:"Підняли слухавку",n:571,c:"var(--cold)",f:"answered"},
+ {k:"Дійшли до ОПР",n:243,c:"var(--amber)",f:"dm"},
+ {k:"Домовленість",n:74,c:"var(--ember)",f:"A"}
+];
+const TIERS=[
+ {t:"A",n:74,d:"Домовленість із датою"},
+ {t:"B",n:96,d:"Інтерес без конкретики"},
+ {t:"C",n:118,d:"Контакт ОПР здобуто"},
+ {t:"D",n:266,d:"Обґрунтована відмова"},
+ {t:"X",n:17,d:"Стоп-лист"}
+];
+const REASON_N={own_printing:71,has_supplier:104,no_need:38,not_dm:118,out_of_scope:22,bad_timing:96,hostile:17};
+
+const BATCHES=[
+ {n:"КВЕД 46.xx · опт",dials:412,ans:198,a:31,cost:521,note:"контроль"},
+ {n:"КВЕД 10–11 · харчпром",dials:388,ans:171,a:28,cost:487,note:"тест"},
+ {n:"КВЕД 47.xx · роздріб",dials:447,ans:202,a:15,cost:563,note:"тест"}
+];
+
+/* ===== helpers ===== */
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const fmt=n=>n.toLocaleString("uk-UA");
+const pc=(a,b)=>b?(100*a/b).toFixed(1)+"%":"—";
+
+let route="ogljad", filter=null;
+
+/* ===== pages ===== */
+const PAGES={
+ ogljad:{t:"Огляд",n:null,render:pOgljad},
+ dzvinky:{t:"Дзвінки",n:()=>fmt(1247),render:pDzvinky},
+ lidy:{t:"Ліди",n:()=>"74",render:pLidy},
+ partii:{t:"Партії",n:()=>"3",render:pPartii},
+ baza:{t:"База",n:null,render:pBaza},
+ konfig:{t:"Конфіг",n:()=>"v4",render:pKonfig}
+};
+
+function strip(){
+  return `<div class="strip">
+    <span class="pulse" aria-hidden="true"></span>
+    <div><span class="lbl">Кампанія</span><span class="val">Холодна база · серпень</span></div>
+    <div class="sep"></div>
+    <div><span class="lbl">Сьогодні</span><span class="val">148 / 200</span></div>
+    <div class="sep"></div>
+    <div><span class="lbl">Витрачено</span><span class="val">612 ₴</span></div>
+    <div class="sep"></div>
+    <div><span class="lbl">Ціна ліда A</span><span class="val">58 ₴</span></div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn">Пауза</button>
+      <button class="btn primary">Зупинити</button>
+    </div>
+  </div>`;
+}
+
+function pOgljad(m){
+  m.innerHTML = `<div class="page-head"><h1>Огляд</h1></div>
+    <p class="page-sub">Кожне число тут — двері. Натисніть на будь-яке, і відкриється список саме тих дзвінків, з яких воно склалося.</p>
+    ${strip()}
+    <div class="grid g4" id="stats"></div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card"><h3>Воронка</h3><p class="hint">Від набору до домовленості з датою</p>
+        <div class="funnel" id="funnel"></div></div>
+      <div class="card"><h3>Розподіл рівнів</h3><p class="hint">A і B — основний показник. C ніколи не додається до них в одну цифру</p>
+        <div id="tiers"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3>Причини відмов</h3>
+      <p class="hint">«Не цікаво» — не причина. Кожна відмова несе код, і саме він робить наступну кампанію дешевшою</p>
+      <div id="reasons"></div></div>`;
+
+  const stats=[
+    {l:"Домовленостей",v:"74",d:"5.9% від набору · 13.0% від відповідей",f:"A"},
+    {l:"Дотримано",v:"61",d:"82% домовленостей відбулись",f:"kept"},
+    {l:"Середня ціна ліда",v:"58 ₴",d:"проти 109 ₴ у KeyCall",f:null},
+    {l:"Дійшли до ОПР",v:"243",d:"42.6% від тих, хто підняв",f:"dm"}
+  ];
+  const sw=$("#stats");
+  stats.forEach(s=>{
+    const b=el("button","card stat",
+      `<span class="eyebrow">${s.l}</span><div class="v">${s.v}</div><div class="d">${s.d}</div>
+       ${s.f?'<span class="drill">відкрити →</span>':""}`);
+    if(s.f) b.onclick=()=>go("dzvinky",s.f); else b.style.cursor="default";
+    sw.appendChild(b);
+  });
+
+  const fw=$("#funnel"), top=FUNNEL[0].n;
+  FUNNEL.forEach(f=>{
+    const b=el("button","frow",
+      `<span class="fl">${f.k}</span>
+       <span class="bar"><i style="width:${100*f.n/top}%;background:${f.c}"></i></span>
+       <span class="fn">${fmt(f.n)}<span class="fp"> · ${pc(f.n,top)}</span></span>`);
+    if(f.f) b.onclick=()=>go("dzvinky",f.f); else b.style.cursor="default";
+    fw.appendChild(b);
+  });
+
+  const tw=$("#tiers"), tot=TIERS.reduce((a,b)=>a+b.n,0);
+  const lb=el("div","legendbar");
+  TIERS.forEach(t=>{const i=document.createElement("i");
+    i.style.width=(100*t.n/tot)+"%";
+    i.style.background={A:"var(--ember)",B:"var(--amber)",C:"var(--cold)",D:"var(--line-2)",X:"var(--alert)"}[t.t];
+    lb.appendChild(i);});
+  tw.appendChild(lb);
+  const lg=el("div","legend");
+  TIERS.forEach(t=>{
+    const b=el("button",null,`<span class="pill t-${t.t}"><span class="dot"></span>${t.t}</span>
+      <span class="num" style="font-size:13px;font-weight:600">${t.n}</span>
+      <span style="color:var(--ink-3);font-size:12px">${t.d}</span>`);
+    b.style.cssText="display:flex;align-items:center;gap:7px;padding:3px 0";
+    b.onclick=()=>go("dzvinky",t.t);
+    lg.appendChild(b);
+  });
+  tw.appendChild(lg);
+
+  const rw=$("#reasons"), rtot=Object.values(REASON_N).reduce((a,b)=>a+b,0);
+  const fr=el("div","funnel");
+  Object.entries(REASON_N).sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>{
+    const b=el("button","frow",
+      `<span class="fl">${REASONS[k]}</span>
+       <span class="bar"><i style="width:${100*n/rtot}%;background:${k==="hostile"?"var(--alert)":k==="not_dm"?"var(--cold)":"var(--line-2)"}"></i></span>
+       <span class="fn">${n}<span class="fp"> · ${pc(n,rtot)}</span></span>`);
+    b.onclick=()=>go("dzvinky",k);
+    fr.appendChild(b);
+  });
+  rw.appendChild(fr);
+  rw.appendChild(el("div","note",
+    `<b>not_dm — не відмова.</b> 118 дзвінків, де відповіла не та людина, сценарні системи ховають у «не цікаво». Тут це маршрут: ім'я й номер ОПР записані, дзвінки повернуто в чергу.`));
+}
+
+function match(c,f){
+  if(!f) return true;
+  if(f==="answered") return true;
+  if(f==="dm") return c.gate!==undefined && ["A","B","C"].includes(c.tier);
+  if(f==="kept") return c.kept==="kept";
+  if(["A","B","C","D","X"].includes(f)) return c.tier===f;
+  if(REASONS[f]) return c.reason===f;
+  if(EXITS[f]) return c.exit===f;
+  return true;
+}
+const FLABEL={answered:"Підняли слухавку",dm:"Дійшли до ОПР",kept:"Дотримані домовленості",
+  A:"Рівень A",B:"Рівень B",C:"Рівень C",D:"Рівень D",X:"Рівень X"};
+
+function pDzvinky(m){
+  const rows=CALLS.filter(c=>match(c,filter));
+  const lbl=filter?(FLABEL[filter]||REASONS[filter]||EXITS[filter]?.t||filter):null;
+  m.innerHTML=`<div class="page-head"><h1>Дзвінки</h1></div>
+   <p class="page-sub">${filter?`Відфільтровано: <b>${lbl}</b>. Ви прийшли сюди з числа на огляді — це і є та різниця, якої не було в KeyCall.`:"Кожен рядок відкривається: транскрипт, запис, і те, чому агент вирішив саме так."}</p>
+   <div class="filters" id="fl"></div>
+   <div class="tw"><table><thead><tr>
+     <th>Час</th><th>Компанія</th><th>Хто відповів</th><th>Трив.</th><th>Рівень</th>
+     <th>Результат</th><th>Зафіксовано</th><th>₴</th></tr></thead><tbody id="tb"></tbody></table></div>`;
+
+  const fw=$("#fl");
+  [["Усі",null],["Рівень A","A"],["Рівень B","B"],["Рівень C","C"],["Відмови","D"],["Стоп","X"],["Дотримані","kept"]]
+   .forEach(([t,f])=>{
+    const b=el("button","chip",t);
+    b.setAttribute("aria-pressed",String(filter===f));
+    b.onclick=()=>{filter=f;render();};
+    fw.appendChild(b);
+  });
+  fw.appendChild(el("span","n",`${rows.length} із ${CALLS.length} у вибірці · демодані`));
+
+  const tb=$("#tb");
+  rows.forEach(c=>{
+    const res=c.exit?EXITS[c.exit].t:(c.reason?REASONS[c.reason]:"—");
+    const tr=el("tr",null,
+     `<td class="n">${c.t}</td>
+      <td class="co">${c.co}<small>КВЕД ${c.kved} · ${c.id}</small></td>
+      <td>${c.who}</td>
+      <td class="n">${c.dur}с</td>
+      <td><span class="pill t-${c.tier}"><span class="dot"></span>${c.tier}</span></td>
+      <td>${res}${c.kept==="kept"?' <span class="pill t-ok">дотримано</span>':""}</td>
+      <td class="n">${c.cap||"—"}</td>
+      <td class="n">${c.cost.toFixed(2)}</td>`);
+    tr.onclick=()=>openCall(c);
+    tb.appendChild(tr);
+  });
+  if(!rows.length) tb.appendChild(el("tr",null,`<td colspan="8" style="color:var(--ink-3);padding:26px;text-align:center">У демонабір не потрапив жоден дзвінок із цим фільтром</td>`));
+}
+
+function pLidy(m){
+  const leads=CALLS.filter(c=>c.exit);
+  m.innerHTML=`<div class="page-head"><h1>Ліди</h1>
+    <button class="btn">Вивантажити CSV</button></div>
+   <p class="page-sub">Три виходи, і всі мають одну форму: названий наступний крок, зафіксоване значення, людина, до якої це прив'язано.</p>
+   <div class="grid g3" id="ex"></div>
+   <div class="tw" style="margin-top:16px"><table><thead><tr>
+     <th>Компанія</th><th>Контакт</th><th>Домовленість</th><th>Зафіксовано</th>
+     <th>Повтор</th><th>Статус</th></tr></thead><tbody id="lb"></tbody></table></div>
+   <div class="note" style="margin-top:14px"><b>Статус заповнює менеджер, не агент.</b>
+     Якщо лід — це «призначена зустріч», агент навчиться призначати зустрічі, які не відбуваються.
+     Тому головна цифра — не домовленості укладені, а дотримані.</div>`;
+
+  const cnt={book_meeting:31,send_offer:28,call_back:15};
+  const ew=$("#ex");
+  Object.entries(EXITS).forEach(([k,v])=>{
+    const b=el("button","card stat",
+      `<span class="eyebrow">${v.t}</span><div class="v">${cnt[k]}</div>
+       <div class="d">фіксується: ${v.v}</div><span class="drill">відкрити →</span>`);
+    b.onclick=()=>go("dzvinky",k);
+    ew.appendChild(b);
+  });
+
+  const lb=$("#lb");
+  leads.forEach(c=>{
+    const st=c.kept==="kept"?'<span class="pill t-ok">дотримано</span>':'<span class="pill t-B">очікує</span>';
+    const tr=el("tr",null,
+     `<td class="co">${c.co}<small>${c.id}</small></td>
+      <td>${c.who}</td>
+      <td>${EXITS[c.exit].t}</td>
+      <td class="n">${c.cap}</td>
+      <td><span class="pill t-ok">підтверджено</span></td>
+      <td>${st}</td>`);
+    tr.onclick=()=>openCall(c);
+    lb.appendChild(tr);
+  });
+}
+
+function pPartii(m){
+  m.innerHTML=`<div class="page-head"><h1>Партії</h1></div>
+   <p class="page-sub">Одна кампанія, різні зрізи бази. Порівняння показує, який КВЕД відповідає, а не який здається перспективним.</p>
+   <div class="tw"><table><thead><tr><th>Партія</th><th>Набрано</th><th>Підняли</th>
+     <th>% відповідей</th><th>Рівень A</th><th>Конверсія</th><th>Ціна ліда</th><th></th>
+     </tr></thead><tbody id="bb"></tbody></table></div>
+   <div class="card" style="margin-top:16px"><h3>Що з цього випливає</h3>
+     <p class="hint" style="margin:0"></p>
+     <p style="font-size:13.5px;margin:8px 0 0;color:var(--ink-2)">
+     Роздріб (КВЕД 47) відповідає не гірше за опт — 45.2% проти 48.1% — але домовленостей дає
+     вдвічі менше, і лід виходить 37.5 ₴ проти 16.8 ₴. Різниця не у здатності додзвонитись,
+     а в тому, що роздріб рідше має власний бюджет на друк.
+     <b>Без розбивки на партії це виглядало б як загальне падіння конверсії</b> — і правили б скрипт
+     замість того, щоб змінити базу.</p></div>`;
+  const bb=$("#bb");
+  BATCHES.forEach(b=>{
+    const cpl=(b.cost/b.a).toFixed(1);
+    const tr=el("tr",null,
+     `<td class="co">${b.n}<small>${b.note}</small></td>
+      <td class="n">${b.dials}</td><td class="n">${b.ans}</td>
+      <td class="n">${pc(b.ans,b.dials)}</td>
+      <td class="n"><b>${b.a}</b></td>
+      <td class="n">${pc(b.a,b.ans)}</td>
+      <td class="n">${cpl} ₴</td>
+      <td><span class="pill ${cpl<20?"t-A":cpl<30?"t-B":"t-D"}">${cpl<20?"тримати":cpl<30?"стежити":"звузити"}</span></td>`);
+    tr.onclick=()=>go("dzvinky",null);
+    bb.appendChild(tr);
+  });
+}
+
+function pBaza(m){
+  m.innerHTML=`<div class="page-head"><h1>База</h1></div>
+   <p class="page-sub">Завантаження списку з міткою партії. Валідація показується до запуску, а не після.</p>
+   <div class="drop"><div class="big">Перетягніть файл або натисніть</div>
+     <div class="sm">CSV або XLSX · назва, телефон, КВЕД, місто, контактна особа</div></div>
+   <div class="grid g4" style="margin-top:16px">
+     <div class="card"><span class="eyebrow">Рядків у файлі</span><div class="v num" style="font-size:26px;font-weight:620">1 604</div></div>
+     <div class="card"><span class="eyebrow">Номер нормалізовано</span><div class="v num" style="font-size:26px;font-weight:620">1 581</div></div>
+     <div class="card"><span class="eyebrow">Дублікати</span><div class="v num" style="font-size:26px;font-weight:620;color:var(--amber)">294</div></div>
+     <div class="card"><span class="eyebrow">У стоп-листі</span><div class="v num" style="font-size:26px;font-weight:620;color:var(--alert)">40</div></div>
+   </div>
+   <div class="card" style="margin-top:14px">
+     <h3>До обдзвону піде 1 247 номерів</h3>
+     <p class="hint">357 відсіяно до першого дзвінка, і кожен — з причиною</p>
+     <div class="tw" style="box-shadow:none"><table><thead><tr><th>Причина</th><th>Рядків</th><th>Що зроблено</th></tr></thead><tbody>
+       <tr><td>Дублікат у цьому ж файлі</td><td class="n">211</td><td>лишено перший запис</td></tr>
+       <tr><td>Вже є в попередніх партіях</td><td class="n">83</td><td>пропущено</td></tr>
+       <tr><td>Стоп-лист (просили не дзвонити)</td><td class="n">40</td><td>виключено назавжди</td></tr>
+       <tr><td>Номер не розпізнано</td><td class="n">23</td><td>у файл помилок</td></tr>
+     </tbody></table></div>
+     <div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+       <input type="text" value="КВЕД 46.xx · опт · серпень" style="max-width:280px">
+       <button class="btn primary">Запустити партію</button>
+       <span style="font-size:12.5px;color:var(--ink-3)">мітка партії потрібна, щоб потім було що порівнювати</span>
+     </div>
+   </div>`;
+}
+
+function pKonfig(m){
+  m.innerHTML=`<div class="page-head"><h1>Конфіг</h1>
+    <button class="btn primary">Зберегти як v5</button></div>
+   <p class="page-sub">Це редагуєте ви, не ми. Зміни безкоштовні й необмежені — саме тут ламалася попередня система.</p>
+   <div class="grid g2">
+     <div class="card">
+       <h3>Розмова</h3><p class="hint">Формулювання, які чує людина</p>
+       <div class="field"><label>Перша фраза до секретаря</label>
+         <textarea>Доброго дня! Компанія Дніпрограф, друкарня з Дніпра. Підкажіть, будь ласка, з ким у вас можна поговорити щодо замовлення поліграфії?</textarea>
+         <span class="help">Коротко й без продажу. Секретар не купує, але може не з'єднати.</span></div>
+       <div class="field"><label>Заперечення: «у нас вже є друкарня»</label>
+         <textarea>Це зрозуміло, і я не пропоную нікого міняти. Зазвичай нас беруть як другий варіант — на випадок, коли основна друкарня завантажена або горять терміни. Можна ми просто прорахуємо ваш наступний тираж?</textarea></div>
+       <div class="field"><label>Пропозиція слотів</label>
+         <input type="text" value="Вам зручніше {день} о {час1} чи о {час2}?">
+         <span class="help">Пропонувати два конкретні часи надійніше, ніж питати відкрито.</span></div>
+     </div>
+     <div>
+       <div class="card">
+         <h3>Правила</h3><p class="hint">Межі, які агент не переходить</p>
+         <div class="field"><label>Вікно обдзвону</label>
+           <input type="text" value="Пн–Пт · 09:00–13:00, 14:00–18:00 · Europe/Kyiv"></div>
+         <div class="field"><label>Нечіткий час</label>
+           <select><option>Не приймати — це рівень B, не зустріч</option><option>Приймати як домовленість</option></select>
+           <span class="help">«Якось на тижні» — задача, яку неможливо виконати.</span></div>
+         <div class="field"><label>Повтор уголос перед завершенням</label>
+           <select><option>Обов'язково (інакше не рівень A)</option><option>Вимкнено</option></select></div>
+         <div class="field" style="margin:0"><label>Дискваліфікатори</label>
+           <input type="text" value="пакування, гофротара, друк на тканині"></div>
+       </div>
+       <div class="card" style="margin-top:14px">
+         <h3>Історія версій</h3><p class="hint">Кожен дзвінок знає, з якою версією він ішов</p>
+         <div class="vhist">
+           <div class="vrow"><span class="vn">v4</span><span>Пом'якшено заперечення «є друкарня»</span><span class="vd">05.08 11:20</span></div>
+           <div class="vrow"><span class="vn">v3</span><span>Додано пропозицію двох слотів</span><span class="vd">04.08 16:05</span></div>
+           <div class="vrow"><span class="vn">v2</span><span>Нечіткий час більше не зараховується</span><span class="vd">04.08 09:41</span></div>
+           <div class="vrow"><span class="vn">v1</span><span>Початкова конфігурація</span><span class="vd">01.08 14:00</span></div>
+         </div>
+       </div>
+     </div>
+   </div>`;
+}
+
+/* ===== call drawer ===== */
+function openCall(c){
+  const d=$("#drawer");
+  const res=c.exit?EXITS[c.exit].t:(c.reason?REASONS[c.reason]:"—");
+  d.innerHTML=`
+   <div class="dhead">
+     <div><span class="eyebrow">${c.id} · ${c.t} · ${c.dur} с</span>
+       <h2 style="font-size:19px;margin-top:3px">${c.co}</h2>
+       <div style="color:var(--ink-3);font-size:13px">${c.who}</div></div>
+     <button class="x" id="xx" aria-label="Закрити">×</button>
+   </div>
+   <div class="dbody">
+     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+       <span class="pill t-${c.tier}"><span class="dot"></span>рівень ${c.tier}</span>
+       <span class="pill t-C">${res}</span>
+       ${c.kept==="kept"?'<span class="pill t-ok">дотримано</span>':""}
+       <span class="pill t-D">впевненість ${(c.conf*100).toFixed(0)}%</span>
+     </div>
+
+     <div>
+       <span class="eyebrow">Запис · два канали</span>
+       <canvas class="wave" id="wv"></canvas>
+       <div class="wkey">
+         <span><i class="sw" style="background:var(--cold)"></i>агент</span>
+         <span><i class="sw" style="background:var(--ember)"></i>співрозмовник</span>
+         <span><i class="sw" style="background:var(--line-2)"></i>пауза</span>
+         <span style="margin-left:auto">${ENV[c.wave].dur} с · 8 кГц</span>
+       </div>
+     </div>
+
+     <dl class="kv">
+       <dt>Результат</dt><dd>${res}</dd>
+       ${c.cap?`<dt>Зафіксовано</dt><dd>${c.cap}</dd>`:""}
+       <dt>Секретар</dt><dd>${c.gate?"так, пройдено":"вийшли одразу на людину"}</dd>
+       <dt>Вартість</dt><dd>${c.cost.toFixed(2)} ₴</dd>
+       <dt>Конфіг</dt><dd>v4 · від 05.08 11:20</dd>
+     </dl>
+
+     <div class="why"><span class="eyebrow">Чому агент вирішив саме так</span><p>${c.why}</p></div>
+
+     <div>
+       <span class="eyebrow" style="display:block;margin-bottom:9px">Транскрипт</span>
+       <div class="turns" id="tn"></div>
+     </div>
+   </div>`;
+  const tn=d.querySelector("#tn");
+  c.turns.forEach(t=>{
+    const [s,who,txt,,flag]=t;
+    tn.appendChild(el("div","turn "+(who==="a"?"agent":"lead"),
+      `<span class="ts">${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}</span>
+       <span class="tx"><span class="who">${who==="a"?"агент":"співрозмовник"}${flag?`<span class="flag">${flag}</span>`:""}</span>${txt}</span>`));
+  });
+  d.querySelector("#xx").onclick=closeDrawer;
+  d.classList.add("on"); $("#scrim").classList.add("on");
+  drawWave(d.querySelector("#wv"), ENV[c.wave].env, c.turns, ENV[c.wave].dur);
+  d.scrollTop=0;
+}
+function closeDrawer(){$("#drawer").classList.remove("on");$("#scrim").classList.remove("on");}
+$("#scrim").onclick=closeDrawer;
+addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
+
+function drawWave(cv,env,turns,dur){
+  const dpr=devicePixelRatio||1, w=cv.clientWidth, h=74;
+  cv.width=w*dpr; cv.height=h*dpr;
+  const x=cv.getContext("2d"); x.scale(dpr,dpr); x.clearRect(0,0,w,h);
+  const cs=getComputedStyle(document.documentElement);
+  const cA=cs.getPropertyValue("--cold").trim(), cL=cs.getPropertyValue("--ember").trim(),
+        cG=cs.getPropertyValue("--line-2").trim();
+  const n=env.length, bw=w/n, mid=h/2;
+  const speaker=t=>{
+    let s="g";
+    for(const tr of turns){ if(t>=tr[0]) s=tr[1]==="a"?"a":"l"; }
+    return s;
+  };
+  const lastT=turns.length?turns[turns.length-1][0]:0;
+  for(let i=0;i<n;i++){
+    const t=(i/n)*Math.max(dur,lastT+4);
+    const v=env[i], hh=Math.max(1.2, v*(h*0.42));
+    const s=v<0.02?"g":speaker(t);
+    x.fillStyle=s==="a"?cA:s==="l"?cL:cG;
+    x.globalAlpha=v<0.02?0.55:0.9;
+    x.fillRect(i*bw, mid-hh, Math.max(bw-0.6,0.7), hh*2);
+  }
+  x.globalAlpha=1;
+  x.strokeStyle=cG; x.lineWidth=1;
+  x.beginPath(); x.moveTo(0,mid+.5); x.lineTo(w,mid+.5); x.stroke();
+}
+
+/* ===== router ===== */
+function go(r,f){ route=r; filter=f===undefined?null:f; render(); closeDrawer();
+  scrollTo({top:0,behavior:"instant"}); }
+
+function render(){
+  const nv=$("#nav"); nv.innerHTML="";
+  Object.entries(PAGES).forEach(([k,p])=>{
+    const b=el("button",null,`<span>${p.t}</span>${p.n?`<span class="count">${p.n()}</span>`:""}`);
+    b.setAttribute("aria-current",String(k===route));
+    b.onclick=()=>go(k);
+    nv.appendChild(b);
+  });
+  const m=$("#main"); m.innerHTML="";
+  PAGES[route].render(m);
+}
+
+/* theme */
+const root=document.documentElement;
+$("#theme").onclick=()=>{
+  const cur=root.getAttribute("data-theme")
+    || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  root.setAttribute("data-theme", cur==="dark"?"light":"dark");
+  const cv=document.querySelector("#wv");
+  if(cv) render();
+};
+addEventListener("resize",()=>{const cv=document.querySelector("#wv"); if(cv) closeDrawer();});
+
+render();
+</script>
