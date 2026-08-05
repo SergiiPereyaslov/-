@@ -105,6 +105,85 @@ lower answer rate it would not be.
 
 ---
 
+## IP telephony and the caller-ID question
+
+Client asked whether IP telephony can be used without involving a mobile
+operator. The answer separates into two sides that are easy to conflate.
+
+**Our side: yes, entirely.** Every provider under consideration — Twilio,
+Telnyx, Zadarma — *is* IP telephony. Nothing originates through a mobile
+operator, and nothing needs to. This was never the constraint.
+
+**The receiving side: no, and that is where the risk lives.** If the number we
+dial is a Kyivstar subscriber, Kyivstar's filtering applies to the incoming
+call no matter how it was originated. Choosing IP telephony does not opt out of
+the recipient's carrier — it only changes what caller ID we present to it.
+
+### The finding that matters
+
+Since 2 October, Ukrainian mobile operators — Kyivstar, Vodafone, lifecell —
+operate a system for **blocking numbers used for spam calls**, and subscribers
+can report a number through the operator's app or hotline.
+`[SEARCH: itc.ua, thedigital.gov.ua, 2026-08-05]`
+
+The mechanism is **complaint-driven**. That changes the shape of the risk in a
+useful way: exposure scales with how irritating the calls are, not merely with
+how many are placed. 100 calls a day that exit politely and never call a
+refuser twice generate few complaints. The same 100 calls made by an agent that
+argues, repeats itself, and re-dials people who already said no will get the
+number reported.
+
+This reframes several existing design decisions. The 45-second gatekeeper cap,
+the two-refusal limit, durable suppression that survives re-import, and the
+prohibition on arguing were all introduced as cost or brand measures. They are
+also **number-survival measures**. Cheap and inoffensive turn out to be the
+same engineering objective here.
+
+Note also that this project dials **company** numbers, many of which are office
+landlines or PBX lines rather than mobile subscriptions. Consumer anti-spam
+filtering does not reach those. Exposure is real but smaller than it would be
+for B2C dialling — and it is unevenly distributed, since small firms often
+publish a mobile.
+
+### SIP trunk resolves R2 by construction
+
+A point worth stating plainly, because it changes the architecture: **a SIP
+trunk does not need to "expose" real-time media — with a SIP trunk you are the
+media endpoint.**
+
+The concern in R2 was that Ukrainian providers offer call control and recording
+but no live audio API. That concern applies to *cloud PBX products*. It does
+not apply to a SIP trunk: the provider hands over signalling and RTP, and
+whatever terminates that SIP leg — LiveKit SIP, Asterisk, FreeSWITCH, Pipecat's
+transport — has the audio in both directions by definition.
+
+Zadarma advertises SIP trunk with no additional fee for trunk usage, plus
+Ukrainian city numbers. `[SEARCH: zadarma.com/en/services/calls/sip-trunk/,
+2026-08-05]`
+
+If that holds, it points to an architecture that was not obvious before:
+
+```
+Ukrainian SIP trunk (local rates, Dnipro city caller ID)
+        → LiveKit SIP / Pipecat (own media endpoint)
+        → STT → tiered models → TTS
+```
+
+This plausibly beats Twilio on the largest line item — international
+termination into Ukraine — while giving a caller ID that matches the pitch
+("друкарня з Дніпра") rather than an unfamiliar or foreign number.
+
+### Caller ID strategy
+
+| Caller ID presented | Assessment |
+|---|---|
+| **Ukrainian city number (Dnipro)** | Best fit. Looks like the business it is, consistent with what the agent says, and outside the mobile-spam heuristics aimed at consumer nuisance calls |
+| Ukrainian mobile | Plausible to a human, but the most exposed to operator filtering |
+| Foreign number | Worst. Low answer rates and immediate suspicion |
+| Withheld | Effectively fatal to a 90% answer rate |
+
+Recorded as the working recommendation pending verification, not a decision.
+
 ## What this means for the three architectures (P3)
 
 Provisional, pending verified numbers:
