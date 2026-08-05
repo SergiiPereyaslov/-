@@ -232,6 +232,51 @@ Handle time is the lever we fully control, and it is probably better than
 previously assumed — see A-001, revised. Cost per minute is what Stage 2 is
 for.
 
+## Setup fees, and where the real saving is
+
+`[CLIENT]` KeyCall also charges **$250 for configuring the robot and the voice** —
+and again for each script change.
+
+That reframes the comparison. Running cost is close to a wash; the difference
+is in iteration.
+
+At 2,100 dials/month (1,890 connections):
+
+| | Monthly running | Per script change |
+|---|---|---|
+| KeyCall | ₴8,505 ($190) | **$250 (₴11,195)** |
+| Us at $0.13/min | ₴11,002 — 129% of KeyCall | ₴0 |
+| **Us at $0.10/min** | **₴8,463 — parity** | **₴0** |
+| Us at $0.07/min | ₴5,924 — 70% | ₴0 |
+
+Over a year with four script revisions:
+
+```
+KeyCall:  ₴102,060 running + ₴44,780 in changes  = ₴146,840
+Us @0.10: ₴101,561 running + ₴0                  = ₴101,561
+Us @0.07: ₴ 71,093 running + ₴0                  = ₴ 71,093
+```
+
+**The honest reading:** at $0.10/min the per-minute cost is a wash. The saving
+is ₴44,780 a year in change fees, plus whatever the conversion difference is
+worth. Below $0.10/min it becomes a saving on both.
+
+This also means the per-minute figure is less decisive for the internal case
+than it looked. It is decisive for the *product* case, where it is margin.
+
+### The client's actual priority
+
+> «Це основне — щоб Дніпрограф не залежав.»
+
+Independence, not price. The system is an asset they own: the config, the
+accumulated transcripts, the objection library, the decision-maker contacts
+harvested on lost calls. None of that is portable out of a service provider,
+and all of it compounds.
+
+That is why `core/learning-loop.md` exists and why config versioning is in the
+MVP definition of done. A system that cannot show what changed and why is not
+an asset — it is another provider, just one you host yourself.
+
 ## Open questions this raises
 
 1. **What do we charge per lead?** Needs the market rate and what KeyCall

@@ -1,16 +1,27 @@
-# MVP Scope — pilot for tenant #1
+# MVP Scope — Дніпрограф calls on its own
 
-> **Re-baselined.** The project is now a service sold to businesses — see
-> `artifacts/PRODUCT.md`. Дніпрограф is customer number one and the pilot.
->
-> The MVP itself is unchanged: numbers in, calls out, scored leads back. What
-> changed is its purpose. It is no longer an internal tool but the proof that
-> the service works on one real business before it is sold to a second.
->
-> One addition follows from the new model: **per-tenant cost attribution must
-> be built in from the start.** Under per-lead pricing we carry the cost of
-> every failed call, so knowing which client is unprofitable is not reporting —
-> it is the business. Retrofitting it means never knowing.
+**The goal, stated by the client and now the single measure of done:**
+
+> «Потрібно створити так, щоб Дніпрограф зміг телефонувати. Це основне — щоб
+> Дніпрограф не залежав, і щоб була жива модель, а не робот. Модель, яка
+> постійно навчається.» `[CLIENT]`
+
+Three requirements, in the client's own order of importance:
+
+1. **Дніпрограф can call.** Independently, without a service provider in the
+   loop.
+2. **A live model, not a robot.** Conversation, not a decision tree.
+3. **It keeps improving**, and changing the script costs nothing. See
+   `core/learning-loop.md`.
+
+Selling this to other businesses (`artifacts/PRODUCT.md`) remains the direction
+of travel, but it is explicitly **not** what the MVP is for. Multi-tenancy,
+billing and per-tenant cost attribution are deferred until Дніпрограф is calling
+and the numbers are real.
+
+> The build itself is unchanged: numbers in, calls out, scored leads back. What
+> changed is what it must prove — independence and improvement, not just
+> function.
 
 Client direction: build the dialer first. One thing, working end to end, before
 anything is integrated around it.
@@ -86,6 +97,10 @@ speaks. That is P2. Concretely, before a line of code:
 - [ ] Every call produces a scored lead record with a transcript
 - [ ] Measured cost per answered call is compared against the gate
 - [ ] It stops on the daily spend cap without being redeployed
+- [ ] Every call records the **config version** in force, so a change in results
+      can be attributed to a change in configuration
+- [ ] Changing the script, an objection, or the wording is a config edit —
+      minutes, no cost, revertible
 
 Nothing here mentions a CRM, a manager, or an email. If the dialer does the
 above, it works.
