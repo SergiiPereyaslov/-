@@ -1,0 +1,43 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<p class="small"><a href="/profile">← Анкета</a></p>
+<span class="lec-block">Крок <%= step %> з <%= total %></span>
+<h1><%= screen.title %></h1>
+<p class="muted" style="max-width:66ch;"><%= screen.intro %></p>
+
+<% if (errors.length) { %>
+  <div class="alert alert-err">
+    <strong>Не збережено як завершене:</strong>
+    <ul style="margin:6px 0 0;"><% errors.forEach(function (e) { %><li><%= e %></li><% }); %></ul>
+    <p class="small" style="margin:8px 0 0;">Введене вже збережено — можна повернутися пізніше.</p>
+  </div>
+<% } %>
+
+<form method="post" action="/profile/<%= screen.id %>" class="card">
+  <% screen.fields.forEach(function (fl) { %>
+    <div class="field">
+      <label for="<%= fl.key %>"><%= fl.label %><%= fl.required ? '' : ' (не обов’язково)' %></label>
+      <% const val = data[fl.key]; %>
+      <% if (fl.type === 'lines') { %>
+        <textarea id="<%= fl.key %>" name="<%= fl.key %>" rows="<%= fl.rows || 5 %>"
+          placeholder="<%= fl.placeholder || '' %>"><%= Array.isArray(val) ? val.join('\n') : '' %></textarea>
+      <% } else if (fl.type === 'textarea') { %>
+        <textarea id="<%= fl.key %>" name="<%= fl.key %>" rows="<%= fl.rows || 3 %>"
+          placeholder="<%= fl.placeholder || '' %>"><%= val || '' %></textarea>
+      <% } else { %>
+        <input type="text" id="<%= fl.key %>" name="<%= fl.key %>"
+          value="<%= val || '' %>" placeholder="<%= fl.placeholder || '' %>">
+      <% } %>
+      <% if (fl.hint) { %><p class="hint"><%= fl.hint %></p><% } %>
+    </div>
+  <% }); %>
+
+  <div class="actions">
+    <button class="btn btn-primary"><%= next ? 'Зберегти й далі →' : 'Зберегти й завершити' %></button>
+    <% if (prev) { %><a class="btn" href="/profile/<%= prev.id %>">← Назад</a><% } %>
+    <a class="btn" href="/profile">До списку</a>
+  </div>
+</form>
+
+<%- include('../partials/foot') %>

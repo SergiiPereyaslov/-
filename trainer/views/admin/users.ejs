@@ -1,0 +1,45 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Люди</h1>
+<p class="muted">Менеджери компанії <strong><%= tenant.name %></strong> та їхній прогрес.</p>
+
+<% if (error) { %><div class="alert alert-err"><%= error %></div><% } %>
+
+<table>
+  <thead><tr><th>Ім’я</th><th>Логін</th><th>Роль</th><th>Курс</th></tr></thead>
+  <tbody>
+    <% people.forEach(function (p) { %>
+      <tr>
+        <td><%= p.user.full_name %></td>
+        <td class="mono small"><%= p.user.username %></td>
+        <td><%= p.user.role === 'admin' ? 'керівник' : 'менеджер' %></td>
+        <td>
+          <%= p.passed %> з <%= p.total %>
+          <div class="progress" style="width:120px; margin-top:4px;"><i style="width:<%= p.percent %>%"></i></div>
+        </td>
+      </tr>
+    <% }); %>
+    <% if (!people.length) { %>
+      <tr><td colspan="4" class="muted">Ще нікого немає.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<h2>Додати людину</h2>
+<form method="post" action="/admin/users" class="card">
+  <div class="field"><label for="full_name">Ім’я та прізвище</label>
+    <input type="text" id="full_name" name="full_name" placeholder="Олександр Коваль"></div>
+  <div class="field"><label for="username">Логін</label>
+    <input type="text" id="username" name="username" placeholder="oleksandr"></div>
+  <div class="field"><label for="password">Тимчасовий пароль</label>
+    <input type="text" id="password" name="password" placeholder="щонайменше 4 символи"></div>
+  <div class="field"><label for="role">Роль</label>
+    <select id="role" name="role">
+      <option value="manager">Менеджер — вчиться й тренується</option>
+      <option value="admin">Керівник — заповнює анкету й бачить звіти</option>
+    </select></div>
+  <button class="btn btn-primary">Додати</button>
+</form>
+
+<%- include('../partials/foot') %>

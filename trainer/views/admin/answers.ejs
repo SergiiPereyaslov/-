@@ -1,0 +1,34 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Відповіді на вправи</h1>
+<p class="muted" style="max-width:66ch;">
+  Відкриті питання «перепиши фразу». Вони не впливають на бал за тест — саме тут видно,
+  чи менеджер справді зрозумів матеріал, чи вгадав варіанти.
+</p>
+
+<% if (!items.length) { %>
+  <div class="empty-state"><p>Відповідей ще немає.</p></div>
+<% } %>
+
+<% items.forEach(function (it) { %>
+  <div class="q">
+    <span class="q-num">
+      <%= it.full_name %> · <%= it.lectureTitle %> · <%= it.created_at %>
+      <% if (it.ai_score !== null && it.ai_score !== undefined) { %> · оцінка <%= it.ai_score %>/100<% } %>
+    </span>
+    <% if (it.question) { %><p class="q-text"><%= it.question.q %></p><% } %>
+    <div class="opt"><span><%= it.answer %></span></div>
+    <% if (it.ai) { %>
+      <p class="why"><%= it.ai.feedback %></p>
+      <% if (it.ai.better) { %><p class="why"><strong>Кращий варіант:</strong> <%= it.ai.better %></p><% } %>
+    <% } else { %>
+      <p class="why muted">Автоматичної оцінки немає — перевірте самі.</p>
+    <% } %>
+    <% if (it.question && it.question.reference) { %>
+      <p class="why"><strong>Орієнтир:</strong> <%= it.question.reference %></p>
+    <% } %>
+  </div>
+<% }); %>
+
+<%- include('../partials/foot') %>

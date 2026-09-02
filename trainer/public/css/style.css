@@ -1,0 +1,190 @@
+/* Тренажер холодних дзвінків — базові стилі. Свідомо простий: один файл,
+   без збірки, без залежностей. */
+
+:root {
+  --paper:#f4f6fa; --surface:#fff; --surface-2:#eef1f7;
+  --ink:#17233d; --ink-soft:#4a587a; --ink-faint:#7b88a5; --rule:#d7deeb;
+  --blue:#2e4c9e; --blue-wash:#e5eaf7;
+  --brass:#a87c2c; --brass-wash:#f5edda;
+  --pass:#2c7357; --pass-wash:#e0efe8;
+  --stop:#a03a46; --stop-wash:#f7e4e6;
+  --radius:6px;
+}
+
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--paper); color:var(--ink);
+  font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+a { color:var(--blue); }
+h1 { font-size:27px; line-height:1.2; margin:0 0 8px; }
+h2 { font-size:20px; margin:32px 0 12px; }
+h3 { font-size:17px; margin:24px 0 8px; }
+p { margin:0 0 14px; }
+
+.container { max-width:820px; margin:0 auto; padding:28px 20px 80px; }
+.container-wide { max-width:1080px; }
+
+/* ── Шапка ── */
+.topbar { background:var(--surface); border-bottom:1px solid var(--rule); }
+.topbar-inner {
+  max-width:1080px; margin:0 auto; padding:12px 20px;
+  display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+}
+.brand { font-weight:700; text-decoration:none; color:var(--ink); font-size:17px; }
+.mainnav { display:flex; gap:16px; flex:1; flex-wrap:wrap; }
+.mainnav a { text-decoration:none; color:var(--ink-soft); padding:4px 0; border-bottom:2px solid transparent; }
+.mainnav a:hover { color:var(--ink); }
+.mainnav a.active { color:var(--ink); border-bottom-color:var(--brass); font-weight:600; }
+.userbox { display:flex; align-items:center; gap:12px; font-size:14px; color:var(--ink-faint); }
+.tenantbar { background:var(--surface-2); border-bottom:1px solid var(--rule); }
+.tenantbar-inner {
+  max-width:1080px; margin:0 auto; padding:8px 20px;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:14px;
+}
+.tenantbar form { display:inline; }
+.tenant-pill {
+  border:1px solid var(--rule); background:var(--surface); color:var(--ink-soft);
+  border-radius:20px; padding:3px 12px; font-size:13px; cursor:pointer;
+}
+.tenant-pill.active { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600; }
+
+/* ── Картки, кнопки ── */
+.card {
+  background:var(--surface); border:1px solid var(--rule);
+  border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;
+}
+.btn {
+  display:inline-block; border:1px solid var(--rule); background:var(--surface);
+  color:var(--ink); border-radius:var(--radius); padding:9px 16px; font-size:15px;
+  text-decoration:none; cursor:pointer; font-family:inherit;
+}
+.btn:hover { background:var(--surface-2); }
+.btn-primary { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600; }
+.btn-primary:hover { background:#25407f; }
+.btn-sm { padding:5px 11px; font-size:14px; }
+.btn[disabled] { opacity:.5; cursor:not-allowed; }
+
+.alert { border-radius:var(--radius); padding:13px 16px; margin-bottom:18px; font-size:15px; }
+.alert-warn { background:var(--brass-wash); border:1px solid #e4d4ae; }
+.alert-ok { background:var(--pass-wash); border:1px solid #b9d9c9; }
+.alert-err { background:var(--stop-wash); border:1px solid #e9c2c6; }
+
+.muted { color:var(--ink-faint); }
+.small { font-size:14px; }
+.mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+
+/* ── Прогрес ── */
+.progress { height:8px; background:var(--surface-2); border-radius:4px; overflow:hidden; }
+.progress > i { display:block; height:100%; background:var(--pass); }
+.progress.brass > i { background:var(--brass); }
+
+/* ── Список лекцій ── */
+.lectures { list-style:none; padding:0; margin:0; }
+.lec-item {
+  display:flex; gap:14px; align-items:flex-start;
+  background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius);
+  padding:16px 18px; margin-bottom:10px;
+}
+.lec-item.locked { opacity:.55; }
+.lec-num {
+  flex:none; width:30px; height:30px; border-radius:50%;
+  background:var(--surface-2); color:var(--ink-faint);
+  display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600;
+}
+.lec-item.done .lec-num { background:var(--pass); color:#fff; }
+.lec-body { flex:1; min-width:0; }
+.lec-body h3 { margin:0 0 3px; font-size:17px; }
+.lec-body h3 a { text-decoration:none; color:var(--ink); }
+.lec-meta { font-size:13px; color:var(--ink-faint); }
+.lec-block { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--brass); }
+
+.badge { display:inline-block; font-size:12px; padding:2px 9px; border-radius:20px; white-space:nowrap; }
+.badge-ok { background:var(--pass-wash); color:var(--pass); }
+.badge-wait { background:var(--surface-2); color:var(--ink-faint); }
+.badge-todo { background:var(--brass-wash); color:var(--brass); }
+
+/* ── Текст лекції ── */
+.lecture { background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); padding:28px 32px; }
+.lecture p { max-width:68ch; }
+.lecture ul, .lecture ol { max-width:68ch; padding-left:22px; }
+.lecture li { margin-bottom:7px; }
+.note {
+  background:var(--brass-wash); border-left:3px solid var(--brass);
+  border-radius:0 var(--radius) var(--radius) 0; padding:13px 17px; margin:18px 0; font-size:16px;
+}
+.company-box {
+  background:var(--blue-wash); border:1px solid #c9d6f0; border-radius:var(--radius);
+  padding:15px 18px; margin:18px 0;
+}
+.company-box .label {
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--blue);
+  display:block; margin-bottom:5px;
+}
+.formula { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:16px 0; }
+.formula span {
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:20px;
+  padding:6px 15px; font-weight:600; font-size:15px;
+}
+.formula i { color:var(--ink-faint); font-style:normal; }
+.pair { display:grid; gap:12px; margin:18px 0; }
+@media (min-width:700px) { .pair { grid-template-columns:1fr 1fr; } }
+.pair-box { border-radius:var(--radius); padding:14px 16px; font-size:15px; }
+.pair-bad { background:var(--stop-wash); border:1px solid #e9c2c6; }
+.pair-good { background:var(--pass-wash); border:1px solid #b9d9c9; }
+.pair-box .label { font-size:12px; text-transform:uppercase; letter-spacing:.07em; display:block; margin-bottom:6px; font-weight:600; }
+.pair-bad .label { color:var(--stop); }
+.pair-good .label { color:var(--pass); }
+.pair-why { grid-column:1/-1; font-size:14px; color:var(--ink-soft); }
+.funnel { display:flex; flex-wrap:wrap; gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; margin:18px 0; }
+.funnel div { background:var(--surface); padding:14px 18px; flex:1; min-width:120px; }
+.funnel b { display:block; font-size:22px; }
+.funnel span { font-size:13px; color:var(--ink-soft); }
+.levels { display:grid; gap:10px; margin:18px 0; }
+.level { border:1px solid var(--rule); border-radius:var(--radius); padding:13px 16px; background:var(--surface); }
+.level.weak { border-left:3px solid var(--stop); }
+.level.mid { border-left:3px solid var(--brass); }
+.level.strong { border-left:3px solid var(--pass); }
+.level b { display:block; margin-bottom:3px; }
+.chain { list-style:none; padding:0; margin:16px 0; }
+.chain li { padding:8px 0 8px 20px; border-left:2px solid var(--rule); margin:0; }
+.chain li:last-child { border-left-color:var(--pass); font-weight:600; }
+.exercise {
+  background:var(--surface-2); border:1px dashed var(--ink-faint);
+  border-radius:var(--radius); padding:16px 18px; margin:24px 0 0;
+}
+.exercise .label { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); display:block; margin-bottom:6px; }
+
+/* ── Форми й тест ── */
+label { display:block; font-weight:600; margin-bottom:5px; font-size:15px; }
+input[type=text], input[type=password], textarea, select {
+  width:100%; padding:9px 11px; border:1px solid var(--rule); border-radius:var(--radius);
+  font:inherit; background:var(--surface); color:var(--ink);
+}
+textarea { resize:vertical; }
+.field { margin-bottom:18px; }
+.field .hint { font-size:13.5px; color:var(--ink-faint); margin:5px 0 0; }
+.actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:22px; }
+
+.q { background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); padding:20px 22px; margin-bottom:14px; }
+/* Без uppercase: велика «З» у «1 з 6» читається як цифра 3. */
+.q-num { font-size:12.5px; color:var(--ink-faint); }
+.q-text { font-weight:600; margin:6px 0 14px; }
+.opt { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--rule); border-radius:var(--radius); margin-bottom:8px; cursor:pointer; }
+.opt:hover { background:var(--surface-2); }
+.opt input { margin-top:4px; flex:none; }
+.opt.correct { background:var(--pass-wash); border-color:#b9d9c9; }
+.opt.wrong { background:var(--stop-wash); border-color:#e9c2c6; }
+.why { font-size:14px; color:var(--ink-soft); margin-top:7px; }
+
+.score { display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+.score b { font-size:38px; line-height:1; }
+.score.ok b { color:var(--pass); }
+.score.fail b { color:var(--stop); }
+
+table { border-collapse:collapse; width:100%; background:var(--surface); }
+th, td { text-align:left; padding:10px 13px; border-bottom:1px solid var(--rule); font-size:15px; }
+th { font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); background:var(--surface-2); }
+
+.sitefoot { text-align:center; padding:24px; font-size:13px; color:var(--ink-faint); }
+.empty-state { text-align:center; padding:60px 20px; color:var(--ink-soft); }

@@ -1,0 +1,19 @@
+<%- include('partials/head', { title }) %>
+<main class="container" style="max-width:400px; padding-top:80px;">
+  <h1 style="text-align:center;">📞 Тренажер</h1>
+  <p class="muted" style="text-align:center; margin-bottom:26px;">Холодні дзвінки: курс і тренування</p>
+  <% if (error) { %><div class="alert alert-err"><%= error %></div><% } %>
+  <form method="post" action="/login" class="card">
+    <div class="field">
+      <label for="username">Логін</label>
+      <input type="text" id="username" name="username" autofocus autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="password">Пароль</label>
+      <input type="password" id="password" name="password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" style="width:100%;">Увійти</button>
+  </form>
+</main>
+</body>
+</html>

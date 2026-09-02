@@ -1,0 +1,30 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Курс холодних дзвінків</h1>
+<p class="muted">Наступна лекція відкривається після складеного тесту попередньої.</p>
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+    <strong>Пройдено <%= done.passed %> з <%= done.total %></strong>
+    <span class="muted small"><%= done.percent %>%</span>
+  </div>
+  <div class="progress"><i style="width:<%= done.percent %>%"></i></div>
+</div>
+
+<% let block = null; %>
+<% lectures.forEach(function (l) { %>
+  <% if (l.block !== block) { block = l.block; %><h2><%= block %></h2><% } %>
+  <div class="lec-item <%= l.passed ? 'done' : '' %> <%= l.unlocked ? '' : 'locked' %>">
+    <span class="lec-num"><%= l.passed ? '✓' : l.n %></span>
+    <div class="lec-body">
+      <h3><% if (l.unlocked) { %><a href="/course/<%= l.id %>"><%= l.title %></a><% } else { %><%= l.title %><% } %></h3>
+      <div class="lec-meta"><%= l.goal %> · <%= l.minutes %> хв</div>
+    </div>
+    <span class="badge <%= l.passed ? 'badge-ok' : (l.unlocked ? 'badge-todo' : 'badge-wait') %>">
+      <%= l.passed ? l.bestPercent + '%' : (l.unlocked ? 'до проходження' : 'закрито') %>
+    </span>
+  </div>
+<% }); %>
+
+<%- include('../partials/foot') %>

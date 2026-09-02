@@ -1,0 +1,63 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/nav') %>
+
+<h1>Вітаємо, <%= user.full_name %>!</h1>
+
+<% if (!tenant) { %>
+  <div class="alert alert-warn">
+    <strong>Компаній ще немає.</strong>
+    <% if (user.role === 'owner') { %>
+      <a href="/admin/tenants">Створіть першу компанію →</a>
+    <% } else { %>
+      Зверніться до керівника.
+    <% } %>
+  </div>
+<% } else { %>
+
+  <% if (completeness.percent < 100 && (user.role === 'owner' || user.role === 'admin')) { %>
+    <div class="alert alert-warn">
+      <strong>Анкету заповнено на <%= completeness.percent %>%.</strong>
+      Поки вона неповна, у лекціях стоять загальні приклади замість ваших.
+      <a href="/profile">Заповнити →</a>
+    </div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+      <strong>Курс пройдено</strong>
+      <span class="muted small"><%= done.passed %> з <%= done.total %> лекцій</span>
+    </div>
+    <div class="progress"><i style="width:<%= done.percent %>%"></i></div>
+    <% if (nextLecture) { %>
+      <div class="actions">
+        <a class="btn btn-primary" href="/course/<%= nextLecture.id %>">
+          <%= nextLecture.read ? 'Продовжити' : 'Почати' %>: <%= nextLecture.title %>
+        </a>
+        <span class="muted small"><%= nextLecture.minutes %> хв</span>
+      </div>
+    <% } else { %>
+      <p class="small" style="margin:14px 0 0; color:var(--pass);">
+        <strong>Курс складено повністю.</strong> Наступний крок — рольові дзвінки (у розробці).
+      </p>
+    <% } %>
+  </div>
+
+  <h2>Лекції</h2>
+  <ul class="lectures">
+    <% lectures.forEach(function (l) { %>
+      <li class="lec-item <%= l.passed ? 'done' : '' %> <%= l.unlocked ? '' : 'locked' %>">
+        <span class="lec-num"><%= l.passed ? '✓' : l.n %></span>
+        <div class="lec-body">
+          <span class="lec-block"><%= l.block %></span>
+          <h3><% if (l.unlocked) { %><a href="/course/<%= l.id %>"><%= l.title %></a><% } else { %><%= l.title %><% } %></h3>
+          <div class="lec-meta"><%= l.goal %></div>
+        </div>
+        <span class="badge <%= l.passed ? 'badge-ok' : (l.unlocked ? 'badge-todo' : 'badge-wait') %>">
+          <%= l.passed ? l.bestPercent + '%' : (l.unlocked ? 'до проходження' : 'закрито') %>
+        </span>
+      </li>
+    <% }); %>
+  </ul>
+<% } %>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Компанії</h1>
+<p class="muted">Кожна компанія має власну анкету, курс і людей. Дані компаній не перетинаються.</p>
+
+<% if (error) { %><div class="alert alert-err"><%= error %></div><% } %>
+
+<table>
+  <thead><tr><th>Компанія</th><th>Людей</th><th></th></tr></thead>
+  <tbody>
+    <% tenants.forEach(function (t) { %>
+      <tr>
+        <td><strong><%= t.name %></strong> <span class="muted small mono"><%= t.slug %></span></td>
+        <td><%= t.users_count === undefined ? '—' : t.users_count %></td>
+        <td>
+          <form method="post" action="/switch-tenant">
+            <input type="hidden" name="tenant_id" value="<%= t.id %>">
+            <button class="btn btn-sm" <%= tenant && tenant.id === t.id ? 'disabled' : '' %>>
+              <%= tenant && tenant.id === t.id ? 'обрана' : 'обрати' %>
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
+<h2>Нова компанія</h2>
+<form method="post" action="/admin/tenants" class="card">
+  <div class="field">
+    <label for="name">Назва</label>
+    <input type="text" id="name" name="name" placeholder="Смартекопак">
+    <p class="hint">Після створення одразу відкриється анкета цієї компанії.</p>
+  </div>
+  <button class="btn btn-primary">Створити</button>
+</form>
+
+<%- include('../partials/foot') %>

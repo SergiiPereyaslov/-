@@ -1,0 +1,78 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Результат</h1>
+<p class="muted"><%= lecture.title %></p>
+
+<div class="card">
+  <div class="score <%= result.passed ? 'ok' : 'fail' %>">
+    <b><%= result.percent %>%</b>
+    <span><%= result.correct %> з <%= result.total %> правильних</span>
+  </div>
+  <div class="progress <%= result.passed ? '' : 'brass' %>"><i style="width:<%= result.percent %>%"></i></div>
+  <p style="margin:14px 0 0;">
+    <% if (result.passed) { %>
+      <strong style="color:var(--pass);">Складено.</strong> Наступна лекція відкрита.
+    <% } else { %>
+      <strong style="color:var(--stop);">Не складено.</strong>
+      Потрібно <%= passPercent %>%. Перечитайте розбір нижче й спробуйте ще раз — питання будуть інші.
+    <% } %>
+  </p>
+</div>
+
+<h2>Розбір</h2>
+<% result.details.forEach(function (d, i) { %>
+  <div class="q">
+    <span class="q-num">Питання <%= i + 1 %></span>
+    <p class="q-text"><%= d.q %></p>
+
+    <% if (d.type === 'single') { %>
+      <div class="opt <%= d.ok ? 'correct' : 'wrong' %>">
+        <span><strong><%= d.ok ? '✓' : '✗' %></strong> <%= d.chosen || '— без відповіді —' %></span>
+      </div>
+      <p class="why"><%= d.why %></p>
+      <% if (!d.ok) { %>
+        <p class="why"><strong>Правильна відповідь:</strong> <%= d.rightText %></p>
+      <% } %>
+
+    <% } else { %>
+      <p class="small muted">Ваша відповідь:</p>
+      <div class="opt"><span><%= d.answer || '— без відповіді —' %></span></div>
+
+      <% if (d.ai) { %>
+        <div class="card" style="margin:12px 0 0; background:var(--blue-wash); border-color:#c9d6f0;">
+          <strong>Оцінка: <%= d.ai.score %> зі 100</strong>
+          <p style="margin:8px 0 0;"><%= d.ai.feedback %></p>
+          <% if (d.ai.missed && d.ai.missed.length) { %>
+            <p class="small" style="margin:8px 0 0;"><strong>Не вистачає:</strong> <%= d.ai.missed.join('; ') %></p>
+          <% } %>
+          <% if (d.ai.better) { %>
+            <p class="small" style="margin:8px 0 0;"><strong>Як можна сказати:</strong> <%= d.ai.better %></p>
+          <% } %>
+        </div>
+      <% } else if (d.answer) { %>
+        <p class="why">
+          <% if (aiConfigured) { %>
+            Автоматична перевірка зараз недоступна — відповідь збережено, її подивиться керівник.
+          <% } else { %>
+            Відповідь збережено. Її подивиться керівник у розділі «Вправи».
+          <% } %>
+        </p>
+      <% } %>
+
+      <p class="why"><strong>Орієнтир:</strong> <%= d.reference %></p>
+    <% } %>
+  </div>
+<% }); %>
+
+<div class="actions">
+  <% if (result.passed && next) { %>
+    <a class="btn btn-primary" href="/course/<%= next.id %>">Наступна лекція: <%= next.title %> →</a>
+  <% } else if (!result.passed) { %>
+    <a class="btn btn-primary" href="/course/<%= lecture.id %>">Перечитати лекцію</a>
+    <a class="btn" href="/course/<%= lecture.id %>/quiz">Спробувати ще раз</a>
+  <% } %>
+  <a class="btn" href="/course">До курсу</a>
+</div>
+
+<%- include('../partials/foot') %>

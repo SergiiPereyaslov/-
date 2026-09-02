@@ -1,0 +1,52 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<h1>Анкета компанії</h1>
+<p class="muted" style="max-width:66ch;">
+  Сім екранів, приблизно година часу. З ваших відповідей збираються приклади в лекціях,
+  питання в тестах і — з наступного етапу — персонажі для рольових дзвінків.
+  Ядро курсу не змінюється, змінюється лише те, на чому менеджер вчиться.
+</p>
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+    <strong>Заповнено <%= completeness.done %> з <%= completeness.total %> екранів</strong>
+    <span class="muted small"><%= completeness.percent %>%</span>
+  </div>
+  <div class="progress <%= completeness.percent === 100 ? '' : 'brass' %>">
+    <i style="width:<%= completeness.percent %>%"></i>
+  </div>
+</div>
+
+<% screens.forEach(function (s, i) { %>
+  <div class="lec-item <%= completeness.screens[i].done ? 'done' : '' %>">
+    <span class="lec-num"><%= completeness.screens[i].done ? '✓' : i + 1 %></span>
+    <div class="lec-body">
+      <h3><% if (canEdit) { %><a href="/profile/<%= s.id %>"><%= s.title %></a><% } else { %><%= s.title %><% } %></h3>
+      <div class="lec-meta"><%= s.intro %></div>
+      <% s.fields.forEach(function (fl) { %>
+        <% const v = data[fl.key]; %>
+        <% if (Array.isArray(v) && v.length) { %>
+          <ul class="small" style="margin:8px 0 0; color:var(--ink-soft);">
+            <% v.slice(0, 6).forEach(function (x) { %><li><%= x %></li><% }); %>
+          </ul>
+        <% } else if (typeof v === 'string' && v) { %>
+          <p class="small" style="margin:6px 0 0; color:var(--ink-soft);"><strong><%= fl.label %>:</strong> <%= v %></p>
+        <% } %>
+      <% }); %>
+    </div>
+    <span class="badge <%= completeness.screens[i].done ? 'badge-ok' : 'badge-todo' %>">
+      <%= completeness.screens[i].done ? 'готово' : 'заповнити' %>
+    </span>
+  </div>
+<% }); %>
+
+<% if (canEdit) { %>
+  <div class="actions">
+    <a class="btn btn-primary" href="/profile/<%= (completeness.screens.find(function (s) { return !s.done; }) || screens[0]).id %>">
+      <%= completeness.percent === 100 ? 'Переглянути анкету' : 'Продовжити заповнення' %>
+    </a>
+  </div>
+<% } %>
+
+<%- include('../partials/foot') %>

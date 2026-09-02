@@ -1,0 +1,36 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">📞 Тренажер</a>
+    <nav class="mainnav">
+      <a href="/course" class="<%= currentPath.startsWith('/course') ? 'active' : '' %>">Курс</a>
+      <a href="/profile" class="<%= currentPath.startsWith('/profile') ? 'active' : '' %>">Анкета компанії</a>
+      <% if (user.role === 'owner' || user.role === 'admin') { %>
+        <a href="/admin/users" class="<%= currentPath.startsWith('/admin/users') ? 'active' : '' %>">Люди</a>
+        <a href="/admin/answers" class="<%= currentPath.startsWith('/admin/answers') ? 'active' : '' %>">Вправи</a>
+      <% } %>
+      <% if (user.role === 'owner') { %>
+        <a href="/admin/tenants" class="<%= currentPath.startsWith('/admin/tenants') ? 'active' : '' %>">Компанії</a>
+      <% } %>
+    </nav>
+    <div class="userbox">
+      <span><%= user.full_name %></span>
+      <form method="post" action="/logout"><button class="btn btn-sm">Вийти</button></form>
+    </div>
+  </div>
+  <% if (allTenants.length > 1) { %>
+    <div class="tenantbar"><div class="tenantbar-inner">
+      <span class="muted small">Компанія:</span>
+      <% allTenants.forEach(function (t) { %>
+        <form method="post" action="/switch-tenant">
+          <input type="hidden" name="tenant_id" value="<%= t.id %>">
+          <button class="tenant-pill <%= tenant && tenant.id === t.id ? 'active' : '' %>"><%= t.name %></button>
+        </form>
+      <% }); %>
+    </div></div>
+  <% } else if (tenant) { %>
+    <div class="tenantbar"><div class="tenantbar-inner">
+      <span class="muted small">Компанія:</span> <strong><%= tenant.name %></strong>
+    </div></div>
+  <% } %>
+</header>
+<main class="container">

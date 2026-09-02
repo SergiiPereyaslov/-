@@ -1,0 +1,94 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+
+<p class="small"><a href="/course">← Курс</a></p>
+
+<% if (!profileComplete) { %>
+  <div class="alert alert-warn small">
+    Анкету компанії заповнено не до кінця — частина прикладів нижче загальні.
+    <a href="/profile">Доповнити анкету →</a>
+  </div>
+<% } %>
+
+<article class="lecture">
+  <span class="lec-block"><%= lecture.block %> · лекція <%= lecture.n %> · <%= lecture.minutes %> хв</span>
+  <h1><%= lecture.title %></h1>
+  <p class="muted"><%= lecture.goal %></p>
+  <hr style="border:none; border-top:1px solid var(--rule); margin:22px 0;">
+
+  <% lecture.sections.forEach(function (s) { %>
+    <% if (s.t === 'p') { %>
+      <p><%- f.inline(s.text) %></p>
+
+    <% } else if (s.t === 'h') { %>
+      <h2><%= s.text %></h2>
+
+    <% } else if (s.t === 'note') { %>
+      <div class="note"><%- f.inline(s.text) %></div>
+
+    <% } else if (s.t === 'list') { %>
+      <% if (s.title) { %><h3><%= s.title %></h3><% } %>
+      <ul><% s.items.forEach(function (i) { %><li><%- f.inline(i) %></li><% }); %></ul>
+
+    <% } else if (s.t === 'steps') { %>
+      <% if (s.title) { %><h3><%= s.title %></h3><% } %>
+      <ol><% s.items.forEach(function (i) { %><li><%- f.inline(i) %></li><% }); %></ol>
+
+    <% } else if (s.t === 'company') { %>
+      <div class="company-box">
+        <span class="label"><%= s.title %></span>
+        <%- f.inline(s.text) %>
+      </div>
+
+    <% } else if (s.t === 'formula') { %>
+      <div class="formula">
+        <% s.parts.forEach(function (p, i) { %>
+          <% if (i) { %><i>+</i><% } %><span><%= p %></span>
+        <% }); %>
+      </div>
+
+    <% } else if (s.t === 'pair') { %>
+      <div class="pair">
+        <div class="pair-box pair-bad"><span class="label">Так не треба</span><%= s.bad %></div>
+        <div class="pair-box pair-good"><span class="label">Так працює</span><%= s.good %></div>
+        <div class="pair-why"><%- f.inline(s.why) %></div>
+      </div>
+
+    <% } else if (s.t === 'funnel') { %>
+      <div class="funnel">
+        <% s.items.forEach(function (i) { %>
+          <div><b><%= i.n %></b><span><%= i.label %></span></div>
+        <% }); %>
+      </div>
+
+    <% } else if (s.t === 'levels') { %>
+      <div class="levels">
+        <% s.items.forEach(function (i) { %>
+          <div class="level <%= i.tone %>"><b><%= i.n %>. <%= i.title %></b><%- f.inline(i.text) %></div>
+        <% }); %>
+      </div>
+
+    <% } else if (s.t === 'chain') { %>
+      <ul class="chain"><% s.items.forEach(function (i) { %><li><%- f.inline(i) %></li><% }); %></ul>
+
+    <% } else if (s.t === 'exercise') { %>
+      <div class="exercise">
+        <span class="label">Вправа</span>
+        <%- f.inline(s.text) %>
+      </div>
+    <% } %>
+  <% }); %>
+</article>
+
+<div class="actions">
+  <a class="btn btn-primary" href="/course/<%= lecture.id %>/quiz">
+    <%= state.passed ? 'Пройти тест ще раз' : 'Скласти тест' %>
+  </a>
+  <% if (state.passed && next) { %>
+    <a class="btn" href="/course/<%= next.id %>">Наступна лекція →</a>
+  <% } %>
+  <% if (state.passed) { %><span class="badge badge-ok">складено на <%= state.bestPercent %>%</span><% } %>
+</div>
+
+<%- include('../partials/foot') %>

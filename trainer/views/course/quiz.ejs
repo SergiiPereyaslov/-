@@ -1,0 +1,43 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+
+<p class="small"><a href="/course/<%= lecture.id %>">← Назад до лекції</a></p>
+<h1>Тест: <%= lecture.title %></h1>
+<p class="muted">
+  Прохідний бал — <%= passPercent %>%. Питання щоразу різні, тож вивчити «третій зверху» не вийде.
+</p>
+
+<form method="post" action="/course/<%= lecture.id %>/quiz">
+  <input type="hidden" name="seed" value="<%= seed %>">
+
+  <% questions.forEach(function (q, qi) { %>
+    <div class="q">
+      <span class="q-num">Питання <%= qi + 1 %> з <%= questions.length %><%= q.type === 'rewrite' ? ' · вправа' : '' %></span>
+      <p class="q-text"><%= q.q %></p>
+
+      <% if (q.type === 'single') { %>
+        <% q.options.forEach(function (o, oi) { %>
+          <label class="opt">
+            <input type="radio" name="<%= q.id %>" value="<%= oi %>" required>
+            <span><%= o.text %></span>
+          </label>
+        <% }); %>
+      <% } else { %>
+        <div class="field">
+          <textarea name="<%= q.id %>" rows="4" placeholder="Ваш варіант…"></textarea>
+          <p class="hint">
+            Оцінюється за критеріями: <%= q.criteria.join(' · ') %>.
+            На бал за тест ця вправа не впливає — її розбирають окремо.
+          </p>
+        </div>
+      <% } %>
+    </div>
+  <% }); %>
+
+  <div class="actions">
+    <button class="btn btn-primary">Перевірити</button>
+    <a class="btn" href="/course/<%= lecture.id %>">Скасувати</a>
+  </div>
+</form>
+
+<%- include('../partials/foot') %>

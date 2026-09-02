@@ -1,0 +1,25 @@
+{
+  "name": "sales-trainer",
+  "version": "0.1.0",
+  "description": "Тренажер холодних дзвінків для менеджерів з продажу",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "seed:demo": "node scripts/seed-demo.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  },
+  "optionalDependencies": {
+    "@anthropic-ai/sdk": "^0.71.0"
+  }
+}
