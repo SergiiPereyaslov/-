@@ -24,3 +24,7 @@ Thumbs.db
 .idea/
 trainer/node_modules/
 trainer/data/
+
+# Аудіозаписи дзвінків — персональні дані, у репозиторій не потрапляють
+knowledge/записи/*
+!knowledge/записи/.gitkeep
