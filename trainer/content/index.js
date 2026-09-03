@@ -6,6 +6,12 @@ const LECTURES = [
   require('./lectures/01-meta'),
   require('./lectures/02-first15'),
   require('./lectures/03-benefit'),
+  require('./lectures/04-questions'),
+  require('./lectures/05-spin'),
+  require('./lectures/06-objection-anatomy'),
+  require('./lectures/07-five-objections'),
+  require('./lectures/08-closing'),
+  require('./lectures/09-after-call'),
 ];
 
 // Чотири навички — наскрізна структура курсу, чеклиста й вправ.
