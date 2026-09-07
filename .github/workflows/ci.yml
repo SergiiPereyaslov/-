@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+# Нова збірка скасовує попередню для тієї ж гілки — немає сенсу тримати
+# чергу з застарілих прогонів
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Перевірки сайту
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: sep
+          POSTGRES_PASSWORD: sep
+          POSTGRES_DB: smartecopack
+          # UTF-8 обов'язково: при локалі C PostgreSQL не згортає кирилицю
+          POSTGRES_INITDB_ARGS: '--locale=C.UTF-8 --encoding=UTF8'
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://sep:sep@localhost:5432/smartecopack
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3300
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Встановити залежності
+        run: npm ci
+
+      - name: Міграції та сідування
+        run: |
+          npx prisma migrate deploy
+          npm run db:seed
+
+      - name: Перевірка типів
+        run: npm run typecheck
+
+      - name: Лінт
+        run: npm run lint
+
+      - name: Збірка
+        run: npm run build
+
+      - name: Браузер для e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E
+        run: npm run test:e2e
+
+      - name: Звіт e2e при падінні
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 7

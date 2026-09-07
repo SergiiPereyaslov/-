@@ -1,6 +1,12 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  /**
+   * Збірка в .next/standalone: у контейнер їде мінімальний набір файлів
+   * замість усього node_modules — образ виходить у рази менший.
+   */
+  output: 'standalone',
+
   /** Канонічні URL із завершальним слешем — так вони й у sitemap. */
   trailingSlash: true,
 

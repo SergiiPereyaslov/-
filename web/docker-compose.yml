@@ -1,0 +1,63 @@
+# Мінімальний бойовий стек: застосунок + база.
+# HTTPS і статику віддає nginx на хості (див. deploy/nginx.conf).
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-smartecopack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?задайте POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-smartecopack}
+      # Локаль з підтримкою UTF-8 обов'язкова: при C-локалі PostgreSQL
+      # не згортає кирилицю в нижній регістр, і частина запитів у базі
+      # починає поводитись неочікувано.
+      LANG: C.UTF-8
+      POSTGRES_INITDB_ARGS: '--locale=C.UTF-8 --encoding=UTF8'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-smartecopack}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://smartecopack.com}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-smartecopack}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-smartecopack}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://smartecopack.com}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      LEAD_EMAIL_TO: ${LEAD_EMAIL_TO:-sales@smartecopack.com}
+    ports:
+      - '127.0.0.1:3000:3000'
+
+  # Разові команди: міграції, сідування, створення адміністратора.
+  # Не запускається сам — тільки через docker compose run.
+  migrate:
+    build:
+      context: .
+      target: migrate
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://smartecopack.com}
+    profiles: ['tools']
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-smartecopack}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-smartecopack}
+
+volumes:
+  db-data:
