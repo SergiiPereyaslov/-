@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { Facet, Locale, Product } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { ProductCard } from './ProductCard';
+import { Sheet } from './Sheet';
 
 type Selected = Record<string, string[]>;
 type SortKey = 'popular' | 'price-asc' | 'price-desc' | 'name';
@@ -31,6 +32,7 @@ export function CategoryView({
   const [sort, setSort] = useState<SortKey>('popular');
   const [shown, setShown] = useState(PAGE);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
 
   const visibleFacets = facets.filter((f) => f.key !== lockedFacet?.key);
 
@@ -232,33 +234,24 @@ export function CategoryView({
       </div>
 
       {/* Мобільна шторка фільтрів */}
-      {sheetOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label={dict.header.close}
-            onClick={() => setSheetOpen(false)}
-          />
-          <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-bg p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold">{dict.common.filters}</h2>
-              <button type="button" className="btn btn-ghost !min-h-9" onClick={() => setSheetOpen(false)}>
-                ✕
-              </button>
-            </div>
-            {filterPanel}
-            <div className="sticky bottom-0 mt-6 flex gap-2 bg-bg pt-3">
-              <button type="button" className="btn btn-secondary flex-1" onClick={() => setSelected({})}>
-                {dict.common.reset}
-              </button>
-              <button type="button" className="btn btn-primary flex-[2]" onClick={() => setSheetOpen(false)}>
-                {dict.common.apply} ({filtered.length})
-              </button>
-            </div>
+      <Sheet
+        open={sheetOpen}
+        onClose={closeSheet}
+        title={dict.common.filters}
+        closeLabel={dict.header.close}
+        footer={
+          <div className="flex gap-2">
+            <button type="button" className="btn btn-secondary flex-1" onClick={() => setSelected({})}>
+              {dict.common.reset}
+            </button>
+            <button type="button" className="btn btn-primary flex-[2]" onClick={closeSheet}>
+              {dict.common.apply} ({filtered.length})
+            </button>
           </div>
-        </div>
-      )}
+        }
+      >
+        {filterPanel}
+      </Sheet>
     </div>
   );
 }
