@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { Locale, Product } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
+import { fill } from '@/i18n/dictionaries';
 import { Placeholder } from './Placeholder';
 import { QtyStepper } from './QtyStepper';
 import { useCart, unitPrice } from './CartProvider';
@@ -24,18 +25,14 @@ export function ProductCard({
 
   const price = unitPrice(product, packs);
   const packPrice = price * product.unitsPerPack;
-  const bestTier = product.tiers[product.tiers.length - 1];
-  const maxDiscount = Math.round((1 - bestTier.perUnit / product.priceRetail) * 100);
+  // Перший оптовий щабель — найближчий до клієнта; показуємо саме його,
+  // а не максимальну знижку: вона однакова в усіх товарів і нічого не каже.
+  const firstTier = product.tiers[0];
 
   return (
     <article className="card group flex flex-col overflow-hidden transition hover:border-primary/40">
       <Link href={`${prefix}/product/${product.slug}/`} className="relative block aspect-square">
         <Placeholder shape={product.shape ?? 'box'} className="h-full w-full" />
-        {maxDiscount > 0 && (
-          <span className="absolute left-2 top-2 rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-bold text-accent tnum">
-            −{maxDiscount}%
-          </span>
-        )}
         {product.brandable && (
           <span className="absolute right-2 top-2 rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] font-medium">
             ⌗ logo
@@ -60,6 +57,11 @@ export function ProductCard({
             {price.toFixed(2)} / {dict.common.pcs}
           </span>
         </div>
+
+        <p className="mt-1 text-xs text-accent tnum">
+          {dict.product.wholesale} {fill(dict.product.wholesaleFrom, { n: firstTier.minPacks })} —{' '}
+          {firstTier.perUnit.toFixed(2)} {dict.common.uah}/{dict.common.pcs}
+        </p>
 
         <div className="mt-3 flex items-center gap-2 pt-1">
           <QtyStepper
