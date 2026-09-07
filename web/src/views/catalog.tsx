@@ -1,8 +1,14 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { GROUPS, CATEGORY_BY_SLUG } from '@/data/taxonomy';
-import { productsOfCategory, priceFrom, PRODUCTS } from '@/lib/catalog';
+import {
+  getAllProducts,
+  getCategories,
+  getCategory,
+  getGroups,
+  priceFrom,
+  productsOfCategory,
+} from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -17,6 +23,11 @@ const SHAPE: Record<string, Shape> = {
 };
 
 export async function meta(l: Locale): Promise<Metadata> {
+  const [total, categories] = await Promise.all([
+    getAllProducts().then((p) => p.length),
+    getCategories().then((c) => c.length),
+  ]);
+
   return pageMeta({
     locale: l,
     path: '/catalog/',
@@ -26,14 +37,29 @@ export async function meta(l: Locale): Promise<Metadata> {
         : 'Каталог упаковки для еды — SmartEcoPack',
     description:
       l === 'uk'
-        ? `Повний каталог паперової упаковки: ${PRODUCTS.length} позицій у 25 категоріях. Стакани, контейнери, пакети, фастфуд-упаковка. Доставка по Дніпру за 24 години.`
-        : `Полный каталог бумажной упаковки: ${PRODUCTS.length} позиций в 25 категориях. Стаканы, контейнеры, пакеты, фастфуд-упаковка. Доставка по Днепру за 24 часа.`,
+        ? `Повний каталог паперової упаковки: ${total} позицій у ${categories} категоріях. Стакани, контейнери, пакети, фастфуд-упаковка. Доставка по Дніпру за 24 години.`
+        : `Полный каталог бумажной упаковки: ${total} позиций в ${categories} категориях. Стаканы, контейнеры, пакеты, фастфуд-упаковка. Доставка по Днепру за 24 часа.`,
   });
 }
 
-export default function CatalogPage({ locale: l }: { locale: Locale }) {
+export default async function CatalogPage({ locale: l }: { locale: Locale }) {
   const dict = getDict(l);
   const p = l === 'uk' ? '' : '/ru';
+  const groups = await getGroups();
+
+  // Картки категорій з лічильником і мінімальною ціною — готуємо на сервері
+  const sections = await Promise.all(
+    groups.map(async (g) => ({
+      group: g,
+      cards: await Promise.all(
+        g.categories.map(async (slug) => ({
+          slug,
+          category: await getCategory(slug),
+          items: await productsOfCategory(slug),
+        })),
+      ),
+    })),
+  );
 
   return (
     <div className="container-page pb-12">
@@ -51,7 +77,7 @@ export default function CatalogPage({ locale: l }: { locale: Locale }) {
       </p>
 
       <div className="mt-8 space-y-10">
-        {GROUPS.map((g) => (
+        {sections.map(({ group: g, cards }) => (
           <section key={g.slug}>
             <div className="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-2">
               <h2 className="text-xl">
@@ -65,10 +91,8 @@ export default function CatalogPage({ locale: l }: { locale: Locale }) {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {g.categories.map((slug) => {
-                const cat = CATEGORY_BY_SLUG.get(slug);
+              {cards.map(({ slug, category: cat, items }) => {
                 if (!cat) return null;
-                const items = productsOfCategory(slug);
                 return (
                   <Link
                     key={slug}

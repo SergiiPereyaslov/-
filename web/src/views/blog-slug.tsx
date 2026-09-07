@@ -2,16 +2,16 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { POSTS, POST_BY_SLUG, formatDate } from '@/data/posts';
-import { CATEGORY_BY_SLUG } from '@/data/taxonomy';
+import { getPost, getPosts, formatDate } from '@/lib/posts';
+import { getCategory } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { SITE, canonical } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { JsonLd } from '@/components/JsonLd';
 
-export function staticParams() {
-  return POSTS.map((p) => ({ slug: p.slug }));
+export async function staticParams() {
+  return (await getPosts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function meta(
@@ -19,7 +19,7 @@ export async function meta(
   params: Promise<{ slug: string }>,
 ): Promise<Metadata> {
   const { slug } = await params;
-  const post = POST_BY_SLUG.get(slug);
+  const post = await getPost(slug);
   if (!post) return {};
 
   return pageMeta({
@@ -39,11 +39,15 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
   const dict = getDict(l);
-  const post = POST_BY_SLUG.get(slug);
+  const post = await getPost(slug);
   if (!post) notFound();
   const p = l === 'uk' ? '' : '/ru';
 
-  const others = POSTS.filter((x) => x.slug !== slug).slice(0, 3);
+  const [all, relatedCategories] = await Promise.all([
+    getPosts(),
+    Promise.all(post.related.map((cs) => getCategory(cs))),
+  ]);
+  const others = all.filter((x) => x.slug !== slug).slice(0, 3);
 
   return (
     <div className="container-page pb-12">
@@ -81,13 +85,12 @@ export default async function PostPage({
               {l === 'uk' ? 'Згадані категорії' : 'Упомянутые категории'}
             </h2>
             <div className="flex flex-wrap gap-2">
-              {post.related.map((cs) => {
-                const cat = CATEGORY_BY_SLUG.get(cs);
+              {relatedCategories.map((cat) => {
                 if (!cat) return null;
                 return (
                   <Link
-                    key={cs}
-                    href={`${p}/catalog/${cs}/`}
+                    key={cat.slug}
+                    href={`${p}/catalog/${cat.slug}/`}
                     className="chip hover:border-primary hover:text-primary"
                   >
                     {cat.name[l]}

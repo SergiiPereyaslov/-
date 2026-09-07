@@ -6,13 +6,14 @@ import { LOCALES, type Locale } from '@/data/types';
 // searchParams, і будь-який запит повертав порожній масив.
 export const dynamic = 'force-dynamic';
 
-export function GET(request: Request) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q') ?? '';
   const raw = searchParams.get('locale') ?? 'uk';
   const locale: Locale = (LOCALES as readonly string[]).includes(raw) ? (raw as Locale) : 'uk';
 
-  const hits = searchProducts(q, locale).map((p) => ({
+  const found = await searchProducts(q, locale);
+  const hits = found.map((p) => ({
     slug: p.slug,
     name: p.name[locale],
     spec: p.spec[locale],

@@ -2,8 +2,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { CATEGORIES, GROUPS, CATEGORY_BY_SLUG } from '@/data/taxonomy';
-import { resolveCatalogSlug, productsOfCategory, productsOfGroup, priceFrom } from '@/lib/catalog';
+import {
+  getCategories,
+  getCategory,
+  getGroups,
+  priceFrom,
+  productsOfCategory,
+  productsOfGroup,
+  resolveCatalogSlug,
+} from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -20,8 +27,9 @@ const SHAPE: Record<string, Shape> = {
   'suputni-tovary': 'flat',
 };
 
-export function staticParams() {
-  return [...GROUPS.map((g) => g.slug), ...CATEGORIES.map((c) => c.slug)].map((slug) => ({ slug }));
+export async function staticParams() {
+  const [groups, categories] = await Promise.all([getGroups(), getCategories()]);
+  return [...groups.map((g) => g.slug), ...categories.map((c) => c.slug)].map((slug) => ({ slug }));
 }
 
 export async function meta(
@@ -29,13 +37,13 @@ export async function meta(
   params: Promise<{ slug: string }>,
 ): Promise<Metadata> {
   const { slug } = await params;
-  const node = resolveCatalogSlug(slug);
+  const node = await resolveCatalogSlug(slug);
   if (node.kind === 'none') return {};
 
   const path = `/catalog/${slug}/`;
 
   if (node.kind === 'group') {
-    const items = productsOfGroup(slug);
+    const items = await productsOfGroup(slug);
     return pageMeta({
       locale: l,
       path,
@@ -48,7 +56,7 @@ export async function meta(
     });
   }
 
-  const items = productsOfCategory(slug);
+  const items = await productsOfCategory(slug);
   return pageMeta({
     locale: l,
     path,
@@ -74,16 +82,22 @@ export default async function CatalogSlugPage({
 }) {
   const { slug } = await params;
   const dict = getDict(l);
-  const node = resolveCatalogSlug(slug);
+  const node = await resolveCatalogSlug(slug);
   if (node.kind === 'none') notFound();
   const p = l === 'uk' ? '' : '/ru';
 
   /* ── Сторінка групи ── */
   if (node.kind === 'group') {
     const g = node.group;
-    const top = productsOfGroup(slug)
-      .sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false))
-      .slice(0, 8);
+    const top = (await productsOfGroup(slug)).slice(0, 8);
+    // Категорії групи з кількістю позицій і мінімальною ціною — одним проходом
+    const groupCards = await Promise.all(
+      g.categories.map(async (cs) => ({
+        slug: cs,
+        category: await getCategory(cs),
+        items: await productsOfCategory(cs),
+      })),
+    );
 
     return (
       <div className="container-page pb-12">
@@ -101,10 +115,8 @@ export default async function CatalogSlugPage({
         <p className="mt-2 max-w-3xl leading-relaxed text-muted">{g.intro[l]}</p>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {g.categories.map((cs) => {
-            const cat = CATEGORY_BY_SLUG.get(cs);
+          {groupCards.map(({ slug: cs, category: cat, items }) => {
             if (!cat) return null;
-            const items = productsOfCategory(cs);
             return (
               <Link
                 key={cs}
@@ -144,8 +156,8 @@ export default async function CatalogSlugPage({
 
   /* ── Сторінка категорії ── */
   const c = node.category;
-  const items = productsOfCategory(slug);
-  const group = GROUPS.find((g) => g.slug === c.group);
+  const [items, groups] = await Promise.all([productsOfCategory(slug), getGroups()]);
+  const group = groups.find((g) => g.slug === c.group);
 
   return (
     <div className="container-page pb-12">

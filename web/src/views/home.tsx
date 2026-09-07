@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { GROUPS, CATEGORY_BY_SLUG } from '@/data/taxonomy';
-import { featuredProducts, productsOfGroup, priceFrom } from '@/lib/catalog';
+import { featuredProducts, getCategory, getGroups, priceFrom, productsOfGroup } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { SITE, formatPhone } from '@/lib/site';
 import { pageMeta } from '@/lib/meta';
@@ -131,11 +130,26 @@ export async function meta(l: Locale): Promise<Metadata> {
   });
 }
 
-export default function HomePage({ locale: l }: { locale: Locale }) {
+export default async function HomePage({ locale: l }: { locale: Locale }) {
   const dict = getDict(l);
   const t = COPY[l];
   const p = l === 'uk' ? '' : '/ru';
-  const hits = featuredProducts(8);
+  const hits = await featuredProducts(8);
+  const groups = await getGroups();
+
+  // Дані для карток груп: перелік категорій і мінімальна ціна
+  const groupCards = await Promise.all(
+    groups.map(async (g) => ({
+      group: g,
+      minPrice: priceFrom(await productsOfGroup(g.slug)),
+      categoryNames: (
+        await Promise.all(g.categories.map((c) => getCategory(c)))
+      )
+        .map((c) => c?.name[l])
+        .filter(Boolean)
+        .join(' · '),
+    })),
+  );
 
   const localBusiness = {
     '@context': 'https://schema.org',
@@ -196,9 +210,7 @@ export default function HomePage({ locale: l }: { locale: Locale }) {
         <h2 className="text-2xl">{t.groupsTitle}</h2>
         <p className="mt-2 max-w-2xl text-muted">{t.groupsLead}</p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {GROUPS.map((g) => {
-            const products = productsOfGroup(g.slug);
-            const min = priceFrom(products);
+          {groupCards.map(({ group: g, minPrice, categoryNames }) => {
             return (
               <Link
                 key={g.slug}
@@ -209,13 +221,10 @@ export default function HomePage({ locale: l }: { locale: Locale }) {
                 <div className="min-w-0">
                   <h3 className="font-display text-lg group-hover:text-primary">{g.name[l]}</h3>
                   <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-muted">
-                    {g.categories
-                      .map((c) => CATEGORY_BY_SLUG.get(c)?.name[l])
-                      .filter(Boolean)
-                      .join(' · ')}
+                    {categoryNames}
                   </p>
                   <p className="mt-2 text-sm font-semibold text-primary tnum">
-                    {t.priceFrom} {min.toFixed(2)} {dict.common.uah}
+                    {t.priceFrom} {minPrice.toFixed(2)} {dict.common.uah}
                   </p>
                 </div>
               </Link>

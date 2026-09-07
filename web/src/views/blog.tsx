@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { POSTS, formatDate } from '@/data/posts';
+import { getPosts, formatDate } from '@/lib/posts';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -18,10 +18,10 @@ export async function meta(l: Locale): Promise<Metadata> {
   });
 }
 
-export default function BlogPage({ locale: l }: { locale: Locale }) {
+export default async function BlogPage({ locale: l }: { locale: Locale }) {
   const dict = getDict(l);
   const p = l === 'uk' ? '' : '/ru';
-  const posts = [...POSTS].sort((a, b) => b.date.localeCompare(a.date));
+  const posts = await getPosts();
 
   return (
     <div className="container-page pb-12">

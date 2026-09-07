@@ -4,7 +4,7 @@ import type { Locale } from '@/data/types';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta } from '@/lib/meta';
 import { SITE } from '@/lib/site';
-import { PRODUCTS } from '@/lib/catalog';
+import { getAllProducts } from '@/lib/catalog';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 const COPY = {
@@ -72,7 +72,8 @@ export async function meta(l: Locale): Promise<Metadata> {
   });
 }
 
-export default function AboutPage({ locale: l }: { locale: Locale }) {
+export default async function AboutPage({ locale: l }: { locale: Locale }) {
+  const total = (await getAllProducts()).length;
   const dict = getDict(l);
   const t = COPY[l];
   const p = l === 'uk' ? '' : '/ru';
@@ -152,7 +153,7 @@ export default function AboutPage({ locale: l }: { locale: Locale }) {
 
       <div className="mt-10">
         <Link href={`${p}/catalog/`} className="btn btn-primary">
-          {t.catalogCta} — {PRODUCTS.length} {dict.common.products}
+          {t.catalogCta} — {total} {dict.common.products}
         </Link>
       </div>
     </div>

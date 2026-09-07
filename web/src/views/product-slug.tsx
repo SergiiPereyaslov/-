@@ -2,8 +2,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { CATEGORY_BY_SLUG, GROUPS } from '@/data/taxonomy';
-import { PRODUCTS, getProduct, productsOfCategory } from '@/lib/catalog';
+import {
+  compatibleProducts,
+  getAllProducts,
+  getCategory,
+  getGroups,
+  getProduct,
+  productsOfCategory,
+} from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { SITE, canonical } from '@/lib/site';
@@ -13,8 +19,8 @@ import { ProductPanel } from '@/components/ProductPanel';
 import { ProductCard } from '@/components/ProductCard';
 import { JsonLd } from '@/components/JsonLd';
 
-export function staticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.slug }));
+export async function staticParams() {
+  return (await getAllProducts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function meta(
@@ -22,7 +28,7 @@ export async function meta(
   params: Promise<{ slug: string }>,
 ): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProduct(slug);
   if (!product) return {};
 
   const packPrice = (product.priceRetail * product.unitsPerPack).toFixed(0);
@@ -49,21 +55,18 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
   const dict = getDict(l);
-  const product = getProduct(slug);
+  const product = await getProduct(slug);
   if (!product) notFound();
 
-  const category = CATEGORY_BY_SLUG.get(product.category);
-  const group = category ? GROUPS.find((g) => g.slug === category.group) : undefined;
+  const [category, groups, compatible, sameCategory] = await Promise.all([
+    getCategory(product.category),
+    getGroups(),
+    compatibleProducts(product),
+    productsOfCategory(product.category),
+  ]);
+  const group = category ? groups.find((g) => g.slug === category.group) : undefined;
   const shape = product.shape ?? 'box';
-
-  const compatible = (product.compatibleWith ?? [])
-    .map((s) => getProduct(s))
-    .filter((p) => p !== undefined)
-    .slice(0, 4);
-
-  const related = productsOfCategory(product.category)
-    .filter((p) => p.slug !== product.slug)
-    .slice(0, 4);
+  const related = sameCategory.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   const compatibleTitle = shape === 'lid' ? dict.product.compatibleCups : dict.product.compatibleLids;
 

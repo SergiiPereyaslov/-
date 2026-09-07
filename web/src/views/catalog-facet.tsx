@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
-import { CATEGORIES, CATEGORY_BY_SLUG, GROUPS } from '@/data/taxonomy';
-import { productsOfCategory, priceFrom } from '@/lib/catalog';
+import { getCategories, getCategory, getGroups, priceFrom, productsOfCategory } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -14,23 +13,29 @@ import { CategoryView } from '@/components/CategoryView';
  * Генеруються лише для фасетів із indexed: true — решта комбінацій
  * лишається всередині категорії й в індекс не потрапляє.
  */
-const indexedPairs = () =>
-  CATEGORIES.flatMap((c) =>
-    c.facets
-      .filter((f) => f.indexed)
-      .flatMap((f) =>
-        f.values
-          .filter((v) => productsOfCategory(c.slug).some((p) => p.facets[f.key] === v.value))
-          .map((v) => ({ category: c.slug, facetKey: f.key, value: v.value, facet: v.slug })),
-      ),
-  );
+const indexedPairs = async () => {
+  const categories = await getCategories();
+  const pairs: { category: string; facet: string }[] = [];
 
-export function staticParams() {
-  return indexedPairs().map(({ category, facet }) => ({ slug: category, facet }));
+  for (const c of categories) {
+    const items = await productsOfCategory(c.slug);
+    for (const f of c.facets) {
+      if (!f.indexed) continue;
+      for (const v of f.values) {
+        if (!items.some((p) => p.facets[f.key] === v.value)) continue;
+        pairs.push({ category: c.slug, facet: v.slug });
+      }
+    }
+  }
+  return pairs;
+};
+
+export async function staticParams() {
+  return (await indexedPairs()).map(({ category, facet }) => ({ slug: category, facet }));
 }
 
-const resolve = (slug: string, facetSlug: string) => {
-  const category = CATEGORY_BY_SLUG.get(slug);
+const resolve = async (slug: string, facetSlug: string) => {
+  const category = await getCategory(slug);
   if (!category) return null;
   for (const f of category.facets) {
     if (!f.indexed) continue;
@@ -45,10 +50,10 @@ export async function meta(
   params: Promise<{ slug: string; facet: string }>,
 ): Promise<Metadata> {
   const { slug, facet } = await params;
-  const found = resolve(slug, facet);
+  const found = await resolve(slug, facet);
   if (!found) return {};
 
-  const items = productsOfCategory(slug).filter(
+  const items = (await productsOfCategory(slug)).filter(
     (p) => p.facets[found.facet.key] === found.value.value,
   );
 
@@ -77,12 +82,14 @@ export default async function FacetPage({
 }) {
   const { slug, facet } = await params;
   const dict = getDict(l);
-  const found = resolve(slug, facet);
+  const found = await resolve(slug, facet);
   if (!found) notFound();
 
   const { category, facet: f, value } = found;
-  const items = productsOfCategory(slug).filter((p) => p.facets[f.key] === value.value);
-  const group = GROUPS.find((g) => g.slug === category.group);
+  const all = await productsOfCategory(slug);
+  const items = all.filter((p) => p.facets[f.key] === value.value);
+  const groups = await getGroups();
+  const group = groups.find((g) => g.slug === category.group);
   const p = l === 'uk' ? '' : '/ru';
 
   const h1 = `${category.h1[l]} ${value.label[l]}`;
@@ -126,7 +133,7 @@ export default async function FacetPage({
           </Link>
           {f.values
             .filter((v) => v.slug !== facet)
-            .filter((v) => productsOfCategory(slug).some((pr) => pr.facets[f.key] === v.value))
+            .filter((v) => all.some((pr) => pr.facets[f.key] === v.value))
             .map((v) => (
               <Link
                 key={v.slug}

@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
-import { CATEGORIES, GROUPS } from '@/data/taxonomy';
-import { PRODUCTS, productsOfCategory } from '@/lib/catalog';
-import { POSTS } from '@/data/posts';
+import { getCategories, getGroups, getAllProducts, productsOfCategory } from '@/lib/catalog';
+import { getPosts } from '@/lib/posts';
 import { SITE } from '@/lib/site';
+import type { Facet } from '@/data/types';
 
 /**
  * Sitemap із hreflang-альтернативами для кожного URL.
@@ -28,7 +28,14 @@ const entry = (
   },
 });
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [groups, categories, products, posts] = await Promise.all([
+    getGroups(),
+    getCategories(),
+    getAllProducts(),
+    getPosts(),
+  ]);
+
   const staticPages: [string, number, MetadataRoute.Sitemap[number]['changeFrequency']][] = [
     ['/', 1, 'weekly'],
     ['/catalog/', 0.9, 'weekly'],
@@ -41,28 +48,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ['/blog/', 0.6, 'weekly'],
   ];
 
-  const groups = GROUPS.map((g) => entry(`/catalog/${g.slug}/`, 0.85, 'weekly'));
-  const categories = CATEGORIES.map((c) => entry(`/catalog/${c.slug}/`, 0.8, 'weekly'));
-
-  const facets = CATEGORIES.flatMap((c) =>
-    c.facets
-      .filter((f) => f.indexed)
-      .flatMap((f) =>
-        f.values
-          .filter((v) => productsOfCategory(c.slug).some((p) => p.facets[f.key] === v.value))
-          .map((v) => entry(`/catalog/${c.slug}/${v.slug}/`, 0.7, 'weekly')),
-      ),
-  );
-
-  const products = PRODUCTS.map((p) => entry(`/product/${p.slug}/`, 0.65, 'weekly'));
-  const posts = POSTS.map((p) => entry(`/blog/${p.slug}/`, 0.5, 'monthly'));
+  const facets: MetadataRoute.Sitemap = [];
+  for (const c of categories) {
+    const items = await productsOfCategory(c.slug);
+    for (const f of c.facets as Facet[]) {
+      if (!f.indexed) continue;
+      for (const v of f.values) {
+        if (!items.some((p) => p.facets[f.key] === v.value)) continue;
+        facets.push(entry(`/catalog/${c.slug}/${v.slug}/`, 0.7, 'weekly'));
+      }
+    }
+  }
 
   return [
     ...staticPages.map(([path, priority, freq]) => entry(path, priority, freq)),
-    ...groups,
-    ...categories,
+    ...groups.map((g) => entry(`/catalog/${g.slug}/`, 0.85, 'weekly')),
+    ...categories.map((c) => entry(`/catalog/${c.slug}/`, 0.8, 'weekly')),
     ...facets,
-    ...products,
-    ...posts,
+    ...products.map((p) => entry(`/product/${p.slug}/`, 0.65, 'weekly')),
+    ...posts.map((p) => entry(`/blog/${p.slug}/`, 0.5, 'monthly')),
   ];
 }

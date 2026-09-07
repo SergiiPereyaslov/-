@@ -44,3 +44,10 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /blob-report/
+
+# Локальні змінні оточення
+.env
+.env*.local
+
+# Згенерований клієнт Prisma
+/src/generated/

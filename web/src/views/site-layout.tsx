@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Manrope } from 'next/font/google';
 import '@/app/globals.css';
 import type { Locale } from '@/data/types';
-import { GROUPS, CATEGORY_BY_SLUG } from '@/data/taxonomy';
+import { getCategories, getGroups } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { SITE, formatPhone, canonical } from '@/lib/site';
 import { Header, type NavGroup } from '@/components/Header';
@@ -64,15 +64,23 @@ export function siteMetadata(l: Locale): Metadata {
  * middleware, а той ламає клієнтську навігацію App Router — RSC-запити
  * до переписаного шляху повертають 404.
  */
-export function SiteLayout({ locale: l, children }: { locale: Locale; children: React.ReactNode }) {
+export async function SiteLayout({
+  locale: l,
+  children,
+}: {
+  locale: Locale;
+  children: React.ReactNode;
+}) {
   const dict = getDict(l);
+  const [groups, categories] = await Promise.all([getGroups(), getCategories()]);
+  const bySlug = new Map(categories.map((c) => [c.slug, c]));
 
   // Слім-дерево навігації: клієнтський Header не має тягнути SEO-тексти таксономії.
-  const nav: NavGroup[] = GROUPS.map((g) => ({
+  const nav: NavGroup[] = groups.map((g) => ({
     slug: g.slug,
     name: g.name[l],
     categories: g.categories
-      .map((slug) => CATEGORY_BY_SLUG.get(slug))
+      .map((slug) => bySlug.get(slug))
       .filter((c) => c !== undefined)
       .map((c) => ({ slug: c.slug, name: c.name[l] })),
   }));

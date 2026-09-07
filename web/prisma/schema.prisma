@@ -1,0 +1,188 @@
+// Схема бази даних SmartEcoPack.
+//
+// Публічні сторінки рендеряться статично й читають БД через кешований шар
+// (src/lib/catalog.ts), а адмінка після кожної зміни викликає ревалідацію.
+// Так зберігається швидкість статики й водночас каталог редагується без
+// участі розробника.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Верхній рівень каталогу: 5 груп, кожна — самостійна SEO-посадкова.
+model Group {
+  slug      String     @id
+  nameUk    String
+  nameRu    String
+  h1Uk      String
+  h1Ru      String
+  introUk   String
+  introRu   String
+  /// Абзаци SEO-тексту: [{ uk, ru }]
+  seo       Json       @default("[]")
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  categories Category[]
+
+  @@map("groups")
+}
+
+model Category {
+  slug      String  @id
+  groupSlug String
+  nameUk    String
+  nameRu    String
+  h1Uk      String
+  h1Ru      String
+  introUk   String
+  introRu   String
+  /// Абзаци SEO-тексту: [{ uk, ru }]
+  seo       Json    @default("[]")
+  /// [{ q: { uk, ru }, a: { uk, ru } }]
+  faq       Json    @default("[]")
+  /// Визначення фасетів; значення з indexed: true отримують власні URL.
+  facets    Json    @default("[]")
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group    Group     @relation(fields: [groupSlug], references: [slug], onDelete: Restrict)
+  products Product[]
+
+  @@index([groupSlug])
+  @@map("categories")
+}
+
+model Product {
+  slug         String   @id
+  sku          String   @unique
+  categorySlug String
+  nameUk       String
+  nameRu       String
+  specUk       String   @default("")
+  specRu       String   @default("")
+  descriptionUk String  @default("") @db.Text
+  descriptionRu String  @default("") @db.Text
+  /// [{ label: { uk, ru }, value: { uk, ru } }]
+  attributes   Json     @default("[]")
+  /// Значення фасетів: { volume: "340", color: "kraft" }
+  facets       Json     @default("{}")
+  unitsPerPack Int
+  /// Гроші — Decimal, не Float: копійки не мають губитись на округленні.
+  priceRetail  Decimal  @db.Decimal(10, 2)
+  /// Оптові щаблі: [{ minPacks, perUnit }]
+  tiers        Json     @default("[]")
+  inStock      Boolean  @default(true)
+  brandable    Boolean  @default(false)
+  featured     Boolean  @default(false)
+  /// Силует заглушки, поки немає фото: cup | lid | box | bag | …
+  shape        String   @default("box")
+  /// Діаметр вінця — основа сумісності стакан ↔ кришка.
+  lidDiameter  Int?
+  image        String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category Category @relation(fields: [categorySlug], references: [slug], onDelete: Restrict)
+
+  @@index([categorySlug])
+  @@index([featured])
+  @@index([lidDiameter])
+  @@map("products")
+}
+
+model Post {
+  slug      String   @id
+  publishedAt DateTime
+  titleUk   String
+  titleRu   String
+  excerptUk String   @db.Text
+  excerptRu String   @db.Text
+  /// Абзаци: [{ uk, ru }]; рядок із «## » стає підзаголовком.
+  body      Json     @default("[]")
+  /// Слаги категорій для перелінковки
+  related   String[] @default([])
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, publishedAt])
+  @@map("posts")
+}
+
+enum LeadKind {
+  quote
+  order
+  branding
+}
+
+enum LeadStatus {
+  new
+  in_progress
+  done
+  rejected
+}
+
+/// Заявка з форми або кошика. Пишеться в БД до спроби надіслати в Telegram,
+/// щоб відмова зовнішнього каналу не втрачала звернення клієнта.
+model Lead {
+  id           String     @id @default(uuid())
+  number       String     @unique
+  kind         LeadKind
+  status       LeadStatus @default(new)
+  name         String?
+  phone        String
+  email        String?
+  company      String?
+  comment      String?    @db.Text
+  delivery     String?
+  customerType String?
+  city         String?
+  requisites   String?    @db.Text
+  locale       String     @default("uk")
+  source       String?
+  /// [{ sku, name, packs, sum }]
+  items        Json       @default("[]")
+  total        Decimal?   @db.Decimal(10, 2)
+  /// Чи вдалось доставити в Telegram / на пошту
+  notified     Boolean    @default(false)
+  notifyError  String?    @db.Text
+  managerNote  String?    @db.Text
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([status, createdAt])
+  @@map("leads")
+}
+
+model AdminUser {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+
+  sessions Session[]
+
+  @@map("admin_users")
+}
+
+model Session {
+  token     String    @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("sessions")
+}
