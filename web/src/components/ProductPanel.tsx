@@ -6,6 +6,7 @@ import type { Dict } from '@/i18n/dictionaries';
 import { fill } from '@/i18n/dictionaries';
 import { QtyStepper } from './QtyStepper';
 import { useCart, unitPrice } from './CartProvider';
+import { events } from '@/lib/analytics';
 
 /**
  * Панель замовлення в картці товару.
@@ -92,7 +93,8 @@ export function ProductPanel({
         <button
           type="button"
           className="btn btn-primary mt-3 w-full"
-          onClick={() =>
+          onClick={() => {
+            events.addToCart(product.sku, product.name.uk, packs, total);
             add(
               {
                 slug: product.slug,
@@ -105,13 +107,19 @@ export function ProductPanel({
                 tiers: product.tiers,
               },
               packs,
-            )
-          }
+            );
+          }}
         >
           {inCart ? dict.common.inCart : dict.common.addToCart}
         </button>
 
-        <a href={telegram} className="btn btn-secondary mt-2 w-full" target="_blank" rel="noopener">
+        <a
+          href={telegram}
+          className="btn btn-secondary mt-2 w-full"
+          target="_blank"
+          rel="noopener"
+          onClick={() => events.messengerClick('telegram', 'product')}
+        >
           {dict.product.writeTelegram}
         </a>
       </div>

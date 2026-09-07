@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Locale } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
+import { events } from '@/lib/analytics';
 
 const PHONE_RE = /^\+?380\d{9}$/;
 
@@ -39,6 +40,7 @@ export function QuoteForm({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ kind: 'quote', name, phone: normalized, source, locale }),
       });
+      if (res.ok) events.lead('quote', source);
       setState(res.ok ? 'sent' : 'error');
     } catch {
       setState('error');

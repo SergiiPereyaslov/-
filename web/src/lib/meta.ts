@@ -1,6 +1,15 @@
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { SITE } from './site';
+import { OG_ALT, OG_SIZE } from '@/views/og-image';
+
+/** Спільний опис картинки для соцмереж — маршрут /og, див. views/og-image.tsx. */
+const ogImage = (locale: Locale) => ({
+  url: `${SITE.url}/og${locale === 'ru' ? '?l=ru' : ''}`,
+  width: OG_SIZE.width,
+  height: OG_SIZE.height,
+  alt: OG_ALT[locale],
+});
 
 /**
  * Метадані сторінки з коректними canonical і hreflang.
@@ -36,6 +45,13 @@ export function pageMeta({
       siteName: SITE.name,
       locale: locale === 'uk' ? 'uk_UA' : 'ru_UA',
       type: 'website',
+      images: [ogImage(locale)],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage(locale).url],
     },
     robots: noindex ? { index: false, follow: true } : { index: true, follow: true },
   };

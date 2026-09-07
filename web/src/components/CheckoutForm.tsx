@@ -5,6 +5,7 @@ import { useState } from 'react';
 import type { Locale } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { useCart, lineSum } from './CartProvider';
+import { events } from '@/lib/analytics';
 
 const PHONE_RE = /^\+?380\d{9}$/;
 
@@ -46,6 +47,7 @@ export function CheckoutForm({ locale, dict }: { locale: Locale; dict: Dict }) {
     }
     setError('');
     setSending(true);
+    events.beginCheckout(Number(totalSum.toFixed(2)), lines.length);
 
     try {
       const res = await fetch('/api/lead/', {
@@ -69,6 +71,7 @@ export function CheckoutForm({ locale, dict }: { locale: Locale; dict: Dict }) {
       });
       const data = (await res.json()) as { ok: boolean; orderNumber?: string };
       if (data.ok) {
+        events.lead('order', 'checkout', Number(totalSum.toFixed(2)));
         clear();
         router.push(`${p}/dyakuyemo/?n=${data.orderNumber ?? ''}`);
         return;

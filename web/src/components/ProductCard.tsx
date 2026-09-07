@@ -8,6 +8,7 @@ import { fill } from '@/i18n/dictionaries';
 import { Placeholder } from './Placeholder';
 import { QtyStepper } from './QtyStepper';
 import { useCart, unitPrice } from './CartProvider';
+import { events } from '@/lib/analytics';
 
 export function ProductCard({
   product,
@@ -73,7 +74,8 @@ export function ProductCard({
           <button
             type="button"
             className="btn btn-primary !min-h-9 flex-1 !px-2 !text-[13px]"
-            onClick={() =>
+            onClick={() => {
+              events.addToCart(product.sku, product.name.uk, packs, packPrice * packs);
               add(
                 {
                   slug: product.slug,
@@ -86,8 +88,8 @@ export function ProductCard({
                   tiers: product.tiers,
                 },
                 packs,
-              )
-            }
+              );
+            }}
           >
             {inCart ? dict.common.inCart : dict.common.addToCart}
           </button>

@@ -27,6 +27,25 @@ test('title вкладається в 60 символів, є description, canon
   }
 });
 
+test('картинка для соцмереж віддається обома мовами', async ({ page, request }) => {
+  for (const [path, expected] of [
+    ['/', '/og'],
+    ['/ru/', '/og?l=ru'],
+    ['/catalog/stakany-paperovi/', '/og'],
+    ['/product/stakan-paperovyi-340-ml-kraft/', '/og'],
+  ] as const) {
+    await page.goto(path);
+    const url = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(url, `немає og:image на ${path}`).toContain(expected);
+  }
+
+  for (const url of ['/og', '/og?l=ru', '/icon']) {
+    const res = await request.get(url);
+    expect(res.status(), `${url} має віддавати картинку`).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/png');
+  }
+});
+
 test('службові сторінки закриті від індексації', async ({ page }) => {
   for (const path of ['/koshyk/', '/oformlennya/', '/polityka-konfidentsiynosti/']) {
     await page.goto(path);

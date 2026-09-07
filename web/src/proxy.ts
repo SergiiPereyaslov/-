@@ -14,6 +14,13 @@ import { legacyTarget } from '@/lib/legacy-redirects';
  */
 const HAS_EXTENSION = /\.[a-z0-9]+$/i;
 
+/**
+ * Маршрути, які Next генерує з файлових конвенцій метаданих. Вони не мають
+ * розширення, тож правило про завершальний слеш перетворило б їх на 301
+ * і браузер не отримав би ні іконки, ні картинки для соцмереж.
+ */
+const METADATA_ROUTES = /^\/(icon|apple-icon|opengraph-image|twitter-image|manifest|og)(-[\w-]+)?$/;
+
 /** Заголовок із локаллю запиту; читає src/app/global-not-found.tsx. */
 export const LOCALE_HEADER = 'x-sep-locale';
 
@@ -31,7 +38,8 @@ export function proxy(request: NextRequest) {
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    HAS_EXTENSION.test(pathname)
+    HAS_EXTENSION.test(pathname) ||
+    METADATA_ROUTES.test(pathname)
   ) {
     return NextResponse.next();
   }

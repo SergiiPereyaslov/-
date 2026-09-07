@@ -5,11 +5,13 @@ import type { Locale } from '@/data/types';
 import { getCategories, getGroups } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
 import { SITE, formatPhone, canonical } from '@/lib/site';
+import { OG_ALT, OG_SIZE } from '@/views/og-image';
 import { Header, type NavGroup } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { themeScript } from '@/components/ThemeToggle';
 import { JsonLd } from '@/components/JsonLd';
 import { FloatingContacts } from '@/components/FloatingContacts';
+import { Analytics } from '@/components/Analytics';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -50,7 +52,16 @@ export function siteMetadata(l: Locale): Metadata {
       siteName: SITE.name,
       locale: l === 'uk' ? 'uk_UA' : 'ru_UA',
       url: canonical(l, '/'),
+      images: [
+        {
+          url: `${SITE.url}/og${l === 'ru' ? '?l=ru' : ''}`,
+          width: OG_SIZE.width,
+          height: OG_SIZE.height,
+          alt: OG_ALT[l],
+        },
+      ],
     },
+    twitter: { card: 'summary_large_image' },
     robots: { index: true, follow: true },
   };
 }
@@ -138,6 +149,7 @@ export async function SiteLayout({
         <Footer locale={l} dict={dict} nav={nav} />
         <FloatingContacts phone={SITE.phones[0]} telegram={SITE.telegram} viber={SITE.viber} />
         <JsonLd data={organization} />
+        <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       </body>
     </html>
   );
