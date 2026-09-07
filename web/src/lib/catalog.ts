@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { prisma } from './db';
-import type { Category, Facet, FaqItem, Group, L, Locale, Product, ProductShape } from '@/data/types';
+import type { Category, Facet, FaqItem, Group, L, Product, ProductShape } from '@/data/types';
 
 /**
  * Доступ до каталогу.
@@ -168,25 +168,12 @@ export const resolveCatalogSlug = cache(async (slug: string): Promise<CatalogNod
  * Запит «340» має знаходити всі стакани 340 мл — основний сценарій
  * аудиторії, яка шукає конкретний розмір.
  */
-export const searchProducts = async (
-  query: string,
-  locale: Locale,
-  limit = 8,
-): Promise<Product[]> => {
-  const q = query.trim();
+export const searchProducts = async (query: string, limit = 8): Promise<Product[]> => {
+  const q = query.trim().toLowerCase();
   if (q.length < 2) return [];
 
-  const nameField = locale === 'uk' ? 'nameUk' : 'nameRu';
-  const specField = locale === 'uk' ? 'specUk' : 'specRu';
-
   const rows = await prisma.product.findMany({
-    where: {
-      OR: [
-        { [nameField]: { contains: q, mode: 'insensitive' } },
-        { [specField]: { contains: q, mode: 'insensitive' } },
-        { sku: { contains: q, mode: 'insensitive' } },
-      ],
-    },
+    where: { searchText: { contains: q } },
     orderBy: [{ featured: 'desc' }, { sortOrder: 'asc' }],
     take: limit,
   });

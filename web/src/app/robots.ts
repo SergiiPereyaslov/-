@@ -11,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         // фільтри працюють станом на клієнті й не створюють URL з параметрами,
         // натомість таке правило заблокувало б переходи з UTM-мітками.
         disallow: [
+          '/admin/',
           '/api/',
           '/koshyk/',
           '/oformlennya/',

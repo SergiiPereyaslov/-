@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const raw = searchParams.get('locale') ?? 'uk';
   const locale: Locale = (LOCALES as readonly string[]).includes(raw) ? (raw as Locale) : 'uk';
 
-  const found = await searchProducts(q, locale);
+  const found = await searchProducts(q);
   const hits = found.map((p) => ({
     slug: p.slug,
     name: p.name[locale],

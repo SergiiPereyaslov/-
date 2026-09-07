@@ -36,6 +36,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Адмінка живе поза мовними деревами: жодних legacy-правил і локалей,
+  // лише нормалізація слеша, щоб адреси були стабільні.
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    return pathname.endsWith('/') ? NextResponse.next() : redirect301(request, `${pathname}/`);
+  }
+
   const isRu = pathname === '/ru' || pathname.startsWith('/ru/');
   const isUk = pathname === '/uk' || pathname.startsWith('/uk/');
   const prefix = isRu ? '/ru' : '';

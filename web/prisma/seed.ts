@@ -7,6 +7,7 @@ import { PrismaClient } from '../src/generated/prisma/client.js';
 import { GROUPS, CATEGORIES } from '../src/data/taxonomy.ts';
 import { POSTS } from '../src/data/posts.ts';
 import type { Product } from '../src/data/types.ts';
+import { buildSearchText } from '../src/lib/search-text.ts';
 
 /**
  * Початкове наповнення БД із файлів-джерел.
@@ -82,6 +83,14 @@ const main = async () => {
       shape: p.shape ?? 'box',
       lidDiameter: p.lidDiameter ?? null,
       image: p.image ?? null,
+      searchText: buildSearchText({
+        nameUk: p.name.uk,
+        nameRu: p.name.ru,
+        sku: p.sku,
+        specUk: p.spec.uk,
+        specRu: p.spec.ru,
+        facets: p.facets,
+      }),
       sortOrder: i,
     };
     await prisma.product.upsert({ where: { slug: p.slug }, create: { slug: p.slug, ...data }, update: data });
