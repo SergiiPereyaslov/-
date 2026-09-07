@@ -19,7 +19,16 @@ interface Hit {
  * Пошук ходить у /api/search, а не імпортує каталог: інакше кожна сторінка
  * тягнула б увесь products.json у клієнтський бандл.
  */
-export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
+export function SearchBox({
+  locale,
+  dict,
+  /** Шапка рендерить два екземпляри (десктоп і мобільний) — id мають бути різні. */
+  id = 'site-search',
+}: {
+  locale: Locale;
+  dict: Dict;
+  id?: string;
+}) {
   const [q, setQ] = useState('');
   const [hits, setHits] = useState<Hit[]>([]);
   const [open, setOpen] = useState(false);
@@ -59,7 +68,7 @@ export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
 
   return (
     <div ref={boxRef} className="relative">
-      <label htmlFor="site-search" className="sr-only">
+      <label htmlFor={id} className="sr-only">
         {dict.header.searchLabel}
       </label>
       <div className="relative">
@@ -71,7 +80,7 @@ export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
           <path d="M20 20l-3.5-3.5" />
         </svg>
         <input
-          id="site-search"
+          id={id}
           type="search"
           className="field !pl-10"
           placeholder={dict.header.searchPlaceholder}

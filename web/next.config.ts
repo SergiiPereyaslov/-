@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
    */
   skipTrailingSlashRedirect: true,
 
+  experimental: {
+    /** Вмикає app/global-not-found.tsx — 404 для адрес поза мовними деревами. */
+    globalNotFound: true,
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
   },

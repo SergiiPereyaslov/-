@@ -62,8 +62,11 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
   }, []);
 
   // Той самий шлях іншою мовою — для перемикача без втрати сторінки.
+  // На сторінці 404 usePathname() віддає службовий /_not-found, тому там
+  // ведемо на головну: посилання на /ru/_not-found/ було б битим.
   const otherLocale: Locale = locale === 'uk' ? 'ru' : 'uk';
-  const bare = locale === 'uk' ? pathname : pathname.replace(/^\/ru/, '') || '/';
+  const raw = locale === 'uk' ? pathname : pathname.replace(/^\/ru/, '') || '/';
+  const bare = raw.includes('_not-found') ? '/' : raw;
   const otherHref = otherLocale === 'uk' ? bare : `/ru${bare === '/' ? '' : bare}`;
 
   const menu = [
@@ -111,13 +114,22 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
         </Link>
 
         <div className="hidden flex-1 md:block">
-          <SearchBox locale={locale} dict={dict} />
+          <SearchBox locale={locale} dict={dict} id="site-search" />
         </div>
 
         <div className="ml-auto flex items-center gap-1">
           <ThemeToggle label={dict.a11y.themeToggle} />
           <CartButton locale={locale} label={dict.header.cart} />
         </div>
+      </div>
+
+      {/*
+        Окремий рядок пошуку на мобільному. Ховати поле в бургер не можна:
+        аудиторія шукає за конкретним розміром («стакан 340»), і пошук —
+        основний спосіб навігації для тих, хто знає, що саме йому треба.
+      */}
+      <div className="border-t border-border px-4 pb-3 pt-2 md:hidden">
+        <SearchBox locale={locale} dict={dict} id="site-search-mobile" />
       </div>
 
       {/* Головна навігація */}
@@ -185,9 +197,6 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
       {menuOpen && (
         <div className="border-t border-border bg-surface lg:hidden">
           <div className="container-page py-4">
-            <div className="mb-4 md:hidden">
-              <SearchBox locale={locale} dict={dict} />
-            </div>
             <ul className="space-y-1">
               {nav.map((g) => (
                 <li key={g.slug}>

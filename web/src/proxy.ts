@@ -2,14 +2,20 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { legacyTarget } from '@/lib/legacy-redirects';
 
 /**
- * Middleware робить лише перенаправлення — жодних rewrite.
+ * Proxy робить лише перенаправлення — жодних rewrite.
+ *
+ * (У Next 16 `middleware.ts` перейменовано на `proxy.ts`; документація прямо
+ * радить обходитись без нього, де можливо, — тут лишилися тільки 301.)
  *
  * Переписування шляху ламає клієнтську навігацію App Router: RSC-запити
  * до переписаної адреси повертають 404, і переходи по сайту перестають
  * працювати. Тому обидві мовні версії — реальні дерева маршрутів
- * (src/app/(uk) і src/app/(ru)/ru), а тут лишаються тільки 301.
+ * (src/app/(uk) і src/app/(ru)/ru).
  */
 const HAS_EXTENSION = /\.[a-z0-9]+$/i;
+
+/** Заголовок із локаллю запиту; читає src/app/global-not-found.tsx. */
+export const LOCALE_HEADER = 'x-sep-locale';
 
 const redirect301 = (request: NextRequest, pathname: string) => {
   // Звичайний URL, а не nextUrl.clone(): NextURL підганяє завершальний слеш
@@ -19,7 +25,7 @@ const redirect301 = (request: NextRequest, pathname: string) => {
   return NextResponse.redirect(url.toString(), 301);
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
@@ -45,7 +51,11 @@ export function middleware(request: NextRequest) {
   // Нормалізація слеша (вбудована вимкнена в next.config, див. коментар там)
   if (!pathname.endsWith('/')) return redirect301(request, `${pathname}/`);
 
-  return NextResponse.next();
+  // Позначаємо локаль заголовком: сторінка 404 для невідомої адреси
+  // не має доступу до шляху й інакше завжди була б українською.
+  const headers = new Headers(request.headers);
+  headers.set(LOCALE_HEADER, isRu ? 'ru' : 'uk');
+  return NextResponse.next({ request: { headers } });
 }
 
 export const config = {
