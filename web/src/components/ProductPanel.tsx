@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Locale, Product } from '@/data/types';
+import type { Product } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { fill } from '@/i18n/dictionaries';
 import { QtyStepper } from './QtyStepper';
@@ -14,13 +14,11 @@ import { useCart, unitPrice } from './CartProvider';
  */
 export function ProductPanel({
   product,
-  locale,
   dict,
   brandingMin,
   telegram,
 }: {
   product: Product;
-  locale: Locale;
   dict: Dict;
   brandingMin: number;
   telegram: string;

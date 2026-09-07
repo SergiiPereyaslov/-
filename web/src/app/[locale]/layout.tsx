@@ -6,7 +6,6 @@ import { LOCALES, type Locale } from '@/data/types';
 import { GROUPS, CATEGORY_BY_SLUG } from '@/data/taxonomy';
 import { getDict } from '@/i18n/dictionaries';
 import { SITE, formatPhone, canonical } from '@/lib/site';
-import { CartProvider } from '@/components/CartProvider';
 import { Header, type NavGroup } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { themeScript } from '@/components/ThemeToggle';
@@ -119,28 +118,26 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="flex min-h-screen flex-col">
-        <CartProvider>
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
-          >
-            {l === 'uk' ? 'Перейти до вмісту' : 'Перейти к содержимому'}
-          </a>
-          <Header
-            locale={l}
-            dict={dict}
-            nav={nav}
-            phone={formatPhone(SITE.phones[0])}
-            phoneHref={`tel:${SITE.phones[0]}`}
-            addressLine={`${city}, ${address}`}
-            hours={SITE.hours[l]}
-          />
-          <main id="main" className="flex-1">
-            {children}
-          </main>
-          <Footer locale={l} dict={dict} nav={nav} />
-          <FloatingContacts phone={SITE.phones[0]} telegram={SITE.telegram} viber={SITE.viber} />
-        </CartProvider>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
+        >
+          {l === 'uk' ? 'Перейти до вмісту' : 'Перейти к содержимому'}
+        </a>
+        <Header
+          locale={l}
+          dict={dict}
+          nav={nav}
+          phone={formatPhone(SITE.phones[0])}
+          phoneHref={`tel:${SITE.phones[0]}`}
+          addressLine={`${city}, ${address}`}
+          hours={SITE.hours[l]}
+        />
+        <main id="main" className="flex-1">
+          {children}
+        </main>
+        <Footer locale={l} dict={dict} nav={nav} />
+        <FloatingContacts phone={SITE.phones[0]} telegram={SITE.telegram} viber={SITE.viber} />
         <JsonLd data={organization} />
       </body>
     </html>

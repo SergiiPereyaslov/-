@@ -117,7 +117,6 @@ export default async function ProductPage({
           <div className="mt-5">
             <ProductPanel
               product={product}
-              locale={l}
               dict={dict}
               brandingMin={SITE.brandingMinUnits}
               telegram={SITE.telegram}

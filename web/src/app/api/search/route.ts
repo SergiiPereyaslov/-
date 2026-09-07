@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { searchProducts } from '@/lib/catalog';
 import { LOCALES, type Locale } from '@/data/types';
 
-export const dynamic = 'force-static';
+// force-static тут не працює: у статичному режимі Next не передає
+// searchParams, і будь-який запит повертав порожній масив.
+export const dynamic = 'force-dynamic';
 
 export function GET(request: Request) {
   const { searchParams } = new URL(request.url);

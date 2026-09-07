@@ -34,7 +34,7 @@ export function QuoteForm({
     setError('');
     setState('sending');
     try {
-      const res = await fetch('/api/lead', {
+      const res = await fetch('/api/lead/', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ kind: 'quote', name, phone: normalized, source, locale }),

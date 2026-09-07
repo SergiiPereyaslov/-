@@ -1,0 +1,141 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { LOCALES, type Locale } from '@/data/types';
+import { getDict } from '@/i18n/dictionaries';
+import { pageMeta } from '@/lib/meta';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { BrandingCalculator } from '@/components/BrandingCalculator';
+
+/**
+ * Дві вузькі посадкові під найчастотніші запити брендування.
+ * Старий URL /druk-na-paperovih-stakanchikah 301-иться сюди.
+ */
+const PAGES = {
+  'druk-na-stakanakh': {
+    uk: {
+      h1: 'Друк на паперових стаканчиках',
+      title: 'Стаканчики для кави з логотипом — друк',
+      description:
+        'Друк логотипу на паперових стаканчиках від 100 шт. Розрахунок вартості в калькуляторі, макет розробимо самі, термін від 5 робочих днів.',
+      body: [
+        'Стаканчик із логотипом — це рекламний носій, який клієнт сам виносить на вулицю й тримає в руках 15–20 хвилин. За ціною контакту з цим не конкурує жоден інший канал, доступний кав’ярні на одну точку.',
+        'Друкуємо на одношарових, двошарових і гофрованих стаканах усіх об’ємів з каталогу — від 110 до 500 мл. Мінімальний тираж 100 штук, але помітна економія починається від 1000: підготовка друкарської форми розкладається на більший тираж.',
+        'Для гофрованих стаканів макет треба спрощувати — рельєф «з’їдає» тонкі лінії й дрібний текст. Якщо потрібен детальний друк, беріть двошаровий стакан із гладкою стінкою: на ньому логотип виглядає найкраще.',
+      ],
+      category: 'stakany-paperovi',
+      categoryLabel: 'Обрати стакани в каталозі',
+    },
+    ru: {
+      h1: 'Печать на бумажных стаканчиках',
+      title: 'Стаканчики для кофе с логотипом — печать',
+      description:
+        'Печать логотипа на бумажных стаканчиках от 100 шт. Расчёт стоимости в калькуляторе, макет разработаем сами, срок от 5 рабочих дней.',
+      body: [
+        'Стаканчик с логотипом — это рекламный носитель, который клиент сам выносит на улицу и держит в руках 15–20 минут. По цене контакта с этим не конкурирует ни один другой канал, доступный кофейне на одну точку.',
+        'Печатаем на однослойных, двухслойных и гофрированных стаканах всех объёмов из каталога — от 110 до 500 мл. Минимальный тираж 100 штук, но заметная экономия начинается от 1000: подготовка печатной формы раскладывается на больший тираж.',
+        'Для гофрированных стаканов макет нужно упрощать — рельеф «съедает» тонкие линии и мелкий текст. Если нужна детальная печать, берите двухслойный стакан с гладкой стенкой: на нём логотип выглядит лучше всего.',
+      ],
+      category: 'stakany-paperovi',
+      categoryLabel: 'Выбрать стаканы в каталоге',
+    },
+  },
+  'druk-na-paketakh': {
+    uk: {
+      h1: 'Друк на крафт пакетах',
+      title: 'Крафт пакети з логотипом — друк',
+      description:
+        'Друк логотипу на крафт пакетах від 100 шт. Пакет виходить із закладу й показує бренд протягом усього шляху клієнта. Термін від 5 робочих днів.',
+      body: [
+        'Пакет працює довше за стакан: клієнт несе його додому, потім часто використовує повторно. Це найдовший контакт із брендом серед усієї упаковки, яку купує заклад.',
+        'Друкуємо на пакетах із крученою й плоскою ручкою, на крафтовому та білому папері. Біла поверхня дає точніші кольори, крафтова — характерний «еко» вигляд, але зсуває відтінки в теплий бік. Це варто врахувати, якщо у вас суворий фірмовий стиль.',
+        'Для великих замовлень із напоями беріть пакети з плоскою ручкою й щільністю 100–120 г/м²: кручена ручка розрахована приблизно на 3 кг і під вагою може прорватися.',
+      ],
+      category: 'pakety-z-ruchkamy',
+      categoryLabel: 'Обрати пакети в каталозі',
+    },
+    ru: {
+      h1: 'Печать на крафт пакетах',
+      title: 'Крафт пакеты с логотипом — печать',
+      description:
+        'Печать логотипа на крафт пакетах от 100 шт. Пакет выходит из заведения и показывает бренд в течение всего пути клиента. Срок от 5 рабочих дней.',
+      body: [
+        'Пакет работает дольше стакана: клиент несёт его домой, потом часто использует повторно. Это самый длинный контакт с брендом среди всей упаковки, которую покупает заведение.',
+        'Печатаем на пакетах с кручёной и плоской ручкой, на крафтовой и белой бумаге. Белая поверхность даёт более точные цвета, крафтовая — характерный «эко» вид, но смещает оттенки в тёплую сторону. Это стоит учесть, если у вас строгий фирменный стиль.',
+        'Для крупных заказов с напитками берите пакеты с плоской ручкой и плотностью 100–120 г/м²: кручёная ручка рассчитана примерно на 3 кг и под весом может прорваться.',
+      ],
+      category: 'pakety-z-ruchkamy',
+      categoryLabel: 'Выбрать пакеты в каталоге',
+    },
+  },
+} as const;
+
+type PageKey = keyof typeof PAGES;
+
+export function generateStaticParams() {
+  return LOCALES.flatMap((locale) =>
+    (Object.keys(PAGES) as PageKey[]).map((slug) => ({ locale, slug })),
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const l = (locale === 'ru' ? 'ru' : 'uk') as Locale;
+  const page = PAGES[slug as PageKey];
+  if (!page) return {};
+  return pageMeta({
+    locale: l,
+    path: `/brenduvannya/${slug}/`,
+    title: page[l].title,
+    description: page[l].description,
+  });
+}
+
+export default async function BrandingSubPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  const { locale, slug } = await params;
+  const l = (locale === 'ru' ? 'ru' : 'uk') as Locale;
+  const dict = getDict(l);
+  const page = PAGES[slug as PageKey];
+  if (!page) notFound();
+  const t = page[l];
+  const p = l === 'uk' ? '' : '/ru';
+
+  return (
+    <div className="container-page pb-12">
+      <Breadcrumbs
+        locale={l}
+        label={dict.a11y.breadcrumb}
+        items={[
+          { label: dict.nav.home, href: '/' },
+          { label: dict.nav.branding, href: '/brenduvannya/' },
+          { label: t.h1 },
+        ]}
+      />
+
+      <div className="grid gap-10 lg:grid-cols-[1fr_400px] lg:items-start">
+        <div>
+          <h1 className="text-3xl">{t.h1}</h1>
+          <div className="prose-uk mt-4 max-w-2xl">
+            {t.body.map((para) => (
+              <p key={para.slice(0, 24)}>{para}</p>
+            ))}
+          </div>
+          <Link href={`${p}/catalog/${t.category}/`} className="btn btn-secondary mt-6">
+            {t.categoryLabel} →
+          </Link>
+        </div>
+        <div className="lg:sticky lg:top-32">
+          <BrandingCalculator locale={l} dict={dict} />
+        </div>
+      </div>
+    </div>
+  );
+}

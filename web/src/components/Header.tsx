@@ -31,13 +31,17 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
   const [menuOpen, setMenuOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const pathname = usePathname();
+  const [lastPath, setLastPath] = useState(pathname);
   const catalogRef = useRef<HTMLDivElement>(null);
 
-  // Закриваємо все при переході — інакше меню лишається відкритим над новою сторінкою.
-  useEffect(() => {
+  // Закриваємо все при переході — інакше меню лишається відкритим над новою
+  // сторінкою. Коригуємо стан під час рендера, а не ефектом: так React не
+  // робить зайвий каскадний рендер із відкритим меню.
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
     setMenuOpen(false);
     setCatalogOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

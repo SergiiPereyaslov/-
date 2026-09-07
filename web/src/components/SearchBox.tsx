@@ -26,15 +26,12 @@ export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
   const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (q.trim().length < 2) {
-      setHits([]);
-      return;
-    }
+    if (q.trim().length < 2) return;
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(q)}&locale=${locale}`,
+          `/api/search/?q=${encodeURIComponent(q)}&locale=${locale}`,
           { signal: controller.signal },
         );
         if (res.ok) setHits((await res.json()) as Hit[]);
@@ -57,6 +54,8 @@ export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
   }, []);
 
   const prefix = locale === 'uk' ? '' : '/ru';
+  // Короткий запит просто не показує підказок — очищати стан ефектом не треба.
+  const visible = q.trim().length >= 2 ? hits : [];
 
   return (
     <div ref={boxRef} className="relative">
@@ -86,9 +85,9 @@ export function SearchBox({ locale, dict }: { locale: Locale; dict: Dict }) {
         />
       </div>
 
-      {open && hits.length > 0 && (
+      {open && visible.length > 0 && (
         <ul className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-md border border-border bg-surface shadow-lg">
-          {hits.map((h) => (
+          {visible.map((h) => (
             <li key={h.slug}>
               <Link
                 href={`${prefix}/product/${h.slug}/`}

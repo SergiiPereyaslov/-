@@ -48,7 +48,7 @@ export function CheckoutForm({ locale, dict }: { locale: Locale; dict: Dict }) {
     setSending(true);
 
     try {
-      const res = await fetch('/api/lead', {
+      const res = await fetch('/api/lead/', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
