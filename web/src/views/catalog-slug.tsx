@@ -14,6 +14,7 @@ import {
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
 import { ProductCard } from '@/components/ProductCard';
 import { Faq } from '@/components/Faq';
@@ -48,7 +49,7 @@ export async function meta(
       locale: l,
       path,
       title: clampTitle(
-        l === 'uk' ? `${node.group.name.uk} — купити оптом` : `${node.group.name.ru} — купить оптом`,
+        l === 'uk' ? `${node.group.name.uk} — оптом` : `${node.group.name.ru} — оптом`,
       ),
       description: clampDescription(
         `${node.group.intro[l]} ${items.length} ${l === 'uk' ? 'позицій, ціна від' : 'позиций, цена от'} ${priceFrom(items).toFixed(2)} грн.`,
@@ -62,8 +63,8 @@ export async function meta(
     path,
     title: clampTitle(
       l === 'uk'
-        ? `${node.category.name.uk} оптом у Дніпрі — ціна`
-        : `${node.category.name.ru} оптом в Днепре — цена`,
+        ? `${node.category.name.uk} оптом — ціна`
+        : `${node.category.name.ru} оптом — цена`,
     ),
     description: clampDescription(
       l === 'uk'
@@ -145,11 +146,7 @@ export default async function CatalogSlugPage({
           </div>
         </section>
 
-        <section className="prose-uk mt-12 max-w-3xl">
-          {g.seo.map((para, i) => (
-            <p key={i}>{para[l]}</p>
-          ))}
-        </section>
+        <Prose blocks={g.seo} locale={l} className="mt-12 max-w-3xl" />
       </div>
     );
   }
@@ -183,11 +180,7 @@ export default async function CatalogSlugPage({
         categorySlug={c.slug}
       />
 
-      <section className="prose-uk mt-12 max-w-3xl">
-        {c.seo.map((para, i) => (
-          <p key={i}>{para[l]}</p>
-        ))}
-      </section>
+      <Prose blocks={c.seo} locale={l} className="mt-12 max-w-3xl" />
 
       <div className="max-w-3xl">
         <Faq items={c.faq} locale={l} title={dict.catalog.faq} />

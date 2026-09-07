@@ -8,6 +8,7 @@ import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { SITE, canonical } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Prose } from '@/components/Prose';
 import { JsonLd } from '@/components/JsonLd';
 
 export async function staticParams() {
@@ -68,16 +69,7 @@ export default async function PostPage({
         <h1 className="mt-2 text-3xl leading-tight">{post.title[l]}</h1>
         <p className="mt-3 text-lg leading-relaxed text-muted">{post.excerpt[l]}</p>
 
-        <div className="prose-uk mt-8">
-          {post.body.map((block, i) => {
-            const text = block[l];
-            return text.startsWith('## ') ? (
-              <h2 key={i}>{text.slice(3)}</h2>
-            ) : (
-              <p key={i}>{text}</p>
-            );
-          })}
-        </div>
+        <Prose blocks={post.body} locale={l} className="mt-8" />
 
         {post.related.length > 0 && (
           <nav className="mt-10 border-t border-border pt-5">

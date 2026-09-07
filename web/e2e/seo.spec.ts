@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test';
 
 const PAGES = [
   '/',
+  '/upakovka/dnipro/',
+  '/upakovka/kyiv/',
   '/catalog/',
   '/catalog/dlya-napoyiv/',
   '/catalog/stakany-paperovi/',
@@ -44,6 +46,52 @@ test('картинка для соцмереж віддається обома �
     expect(res.status(), `${url} має віддавати картинку`).toBe(200);
     expect(res.headers()['content-type']).toContain('image/png');
   }
+});
+
+test('заголовок не дублює назву компанії', async ({ page }) => {
+  // Кореневий layout додає шаблон « | SmartEcoPack»; якщо назву вписати
+  // ще й у сам заголовок, бренд у видачі задвоюється
+  for (const path of PAGES) {
+    await page.goto(path);
+    const title = await page.title();
+    const count = title.split('SmartEcoPack').length - 1;
+    expect(count, `бренд повторюється в title на ${path}: ${title}`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('гео-сторінки віддають різні умови доставки', async ({ page }) => {
+  await page.goto('/upakovka/dnipro/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Упаковка для їжі у Дніпрі');
+  await expect(page.getByText('Безкоштовно, власним транспортом')).toBeVisible();
+
+  await page.goto('/upakovka/kyiv/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Упаковка для їжі у Києві');
+  await expect(page.getByText(/Нова пошта/).first()).toBeVisible();
+
+  await page.goto('/ru/upakovka/dnipro/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Упаковка для еды в Днепре');
+});
+
+test('RSS блогу віддається обома мовами', async ({ request }) => {
+  for (const [url, lang] of [
+    ['/blog/rss.xml', 'uk-UA'],
+    ['/ru/blog/rss.xml', 'ru-UA'],
+  ] as const) {
+    const res = await request.get(url);
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('application/rss+xml');
+
+    const xml = await res.text();
+    expect(xml).toContain(`<language>${lang}</language>`);
+    expect(xml.split('<item>').length - 1, 'у стрічці мають бути статті').toBeGreaterThan(0);
+  }
+});
+
+test('SEO-текст категорії має підзаголовки, а не літерали «##»', async ({ page }) => {
+  await page.goto('/catalog/stakany-paperovi/');
+  const prose = page.locator('.prose-uk').first();
+  await expect(prose.locator('h2')).not.toHaveCount(0);
+  await expect(prose).not.toContainText('## ');
 });
 
 test('службові сторінки закриті від індексації', async ({ page }) => {

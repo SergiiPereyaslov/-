@@ -64,7 +64,7 @@ export async function meta(l: Locale): Promise<Metadata> {
   return pageMeta({
     locale: l,
     path: '/pro-nas/',
-    title: l === 'uk' ? 'Про компанію SmartEcoPack' : 'О компании SmartEcoPack',
+    title: l === 'uk' ? 'Про компанію' : 'О компании',
     description:
       l === 'uk'
         ? 'Постачальник паперової упаковки для HoReCa у Дніпрі. Власний склад і логістика, доставка за 24 години, сертифікована продукція, друк логотипу від 100 шт.'

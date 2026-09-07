@@ -10,7 +10,7 @@ export async function meta(l: Locale): Promise<Metadata> {
   return pageMeta({
     locale: l,
     path: '/kontakty/',
-    title: l === 'uk' ? 'Контакти — SmartEcoPack Дніпро' : 'Контакты — SmartEcoPack Днепр',
+    title: l === 'uk' ? 'Контакти, склад і шоурум у Дніпрі' : 'Контакты, склад и шоурум в Днепре',
     description:
       l === 'uk'
         ? 'Дніпро, пр. О. Поля, 82 г — склад і шоурум. Пн–Пт 09:00–18:00. Телефони, Telegram, Viber, e-mail для замовлень і прайсу.'

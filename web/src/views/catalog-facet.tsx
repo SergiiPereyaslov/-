@@ -6,6 +6,7 @@ import { getCategories, getCategory, getGroups, priceFrom, productsOfCategory } 
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
 
 /**
@@ -146,9 +147,10 @@ export default async function FacetPage({
         </div>
       </nav>
 
-      <section className="prose-uk mt-10 max-w-3xl">
-        <p>{category.seo[0][l]}</p>
-      </section>
+      {/* На фасетній сторінці показуємо лише вступний абзац категорії:
+          повний текст лишається на самій категорії, щоб не дублювати його
+          в індексі десятком майже однакових сторінок. */}
+      <Prose blocks={category.seo.slice(0, 1)} locale={l} className="mt-10 max-w-3xl" />
     </div>
   );
 }

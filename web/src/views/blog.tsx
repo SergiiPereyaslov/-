@@ -7,15 +7,24 @@ import { pageMeta } from '@/lib/meta';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 export async function meta(l: Locale): Promise<Metadata> {
-  return pageMeta({
+  const base = pageMeta({
     locale: l,
     path: '/blog/',
-    title: l === 'uk' ? 'Блог про упаковку — SmartEcoPack' : 'Блог об упаковке — SmartEcoPack',
+    title: l === 'uk' ? 'Блог про упаковку для закладів' : 'Блог об упаковке для заведений',
     description:
       l === 'uk'
         ? 'Практичні матеріали про вибір паперової упаковки: розміри стаканів, сумісність кришок, брендування, упаковка для доставки.'
         : 'Практические материалы о выборе бумажной упаковки: размеры стаканов, совместимость крышек, брендирование, упаковка для доставки.',
   });
+
+  // RSS у <head>: агрегатори підхоплюють нові статті швидше за краулер
+  return {
+    ...base,
+    alternates: {
+      ...base.alternates,
+      types: { 'application/rss+xml': l === 'uk' ? '/blog/rss.xml' : '/ru/blog/rss.xml' },
+    },
+  };
 }
 
 export default async function BlogPage({ locale: l }: { locale: Locale }) {

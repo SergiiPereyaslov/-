@@ -80,7 +80,7 @@ export async function meta(l: Locale): Promise<Metadata> {
   return pageMeta({
     locale: l,
     path: '/dostavka-i-oplata/',
-    title: l === 'uk' ? 'Доставка й оплата — SmartEcoPack' : 'Доставка и оплата — SmartEcoPack',
+    title: l === 'uk' ? 'Доставка й оплата' : 'Доставка и оплата',
     description:
       l === 'uk'
         ? 'Безкоштовна доставка по Дніпру за 24 години власним транспортом, без мінімальної суми. По Україні — Нова пошта. Оплата готівкою, на картку або за рахунком.'

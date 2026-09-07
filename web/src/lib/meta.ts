@@ -57,8 +57,18 @@ export function pageMeta({
   };
 }
 
-/** Жорсткий ліміт title — виправляє проблему старого сайту з 110-символьними заголовками. */
-export const clampTitle = (s: string, max = 60) =>
+/**
+ * Ліміт заголовка.
+ *
+ * Ліміт видачі — 60 символів, але кореневий layout додає шаблон
+ * « | SmartEcoPack» (15 символів), тому власна частина title має
+ * вкладатися в 45. Не додавайте назву компанії в сам заголовок:
+ * вона припасується автоматично, інакше бренд задвоюється.
+ */
+export const BRAND_SUFFIX_LENGTH = ' | SmartEcoPack'.length;
+export const TITLE_LIMIT = 60 - BRAND_SUFFIX_LENGTH;
+
+export const clampTitle = (s: string, max = TITLE_LIMIT) =>
   s.length <= max ? s : `${s.slice(0, max - 1).trimEnd()}…`;
 
 export const clampDescription = (s: string, max = 160) =>

@@ -3,6 +3,7 @@ import type { Locale } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { SITE, formatPhone } from '@/lib/site';
 import type { NavGroup } from './Header';
+import { CITIES } from '@/data/cities';
 
 export function Footer({
   locale,
@@ -39,6 +40,19 @@ export function Footer({
             <li><Link href={l('/pro-nas/')} className="hover:text-primary">{dict.nav.about}</Link></li>
             <li><Link href={l('/blog/')} className="hover:text-primary">{dict.nav.blog}</Link></li>
             <li><Link href={l('/kontakty/')} className="hover:text-primary">{dict.nav.contacts}</Link></li>
+          </ul>
+
+          <h2 className="mb-3 mt-6 text-sm font-bold uppercase tracking-wide">
+            {locale === 'uk' ? 'Доставка' : 'Доставка'}
+          </h2>
+          <ul className="space-y-2 text-sm text-muted">
+            {CITIES.map((c) => (
+              <li key={c.slug}>
+                <Link href={l(`/upakovka/${c.slug}/`)} className="hover:text-primary">
+                  {c.name[locale]}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
