@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SmartEcoPack — сайт
 
-## Getting Started
+Каталог паперової та крафтової упаковки для HoReCa з кошиком-заявкою.
+Next.js 16 (App Router) + TypeScript + Tailwind CSS 4.
 
-First, run the development server:
+Проєктна документація — у `../docs/smartecopack/`.
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # продакшн-збірка
+npm start            # запуск продакшн-збірки
+npm run lint
+npx tsc --noEmit     # перевірка типів
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Змінна оточення (перед запуском у продакшн):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SITE_URL=https://smartecopack.com
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Без неї canonical, hreflang і sitemap використають значення за замовчуванням
+із `src/lib/site.ts`.
 
-## Learn More
+## Структура
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    (uk)/            українська версія — у корені: /catalog/…
+    (ru)/ru/         російська версія: /ru/catalog/…
+    api/lead/        приймання заявок
+    api/search/      підказки пошуку
+    sitemap.ts       188 URL з hreflang
+    robots.ts
+  views/             реалізації сторінок; маршрути — тонкі обгортки над ними
+  components/        UI-компоненти
+  data/
+    types.ts         типи каталогу
+    taxonomy.ts      5 груп / 25 категорій: назви, тексти, FAQ, фасети
+    products.json    товари (генерується, див. нижче)
+    posts.ts         статті блогу
+    legal.ts         юридичні документи
+  i18n/              словники інтерфейсу uk/ru
+  lib/
+    site.ts          контакти, реквізити, пороги — єдине джерело для NAP
+    catalog.ts       доступ до каталогу, ціни, фільтри, пошук
+    cart-store.ts    кошик поза React (useSyncExternalStore + localStorage)
+    legacy-redirects.ts  мапа 301 зі старих URL
+    meta.ts          метадані з canonical і hreflang
+middleware.ts        тільки 301: legacy, /uk → корінь, слеш
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Чому два дерева маршрутів, а не `[locale]`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Стандартний підхід — один сегмент `[locale]` і rewrite у middleware для
+української версії в корені. У цій версії Next такий rewrite ламає клієнтську
+навігацію: RSC-запити до переписаного шляху повертають 404, і `<Link>` не
+змінює сторінку. Тому обидві мови — реальні дерева маршрутів над спільними
+реалізаціями в `src/views/`. Дублюються лише тонкі обгортки (8–12 рядків).
 
-## Deploy on Vercel
+**Додаючи сторінку, створіть обгортку в обох деревах** — інакше сторінка
+з'явиться тільки однією мовою.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Каталог товарів
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`src/data/products.json` зараз **згенерований демо-каталог** — 107 позицій
+з реалістичними розмірами й цінами, але це не бойові дані.
+
+```bash
+npm run catalog:generate    # перегенерувати з описів у scripts/generate-catalog.mjs
+```
+
+### Підключення реального вивантаження
+
+Формат `products.json` зафіксований у `src/data/types.ts`. Коли надійде
+вивантаження від клієнта, замініть `scripts/generate-catalog.mjs` на
+`scripts/import-products.mjs`, який читає CSV/XLSX і пише той самий формат.
+Решта застосунку не змінюється.
+
+Обов'язкові поля кожного товару: `slug`, `sku`, `category` (слаг із
+`taxonomy.ts`), `name`, `spec`, `description`, `attributes`, `facets`,
+`unitsPerPack`, `priceRetail`, `tiers`, `inStock`, `brandable`.
+Опційні: `shape` (силует заглушки), `lidDiameter` (сумісність стакан↔кришка),
+`compatibleWith`, `featured`, `image`.
+
+Генератор перевіряє унікальність слагів і артикулів і падає на дублях.
+
+## Зображення
+
+Фотографій товарів ще немає. Замість «сірих квадратів» компонент
+`Placeholder` малює силует за формою товару (`shape`). Коли з'являться фото:
+
+1. Покласти файли в `public/products/` або на CDN
+2. Проставити `image` у товарах
+3. У `ProductCard` і на сторінці товару замінити `<Placeholder>` на
+   `next/image` — поле в типі вже передбачене
+
+## Заявки
+
+`POST /api/lead/` приймає заявки з форм і кошика. Зараз лід **логується на
+сервері** — це заглушка. Перед запуском підключіть бойовий канал у
+`src/app/api/lead/route.ts`: Telegram Bot API (найшвидше для менеджера),
+SMTP або CRM. Формат тіла запиту фіксований, клієнтський код не зміниться.
+
+Онлайн-оплати немає навмисно: менеджер підтверджує наявність і виставляє
+рахунок.
+
+## Редиректи зі старого сайту
+
+`src/lib/legacy-redirects.ts` — 26 точкових правил і 4 шаблонні.
+Правила застосовуються транзитивно й виконуються в middleware **до**
+нормалізації слеша, тому старий URL веде на новий за один хоп (301).
+
+`skipTrailingSlashRedirect: true` у `next.config.ts` потрібен саме для цього —
+без нього Next спершу додає слеш (308) і лише потім спрацьовує редирект.
+
+⚠️ Мапа неповна: бракує повного переліку URL товарів і слагів статей
+старого сайту. Потрібен краул перед запуском — див.
+`../docs/smartecopack/04-zapusk.md`.
+
+## Вимірювання
+
+Продакшн-збірка, gzip, станом на 2026-09-07:
+
+| Сторінка | HTML | JS | CSS | Разом |
+|---|---|---|---|---|
+| Головна | 19.0 KB | 179.0 KB | 7.5 KB | 205 KB |
+| Категорія | 17.7 KB | 179.9 KB | 7.5 KB | 205 KB |
+| Товар | 14.9 KB | 179.0 KB | 7.5 KB | 201 KB |
+
+386 сторінок згенеровано статично. JS — це майже повністю базовий рантайм
+React 19 + Next 16; власний код сторінки додає одиниці кілобайтів.
