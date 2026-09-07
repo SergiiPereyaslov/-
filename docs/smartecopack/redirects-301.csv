@@ -1,0 +1,29 @@
+source,destination,type,note
+/catalog/stakani-paperovi,/catalog/stakany-paperovi/,exact,категорія
+/catalog/stakani-dvosharovi,/catalog/stakany-dvosharovi/,exact,категорія
+/catalog/stakani-gofrovani,/catalog/stakany-gofrovani/,exact,категорія
+/catalog/krishki-dlya-stakaniv,/catalog/kryshky-dlya-stakaniv/,exact,категорія
+/catalog/termochohli,/catalog/termochokhly/,exact,категорія
+/catalog/trimachi,/catalog/trymachi-dlya-stakaniv/,exact,категорія
+/catalog/trubochki-paperovi,/catalog/trubochky-paperovi/,exact,категорія
+/catalog/trubochki-polimerni,/catalog/trubochky-polimerni/,exact,категорія
+/catalog/Lanch-box,/catalog/lanch-boksy/,exact,категорія
+/catalog/lanch-box,/catalog/lanch-boksy/,exact,категорія (lowercase-варіант)
+/catalog/salatnitsa,/catalog/salatnyky/,exact,категорія
+/catalog/supnik,/catalog/supnyky/,exact,категорія
+/catalog/alyuminievi-kontejneri,/catalog/konteynery-alyuminiyevi/,exact,категорія
+/catalog/tarilka-pryamokutna,/catalog/tarilky-ta-sousnyky/,exact,категорія — URL не відповідав змісту
+/catalog/upakovka-dlya-fast-fudu,/catalog/fastfud/,exact,категорія стає групою
+/catalog/upakovka-dlya-fast-fudu/page-all,/catalog/fastfud/,exact,усунення дубля пагінації
+/catalog/paketi-paperovi,/catalog/pakety-z-ruchkamy/,exact,категорія
+/catalog/paket-sashe,/catalog/pakety-sashe/,exact,категорія
+/catalog/suputni-tovari,/catalog/suputni-tovary/,exact,категорія
+/all-products,/catalog/,exact,тонка сторінка-дубль
+/branding,/brenduvannya/,exact,службова
+/druk-na-paperovih-stakanchikah,/brenduvannya/druk-na-stakanakh/,exact,службова
+/news,/blog/,exact,блог
+/contact,/kontakty/,exact,службова
+/catalog/:slug/page-all,/catalog/:slug/,pattern,усунення дублів пагінації
+/catalog/:slug/page-:n,/catalog/:slug/,pattern,пагінація перебудовується
+/news/:slug,/blog/:slug/,pattern,ПОТРЕБУЄ ручної звірки — частина slug російською
+/products/:slug,/product/:slug/,pattern,ПОТРЕБУЄ звірки slug 1:1 з краулу
