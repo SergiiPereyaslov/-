@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Manrope } from 'next/font/google';
+import { Comfortaa, Inter } from 'next/font/google';
 import '@/app/globals.css';
 import type { Locale } from '@/data/types';
 import { getCategories, getGroups } from '@/lib/catalog';
@@ -19,9 +19,11 @@ const inter = Inter({
   display: 'swap',
 });
 
-const manrope = Manrope({
+/** Фірмовий шрифт бренду — геометричний гротеск з округлими закінченнями. */
+const comfortaa = Comfortaa({
   subsets: ['latin', 'cyrillic'],
-  variable: '--font-manrope',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-comfortaa',
   display: 'swap',
 });
 
@@ -120,7 +122,7 @@ export async function SiteLayout({
   };
 
   return (
-    <html lang={l} className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang={l} className={`${inter.variable} ${comfortaa.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         {/*
           Тему ставимо першим інлайновим скриптом у body: він виконується до
@@ -142,6 +144,7 @@ export async function SiteLayout({
           phoneHref={`tel:${SITE.phones[0]}`}
           addressLine={`${city}, ${address}`}
           hours={SITE.hours[l]}
+          tagline={SITE.tagline}
         />
         <main id="main" className="flex-1">
           {children}

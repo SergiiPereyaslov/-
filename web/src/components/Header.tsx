@@ -8,6 +8,7 @@ import type { Dict } from '@/i18n/dictionaries';
 import { useCart } from './CartProvider';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
+import { Logo } from './Logo';
 
 export interface NavGroup {
   slug: string;
@@ -23,11 +24,13 @@ interface Props {
   phoneHref: string;
   addressLine: string;
   hours: string;
+  /** Слоган бренду в темній смузі — як на чинному сайті. */
+  tagline: string;
 }
 
 const link = (locale: Locale, path: string) => (locale === 'uk' ? path : `/ru${path}`);
 
-export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours }: Props) {
+export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours, tagline }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const pathname = usePathname();
@@ -79,20 +82,30 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/95 backdrop-blur">
-      {/* Топ-бар: адреса й графік — сигнал локальності, головна перевага компанії */}
+      {/* Темно-зелена смуга бренду: телефон, слоган, мова */}
+      <div className="band-deep text-[13px]">
+        <div className="container-page flex h-10 items-center justify-between gap-4">
+          <a href={phoneHref} className="font-display font-semibold tnum hover:opacity-80">
+            {phone}
+          </a>
+          <span className="hidden font-display tracking-wide opacity-90 sm:block">{tagline}</span>
+          <Link
+            href={otherHref}
+            hrefLang={otherLocale}
+            className="font-display hover:opacity-80"
+            title={dict.a11y.langToggle}
+          >
+            {otherLocale === 'uk' ? 'Українська' : 'Русский'}
+          </Link>
+        </div>
+      </div>
+
+      {/* Адреса й графік — сигнал локальності, головна перевага компанії */}
       <div className="hidden border-b border-border text-xs text-muted lg:block">
-        <div className="container-page flex h-9 items-center justify-between">
+        <div className="container-page flex h-8 items-center">
           <span>
             {addressLine} · {hours}
           </span>
-          <div className="flex items-center gap-4">
-            <Link href={otherHref} hrefLang={otherLocale} className="hover:text-primary">
-              {otherLocale === 'uk' ? 'UA' : 'RU'}
-            </Link>
-            <a href={phoneHref} className="font-semibold text-ink hover:text-primary">
-              {phone}
-            </a>
-          </div>
         </div>
       </div>
 
@@ -109,8 +122,13 @@ export function Header({ locale, dict, nav, phone, phoneHref, addressLine, hours
           </svg>
         </button>
 
-        <Link href={link(locale, '/')} className="shrink-0 font-display text-lg font-bold tracking-tight">
-          Smart<span className="text-primary">Eco</span>Pack
+        <Link
+          href={link(locale, '/')}
+          className="flex shrink-0 items-center gap-2.5 text-primary"
+          aria-label="SmartEcoPack"
+        >
+          <Logo className="h-11 w-11" />
+          <span className="sr-only">SmartEcoPack</span>
         </Link>
 
         <div className="hidden flex-1 md:block">

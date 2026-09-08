@@ -76,7 +76,7 @@ export function CartView({ locale, dict }: { locale: Locale; dict: Dict }) {
                   </div>
 
                   {next && (
-                    <p className="mt-2 rounded bg-accent-soft px-2.5 py-1.5 text-xs text-accent">
+                    <p className="mt-2 rounded-md bg-accent-soft px-2.5 py-1.5 text-xs font-medium text-accent">
                       {fill(dict.cart.tierHint, {
                         n: next.minPacks - line.packs,
                         price: next.perUnit.toFixed(2),

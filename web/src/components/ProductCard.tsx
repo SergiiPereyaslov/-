@@ -59,7 +59,7 @@ export function ProductCard({
           </span>
         </div>
 
-        <p className="mt-1 text-xs text-accent tnum">
+        <p className="mt-1 text-xs font-medium text-accent tnum">
           {dict.product.wholesale} {fill(dict.product.wholesaleFrom, { n: firstTier.minPacks })} —{' '}
           {firstTier.perUnit.toFixed(2)} {dict.common.uah}/{dict.common.pcs}
         </p>

@@ -180,7 +180,7 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
   return (
     <>
       {/* Hero: головна перевага — швидкість, а не «еко» */}
-      <section className="border-b border-border bg-kraft">
+      <section className="border-b border-border bg-bg">
         <div className="container-page grid gap-8 py-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-20">
           <div>
             <h1 className="text-[clamp(1.9rem,4.5vw,2.9rem)] leading-[1.12]">{t.h1}</h1>
@@ -196,7 +196,7 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {t.advantages.map(([big, small]) => (
-              <div key={small} className="card p-4">
+              <div key={small} className="rounded-md border border-border bg-accent-soft p-4">
                 <div className="font-display text-2xl font-bold text-primary tnum">{big}</div>
                 <div className="mt-1 text-[13px] leading-snug text-muted">{small}</div>
               </div>
@@ -247,7 +247,7 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
 
       {/* Брендування */}
       <section className="container-page py-12 lg:py-16">
-        <div className="grid items-center gap-8 rounded-lg border border-border bg-kraft p-6 lg:grid-cols-[1.2fr_1fr] lg:p-10">
+        <div className="grid items-center gap-8 rounded-lg border border-border bg-accent-soft p-6 lg:grid-cols-[1.2fr_1fr] lg:p-10">
           <div>
             <h2 className="text-2xl">{t.brandTitle}</h2>
             <p className="mt-3 max-w-xl leading-relaxed text-muted">{t.brandLead}</p>

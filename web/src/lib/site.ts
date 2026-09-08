@@ -7,6 +7,8 @@ import type { Locale } from '@/data/types';
  */
 export const SITE = {
   name: 'SmartEcoPack',
+  /** Слоган бренду з чинного сайту. */
+  tagline: 'be smart, pack eco',
   legalName: 'ТОВ «СМАРТЕКОПАК»',
   edrpou: '44664514',
   /** Замінити на бойовий домен перед запуском. */

@@ -4,58 +4,89 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
- * Палітра побудована на крафтовому папері як матеріалі.
- * Зелений зарезервований виключно за дією (кнопки, статус наявності) —
- * це навмисне рішення, щоб не зливатися з «зеленим еко» конкурентів.
+ * Фірмова палітра SmartEcoPack.
+ *
+ * Значення зняті з чинного сайту: темно-зелений топ-бар, м'ятний акцент із
+ * фотографій, тепле молочне тло й сірий (не чорний) текст. Перед запуском їх
+ * варто звірити з брендбуком — тут вони визначені на око зі скріншотів.
+ *
+ * Помаранчевого в бренді немає, тому «акцент» для знижок і термінів — це
+ * темно-зелений на м'ятній підкладці, а не інший колір.
  */
 :root {
-  --ink: #1a1d1a;
-  --muted: #5f6660;
-  --bg: #fbf9f5;
+  --ink: #46493f;
+  --muted: #6e7268;
+  --bg: #f4f4ef;
   --surface: #ffffff;
-  --kraft: #f2e8d8;
-  --border: #e3ddd1;
-  --primary: #0e7a4b;
-  --primary-hover: #0a6640;
+  --kraft: #edede5;
+  --border: #e1e1d7;
+
+  --primary: #4e9e6a;
+  --primary-hover: #3f8757;
   --on-primary: #ffffff;
-  --accent: #c8721b;
-  --accent-soft: #fbf0e2;
-  --success: #15803d;
-  --danger: #b42318;
+
+  /* Темно-зелений: топ-бар, підвал, великі площини */
+  --deep: #2f5c23;
+  --on-deep: #f1f3ea;
+
+  /* М'ятний із фотографій бренду */
+  --mint: #86c9a4;
+
+  --accent: #2f5c23;
+  --accent-soft: #e3f0e8;
+
+  --success: #3f8757;
+  --danger: #b4402f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --ink: #ecefea;
-    --muted: #a3aaa4;
-    --bg: #131614;
-    --surface: #1b1f1c;
-    --kraft: #242822;
-    --border: #2e332e;
-    --primary: #2fa46f;
-    --primary-hover: #3cb77e;
-    --on-primary: #08130d;
-    --accent: #e08b33;
-    --accent-soft: #2a2119;
-    --success: #4ade80;
-    --danger: #f87171;
+    --ink: #eceee7;
+    --muted: #a5aa9f;
+    --bg: #171a14;
+    --surface: #1f231c;
+    --kraft: #262a22;
+    --border: #333829;
+
+    --primary: #6fbf8c;
+    --primary-hover: #82cc9c;
+    --on-primary: #0f2113;
+
+    --deep: #24401c;
+    --on-deep: #eceee7;
+
+    --mint: #86c9a4;
+
+    --accent: #86c9a4;
+    --accent-soft: #22301f;
+
+    --success: #6fbf8c;
+    --danger: #e08272;
   }
 }
 
 :root[data-theme='dark'] {
-  --ink: #ecefea;
-  --muted: #a3aaa4;
-  --bg: #131614;
-  --surface: #1b1f1c;
-  --kraft: #242822;
-  --border: #2e332e;
-  --primary: #2fa46f;
-  --primary-hover: #3cb77e;
-  --on-primary: #08130d;
-  --accent: #e08b33;
-  --accent-soft: #2a2119;
-  --success: #4ade80;
-  --danger: #f87171;
+  --ink: #eceee7;
+  --muted: #a5aa9f;
+  --bg: #171a14;
+  --surface: #1f231c;
+  --kraft: #262a22;
+  --border: #333829;
+
+  --primary: #6fbf8c;
+  --primary-hover: #82cc9c;
+  --on-primary: #0f2113;
+
+  --deep: #24401c;
+  --on-deep: #eceee7;
+
+  --mint: #86c9a4;
+
+  --accent: #86c9a4;
+  --accent-soft: #22301f;
+
+  --success: #6fbf8c;
+  --danger: #e08272;
 }
 
 @theme inline {
@@ -70,11 +101,20 @@
   --color-on-primary: var(--on-primary);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-deep: var(--deep);
+  --color-on-deep: var(--on-deep);
+  --color-mint: var(--mint);
   --color-success: var(--success);
   --color-danger: var(--danger);
 
+  /*
+   * Comfortaa — фірмовий шрифт бренду: геометричний, з округлими
+   * закінченнями. Використовується для заголовків, навігації, кнопок і цін.
+   * Довгі тексти набрані Inter: Comfortaa на суцільному абзаці в 2000 знаків
+   * читається помітно важче.
+   */
   --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-manrope), var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-comfortaa), var(--font-inter), system-ui, sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -100,7 +140,8 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.015em;
+    /* Comfortaa геометричний і широкий — від'ємний трекінг йому шкодить */
+    letter-spacing: 0;
     text-wrap: balance;
   }
 
@@ -152,13 +193,14 @@
   }
 
   .btn {
+    font-family: var(--font-display);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     min-height: 44px;
     padding: 0.625rem 1.25rem;
-    border-radius: var(--radius-md);
+    border-radius: 999px;
     font-weight: 600;
     font-size: 0.9375rem;
     line-height: 1.2;
@@ -204,6 +246,12 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
+  }
+
+  /* Темно-зелена смуга: топ-бар і підвал, як на чинному сайті */
+  .band-deep {
+    background: var(--deep);
+    color: var(--on-deep);
   }
 
   .field {

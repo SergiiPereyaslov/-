@@ -73,12 +73,12 @@ const PATHS: Record<Shape, React.ReactNode> = {
 export function Placeholder({ shape = 'box', className = '' }: { shape?: Shape; className?: string }) {
   return (
     <div
-      className={`flex items-center justify-center bg-kraft ${className}`}
+      className={`flex items-center justify-center bg-accent-soft ${className}`}
       aria-hidden="true"
     >
       <svg
         viewBox="0 0 80 80"
-        className="h-1/2 w-1/2 text-muted opacity-45"
+        className="h-1/2 w-1/2 text-primary opacity-40"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
