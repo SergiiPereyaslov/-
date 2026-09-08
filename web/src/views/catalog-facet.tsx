@@ -10,6 +10,8 @@ import { facetCopy, FACET_NOUN } from '@/data/facet-copy';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
+import { ItemListJsonLd } from '@/components/ItemListJsonLd';
+import { SITE } from '@/lib/site';
 
 /**
  * Індексовані фільтрові посадкові: /catalog/stakany-paperovi/340-ml/.
@@ -192,6 +194,11 @@ export default async function FacetPage({
         blocks={copy ? copy.body : category.seo.slice(0, 1)}
         locale={l}
         className="mt-10 max-w-3xl"
+      />
+
+      <ItemListJsonLd
+        urls={items.map((prod) => `${SITE.url}${p}/product/${prod.slug}/`)}
+        name={h1}
       />
 
       {/* Вихід у повний текст категорії — там, де він доречний, а не дублем */}

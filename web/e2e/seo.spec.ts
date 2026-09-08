@@ -207,3 +207,24 @@ test('404 під /ru показується російською', async ({ page
     '/ru/catalog/',
   );
 });
+
+test('сторінки-списки мають ItemList із правильними URL', async ({ request }) => {
+  const cases: [string, string][] = [
+    ['/catalog/stakany/', '/catalog/'],
+    ['/catalog/mishalky/', '/product/'],
+    ['/catalog/stakany-paperovi/340-ml/', '/product/'],
+    ['/ru/catalog/mishalky/', '/ru/product/'],
+  ];
+
+  for (const [path, expectedSegment] of cases) {
+    const html = await (await request.get(path)).text();
+    const block = /"@type":"ItemList"[\s\S]*?\}<\/script>/.exec(html)?.[0] ?? '';
+    expect(block, `немає ItemList на ${path}`).toContain('"@type":"ItemList"');
+
+    const urls = [...block.matchAll(/"url":"([^"]+)"/g)].map((m) => m[1]);
+    expect(urls.length, `порожній ItemList на ${path}`).toBeGreaterThan(0);
+    for (const u of urls) {
+      expect(u, `невірний URL у ItemList на ${path}`).toContain(expectedSegment);
+    }
+  }
+});

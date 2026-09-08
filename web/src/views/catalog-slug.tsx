@@ -19,6 +19,8 @@ import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
 import { ProductCard } from '@/components/ProductCard';
 import { Faq } from '@/components/Faq';
+import { ItemListJsonLd } from '@/components/ItemListJsonLd';
+import { SITE } from '@/lib/site';
 import { getPosts } from '@/lib/posts';
 import { Placeholder, type Shape } from '@/components/Placeholder';
 
@@ -155,6 +157,14 @@ export default async function CatalogSlugPage({
         </section>
 
         <Prose blocks={g.seo} locale={l} className="mt-12 max-w-3xl" />
+
+        {/* На сторінці групи список — це категорії, а не товари */}
+        <ItemListJsonLd
+          urls={groupCards
+            .filter((card) => card.category)
+            .map((card) => `${SITE.url}${p}/catalog/${card.slug}/`)}
+          name={g.h1[l]}
+        />
       </div>
     );
   }
@@ -199,6 +209,12 @@ export default async function CatalogSlugPage({
       <div className="max-w-3xl">
         <Faq items={c.faq} locale={l} title={dict.catalog.faq} />
       </div>
+
+      {/* Список товарів категорії — форма «сторінка-зведення» */}
+      <ItemListJsonLd
+        urls={items.map((prod) => `${SITE.url}${p}/product/${prod.slug}/`)}
+        name={c.h1[l]}
+      />
 
       {/*
         Зворотна перелінковка. Статті вже вели в категорії через поле related,
