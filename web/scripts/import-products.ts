@@ -26,7 +26,7 @@ const prisma = new PrismaClient({
 
 const categories = await prisma.category.findMany({ select: { slug: true } });
 const csv = readFileSync(resolve(process.cwd(), file), 'utf8');
-const { products, errors, emptyCategories } = importProducts(
+const { products, errors, warnings, emptyCategories } = importProducts(
   csv,
   new Set(categories.map((c) => c.slug)),
 );
@@ -50,6 +50,13 @@ for (const [i, p] of products.entries()) {
 }
 
 console.log(`Імпортовано ${products.length} товарів.`);
+
+if (warnings.length) {
+  console.warn(`\nТовари без слага у файлі (${warnings.length}) — слаг згенеровано з назви,`);
+  console.warn('старі посилання на ці товари після запуску віддадуть 404:\n');
+  console.warn(warnings.slice(0, 30).join('\n'));
+  if (warnings.length > 30) console.warn(`\n…і ще ${warnings.length - 30}`);
+}
 if (emptyCategories.length) {
   console.warn(`\nКатегорії без жодного товару (${emptyCategories.length}):`);
   console.warn('  ' + emptyCategories.join(', '));

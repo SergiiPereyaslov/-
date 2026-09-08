@@ -10,6 +10,8 @@ export interface ImportState {
   status: 'idle' | 'ok' | 'error';
   message?: string;
   errors?: string[];
+  /** Товари без слага: імпортуються, але втрачають старе посилання. */
+  warnings?: string[];
   imported?: number;
   emptyCategories?: string[];
 }
@@ -36,7 +38,7 @@ export async function runImport(_prev: ImportState, formData: FormData): Promise
 
   const csv = await file.text();
   const categories = await prisma.category.findMany({ select: { slug: true } });
-  const { products, errors, emptyCategories } = importProducts(
+  const { products, errors, warnings, emptyCategories } = importProducts(
     csv,
     new Set(categories.map((c) => c.slug)),
   );
@@ -68,6 +70,7 @@ export async function runImport(_prev: ImportState, formData: FormData): Promise
     status: 'ok',
     message: `Імпортовано ${products.length} товарів, сторінки сайту оновлено.`,
     imported: products.length,
+    warnings: warnings.slice(0, 60),
     emptyCategories,
   };
 }

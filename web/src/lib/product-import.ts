@@ -6,7 +6,7 @@
  * Тут немає доступу до БД: на вхід CSV, на вихід готові записи або помилки.
  */
 
-import { buildSearchText } from './search-text';
+import { buildSearchText } from './search-text.ts';
 
 export interface ImportedProduct {
   slug: string;
@@ -34,6 +34,12 @@ export interface ImportedProduct {
 export interface ImportResult {
   products: ImportedProduct[];
   errors: string[];
+  /**
+   * Некритичні зауваження: імпорт пройде, але щось варто перевірити.
+   * Головне з них — товар без слага в файлі: для нього доведеться
+   * згенерувати новий, і старе посилання на товар перестане працювати.
+   */
+  warnings: string[];
   /** Категорії з taxonomy, для яких у файлі немає жодного товару. */
   emptyCategories: string[];
 }
@@ -60,6 +66,25 @@ export const slugify = (s: string) =>
     .join('')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+/**
+ * Слаги товарів переносяться зі старого сайту без змін — це рішення клієнта
+ * і воно економить цілу мапу 301: правило `/products/:slug → /product/:slug/`
+ * покриває всі 299 позицій один в один. Тому тут слаг не генерується з назви,
+ * а нормалізується з того, що дали: приймаємо і чистий слаг, і повний URL.
+ */
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export const normalizeSlug = (raw: string): string => {
+  let v = raw.trim().toLowerCase();
+  // Повний URL або шлях: /products/stakan-kraft-350-ml → stakan-kraft-350-ml
+  v = v.replace(/^https?:\/\/[^/]+/, '');
+  v = v.replace(/^\/?(?:ru\/)?products?\//, '');
+  v = v.replace(/\/+$/, '');
+  // Хвости старого рушія на кшталт ?variant=… ніколи не частина слага
+  v = v.split(/[?#]/)[0];
+  return v;
+};
 
 /** Розбір CSV із підтримкою лапок і переносів рядків усередині полів. */
 export const parseCsv = (text: string): Record<string, string>[] => {
@@ -126,12 +151,18 @@ const round = (n: number) => Math.round(n * 100) / 100;
 export const importProducts = (csv: string, categorySlugs: Set<string>): ImportResult => {
   const rows = parseCsv(csv);
   const errors: string[] = [];
+  const warnings: string[] = [];
   const products: ImportedProduct[] = [];
   const seenSku = new Set<string>();
   const seenSlug = new Set<string>();
 
   if (!rows.length) {
-    return { products: [], errors: ['У файлі немає рядків з даними.'], emptyCategories: [] };
+    return {
+      products: [],
+      errors: ['У файлі немає рядків з даними.'],
+      warnings: [],
+      emptyCategories: [],
+    };
   }
 
   rows.forEach((row, i) => {
@@ -160,8 +191,29 @@ export const importProducts = (csv: string, categorySlugs: Set<string>): ImportR
     const descUk = pick(row, 'описuk', 'опис', 'descriptionuk', 'description');
     const descRu = pick(row, 'описru', 'descriptionru') || descUk;
 
-    let slug = slugify(nameUk);
-    if (seenSlug.has(slug)) slug = `${slug}-${slugify(sku)}`;
+    // Слаг зі старого сайту має пріоритет над будь-якою генерацією:
+    // саме він зберігає позиції товару в пошуку.
+    const rawSlug = pick(row, 'слаг', 'слагтовару', 'url', 'посилання', 'slug', 'link');
+    let slug = normalizeSlug(rawSlug);
+
+    if (!slug) {
+      slug = slugify(nameUk);
+      warnings.push(
+        `рядок ${line}: немає слага — згенеровано «${slug}». ` +
+          'Старе посилання на цей товар після запуску віддасть 404.',
+      );
+    } else if (!SLUG_RE.test(slug)) {
+      errors.push(
+        `рядок ${line}: слаг «${rawSlug}» містить неприпустимі символи. ` +
+          'Дозволені лише латиниця, цифри й дефіс.',
+      );
+      return;
+    }
+
+    if (seenSlug.has(slug)) {
+      errors.push(`рядок ${line}: дубль слага «${slug}» — два товари не можуть жити за одним URL`);
+      return;
+    }
     seenSlug.add(slug);
 
     const facets: Record<string, string> = {};
@@ -225,5 +277,5 @@ export const importProducts = (csv: string, categorySlugs: Set<string>): ImportR
   const used = new Set(products.map((p) => p.categorySlug));
   const emptyCategories = [...categorySlugs].filter((c) => !used.has(c));
 
-  return { products, errors, emptyCategories };
+  return { products, errors, warnings, emptyCategories };
 };

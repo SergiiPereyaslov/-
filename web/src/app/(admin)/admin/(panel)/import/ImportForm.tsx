@@ -38,6 +38,19 @@ export function ImportForm() {
               {state.emptyCategories.join(', ')}. Такі сторінки будуть порожні.
             </p>
           )}
+          {state.warnings && state.warnings.length > 0 && (
+            <div className="mt-3 border-t border-border pt-3">
+              <p className="font-medium">
+                Товарів без слага у файлі: {state.warnings.length}. Слаг згенеровано з
+                назви — старі посилання на ці товари віддадуть 404.
+              </p>
+              <ul className="mt-2 max-h-56 space-y-0.5 overflow-y-auto font-mono text-xs text-muted">
+                {state.warnings.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
