@@ -19,7 +19,8 @@
     "admin:create": "node scripts/create-admin.mjs",
     "check:legacy": "node --experimental-strip-types scripts/check-legacy-urls.ts",
     "check:meta": "node --experimental-strip-types scripts/check-meta.ts",
-    "test:unit": "node --experimental-strip-types --test \"src/**/*.test.ts\""
+    "test:unit": "node --experimental-strip-types --test \"src/**/*.test.ts\"",
+    "check:content": "node --experimental-strip-types scripts/check-content.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
