@@ -6,6 +6,7 @@ import { getCategories, getCategory, getGroups, priceFrom, productsOfCategory } 
 import { getDict } from '@/i18n/dictionaries';
 import { pageMeta, fitTitle, fitDescription } from '@/lib/meta';
 import { count } from '@/i18n/plural';
+import { facetCopy, FACET_NOUN } from '@/data/facet-copy';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
@@ -68,18 +69,27 @@ export async function meta(
     ? `${found.category.name[l]} (${label.toLowerCase()})`
     : `${found.category.name[l]} ${label}`;
 
+  const copy = facetCopy(slug, found.facet.key, facet);
+
   return pageMeta({
     locale: l,
     path: `/catalog/${slug}/${facet}/`,
     title: fitTitle(head, { text: l === 'uk' ? 'купити' : 'купить' }),
+    // Опис теж має бути власним, а не шаблоном із підставленим числом:
+    // 59 однакових описів у видачі конкурують між собою так само, як тексти
     description: fitDescription(
+      copy
+        ? copy.lead[l]
+        : l === 'uk'
+          ? `${head} — ${count(items.length, 'position', 'uk')} у наявності, ціна від ${priceFrom(items).toFixed(2)} грн.`
+          : `${head} — ${count(items.length, 'position', 'ru')} в наличии, цена от ${priceFrom(items).toFixed(2)} грн.`,
       l === 'uk'
-        ? `${head} — ${count(items.length, 'position', 'uk')} у наявності, ціна від ${priceFrom(items).toFixed(2)} грн.`
-        : `${head} — ${count(items.length, 'position', 'ru')} в наличии, цена от ${priceFrom(items).toFixed(2)} грн.`,
+        ? `${count(items.length, 'position', 'uk')} у наявності, ціна від ${priceFrom(items).toFixed(2)} грн.`
+        : `${count(items.length, 'position', 'ru')} в наличии, цена от ${priceFrom(items).toFixed(2)} грн.`,
       l === 'uk'
-        ? 'Власний склад у Дніпрі, доставка за 24 години безкоштовно.'
-        : 'Собственный склад в Днепре, доставка за 24 часа бесплатно.',
-      l === 'uk' ? 'Опт від 10 пачок, друк логотипу.' : 'Опт от 10 пачек, печать логотипа.',
+        ? 'Доставка по Дніпру за 24 години безкоштовно.'
+        : 'Доставка по Днепру за 24 часа бесплатно.',
+      l === 'uk' ? 'Опт від 10 пачок.' : 'Опт от 10 пачек.',
     ),
   });
 }
@@ -104,6 +114,8 @@ export default async function FacetPage({
   const p = l === 'uk' ? '' : '/ru';
 
   const h1 = `${category.h1[l]} ${value.label[l]}`;
+  const copy = facetCopy(slug, f.key, facet);
+  const noun = FACET_NOUN[f.key]?.[l] ?? (l === 'uk' ? 'зі значенням' : 'со значением');
 
   return (
     <div className="container-page pb-12">
@@ -120,10 +132,23 @@ export default async function FacetPage({
       />
 
       <h1 className="text-3xl">{h1}</h1>
+
+      {/*
+        Текст під H1 — власний для кожного значення фасета. Шаблонне
+        «N позицій у розмірі X» лишилось лише як фолбек: воно давало і
+        неграматичне «у розмірі Крафт», і 59 майже однакових сторінок.
+      */}
       <p className="mt-2 max-w-3xl leading-relaxed text-muted">
+        {copy
+          ? copy.lead[l]
+          : l === 'uk'
+            ? `${count(items.length, 'position', 'uk')} ${noun} ${value.label.uk}.`
+            : `${count(items.length, 'position', 'ru')} ${noun} ${value.label.ru}.`}
+      </p>
+      <p className="mt-2 text-sm text-muted tnum">
         {l === 'uk'
-          ? `${items.length} позицій у розмірі ${value.label.uk}. Ціна від ${priceFrom(items).toFixed(2)} грн за штуку, оптова ціна вмикається від 10 пачок.`
-          : `${items.length} позиций в размере ${value.label.ru}. Цена от ${priceFrom(items).toFixed(2)} грн за штуку, оптовая цена включается от 10 пачек.`}
+          ? `${count(items.length, 'position', 'uk')} у наявності, ціна від ${priceFrom(items).toFixed(2)} грн за штуку. Оптова ціна вмикається від 10 пачок.`
+          : `${count(items.length, 'position', 'ru')} в наличии, цена от ${priceFrom(items).toFixed(2)} грн за штуку. Оптовая цена включается от 10 пачек.`}
       </p>
 
       <CategoryView
@@ -157,10 +182,26 @@ export default async function FacetPage({
         </div>
       </nav>
 
-      {/* На фасетній сторінці показуємо лише вступний абзац категорії:
-          повний текст лишається на самій категорії, щоб не дублювати його
-          в індексі десятком майже однакових сторінок. */}
-      <Prose blocks={category.seo.slice(0, 1)} locale={l} className="mt-10 max-w-3xl" />
+      {/*
+        Власний текст сторінки. Раніше тут стояв перший абзац категорії —
+        тобто всі фільтрові сторінки під однією категорією несли той самий
+        текст і конкурували з нею ж у видачі. Фолбек на абзац категорії
+        лишився тільки для значень, під які тексту ще не написано.
+      */}
+      <Prose
+        blocks={copy ? copy.body : category.seo.slice(0, 1)}
+        locale={l}
+        className="mt-10 max-w-3xl"
+      />
+
+      {/* Вихід у повний текст категорії — там, де він доречний, а не дублем */}
+      <p className="mt-4 max-w-3xl text-sm text-muted">
+        <Link href={`${p}/catalog/${category.slug}/`} className="text-primary hover:underline">
+          {l === 'uk'
+            ? `Як вибрати: ${category.name.uk.toLowerCase()} — повний розбір`
+            : `Как выбрать: ${category.name.ru.toLowerCase()} — полный разбор`}
+        </Link>
+      </p>
     </div>
   );
 }
