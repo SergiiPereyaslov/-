@@ -21,9 +21,15 @@ test('title вкладається в 60 символів, є description, canon
     const title = await page.title();
     expect(title.length, `задовгий title на ${path}: ${title}`).toBeLessThanOrEqual(60);
 
+    // Трикрапка означає, що формула заголовка не вклалася й сенс утрачено.
+    // Це гірше за просто довгий title: користувач бачить обірване слово.
+    expect(title, `обрізаний title на ${path}: ${title}`).not.toContain('…');
+
     const description = await page.locator('meta[name=description]').getAttribute('content');
     expect(description, `немає description на ${path}`).toBeTruthy();
-    expect(description!.length).toBeLessThanOrEqual(170);
+    expect(description!.length).toBeLessThanOrEqual(160);
+    // Коротший опис не помилка, але це віддане задарма місце у сніпеті
+    expect(description!.length, `закороткий description на ${path}`).toBeGreaterThanOrEqual(120);
 
     await expect(page.locator('link[rel=canonical]'), `немає canonical на ${path}`).toHaveCount(1);
     await expect(page.locator('link[rel=alternate][hreflang]')).toHaveCount(3);
@@ -57,6 +63,29 @@ test('заголовок не дублює назву компанії', async (
     const title = await page.title();
     const count = title.split('SmartEcoPack').length - 1;
     expect(count, `бренд повторюється в title на ${path}: ${title}`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('картка товару не витрачає ліміт заголовка на бренд', async ({ page }) => {
+  // Свідоме рішення: на реальних назвах до 82 символів « | SmartEcoPack»
+  // з'їдав саме той параметр, за яким товар шукають — об'єм чи розмір
+  await page.goto('/product/stakan-paperovyi-340-ml-kraft/');
+  const title = await page.title();
+  expect(title).not.toContain('SmartEcoPack');
+  expect(title.length).toBeLessThanOrEqual(60);
+
+  // На категорії бренд, навпаки, лишається
+  await page.goto('/catalog/stakany-paperovi/');
+  expect(await page.title()).toContain('SmartEcoPack');
+});
+
+test('числівники в описах узгоджені', async ({ page }) => {
+  // «1 позицій» у сніпеті читається як недбалість
+  for (const path of ['/catalog/supnyky/340-ml/', '/catalog/stakany-paperovi/340-ml/']) {
+    await page.goto(path);
+    const d = (await page.locator('meta[name=description]').getAttribute('content')) ?? '';
+    expect(d, `неузгоджений числівник на ${path}: ${d}`).not.toMatch(/\b1 позицій\b/);
+    expect(d).not.toMatch(/\b[234] позицій\b/);
   }
 });
 

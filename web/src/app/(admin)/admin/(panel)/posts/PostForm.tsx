@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { deletePost, savePost } from './actions';
+import { MetaCounter } from '../MetaCounter';
 
 interface Para {
   uk: string;
@@ -29,14 +30,20 @@ export function PostForm({ post, isNew }: { post: PostFormData; isNew: boolean }
 
         <section className="card space-y-4 p-5">
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium">Заголовок (укр)</span>
-              <input name="titleUk" defaultValue={post.titleUk} className="field" required />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium">Заголовок (рос)</span>
-              <input name="titleRu" defaultValue={post.titleRu} className="field" />
-            </label>
+            {/* Заголовок статті йде і в H1, і в title видачі — тому лічильник */}
+            <MetaCounter
+              name="titleUk"
+              label="Заголовок (укр)"
+              defaultValue={post.titleUk}
+              kind="title"
+              required
+            />
+            <MetaCounter
+              name="titleRu"
+              label="Заголовок (рос)"
+              defaultValue={post.titleRu}
+              kind="title"
+            />
             <label className="block">
               <span className="mb-1 block text-sm font-medium">Адреса (slug)</span>
               <input
@@ -63,14 +70,27 @@ export function PostForm({ post, isNew }: { post: PostFormData; isNew: boolean }
             </label>
           </div>
 
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium">Анонс (укр)</span>
-            <textarea name="excerptUk" rows={2} defaultValue={post.excerptUk} className="field" />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium">Анонс (рос)</span>
-            <textarea name="excerptRu" rows={2} defaultValue={post.excerptRu} className="field" />
-          </label>
+          {/*
+            Анонс стає description у видачі. Якщо він коротший за ліміт,
+            система добере хвіст про компанію — але власний текст завжди
+            переконливіший за шаблонний, тому лічильник показує запас.
+          */}
+          <MetaCounter
+            name="excerptUk"
+            label="Анонс (укр)"
+            defaultValue={post.excerptUk}
+            kind="description"
+            multiline
+            rows={2}
+          />
+          <MetaCounter
+            name="excerptRu"
+            label="Анонс (рос)"
+            defaultValue={post.excerptRu}
+            kind="description"
+            multiline
+            rows={2}
+          />
         </section>
 
         <section className="card space-y-4 p-5">

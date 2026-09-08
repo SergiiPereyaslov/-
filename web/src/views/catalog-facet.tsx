@@ -4,7 +4,8 @@ import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { getCategories, getCategory, getGroups, priceFrom, productsOfCategory } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
-import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
+import { pageMeta, fitTitle, fitDescription } from '@/lib/meta';
+import { count } from '@/i18n/plural';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
@@ -58,18 +59,27 @@ export async function meta(
     (p) => p.facets[found.facet.key] === found.value.value,
   );
 
+  // Частина фасетів має підпис-прикметник («Для суші», «Крафт»), і склейка
+  // «Категорія Підпис» давала неграматичний заголовок на кшталт
+  // «Упаковка для суші та вок Для суші». Такий підпис ставимо в дужки.
+  const label = found.value.label[l];
+  const isPhrase = /^(Для|Под|З |С )/.test(label);
+  const head = isPhrase
+    ? `${found.category.name[l]} (${label.toLowerCase()})`
+    : `${found.category.name[l]} ${label}`;
+
   return pageMeta({
     locale: l,
     path: `/catalog/${slug}/${facet}/`,
-    title: clampTitle(
+    title: fitTitle(head, { text: l === 'uk' ? 'купити' : 'купить' }),
+    description: fitDescription(
       l === 'uk'
-        ? `${found.category.name.uk} ${found.value.label.uk} — купити`
-        : `${found.category.name.ru} ${found.value.label.ru} — купить`,
-    ),
-    description: clampDescription(
+        ? `${head} — ${count(items.length, 'position', 'uk')} у наявності, ціна від ${priceFrom(items).toFixed(2)} грн.`
+        : `${head} — ${count(items.length, 'position', 'ru')} в наличии, цена от ${priceFrom(items).toFixed(2)} грн.`,
       l === 'uk'
-        ? `${found.category.name.uk} ${found.value.label.uk}: ${items.length} позицій, ціна від ${priceFrom(items).toFixed(2)} грн. Наявність на складі в Дніпрі, доставка за 24 години.`
-        : `${found.category.name.ru} ${found.value.label.ru}: ${items.length} позиций, цена от ${priceFrom(items).toFixed(2)} грн. Наличие на складе в Днепре, доставка за 24 часа.`,
+        ? 'Власний склад у Дніпрі, доставка за 24 години безкоштовно.'
+        : 'Собственный склад в Днепре, доставка за 24 часа бесплатно.',
+      l === 'uk' ? 'Опт від 10 пачок, друк логотипу.' : 'Опт от 10 пачек, печать логотипа.',
     ),
   });
 }

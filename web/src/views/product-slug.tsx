@@ -11,7 +11,14 @@ import {
   productsOfCategory,
 } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
-import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
+import {
+  pageMeta,
+  fitTitle,
+  fitDescription,
+  shortenProductName,
+  TITLE_LIMIT_NO_BRAND,
+} from '@/lib/meta';
+import { count } from '@/i18n/plural';
 import { SITE, canonical } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Placeholder } from '@/components/Placeholder';
@@ -32,16 +39,29 @@ export async function meta(
   if (!product) return {};
 
   const packPrice = (product.priceRetail * product.unitsPerPack).toFixed(0);
+  const opt = product.tiers[0].perUnit.toFixed(2);
+
+  // Назва скорочується, а не обрізається: фасування й габарити на сторінці
+  // вже є окремими полями, тож у заголовку вони лише з'їдають ліміт.
+  const short = shortenProductName(product.name[l], product.spec[l], TITLE_LIMIT_NO_BRAND);
 
   return pageMeta({
     locale: l,
     path: `/product/${slug}/`,
-    // Технічні параметри свідомо не йдуть у title — він тримається в 60 символах
-    title: clampTitle(`${product.name[l]} — ${packPrice} грн`),
-    description: clampDescription(
+    // Ціна — необов'язковий хвіст: якщо не влазить цілком, її краще не
+    // показувати взагалі, ніж лишити обрізане «— 340…»
+    // Бренд у заголовку картки свідомо вимкнений: на реальних назвах до 82
+    // символів ці 15 знаків з'їдали об'єм товару — те, за чим його шукають.
+    brandInTitle: false,
+    title: fitTitle(short, { text: `${packPrice} грн` }, TITLE_LIMIT_NO_BRAND),
+    description: fitDescription(
       l === 'uk'
-        ? `${product.name.uk}, ${product.unitsPerPack} шт в упаковці. Опт від ${product.tiers[0].perUnit.toFixed(2)} грн/шт. Доставка з власного складу в Дніпрі за 24 години.`
-        : `${product.name.ru}, ${product.unitsPerPack} шт в упаковке. Опт от ${product.tiers[0].perUnit.toFixed(2)} грн/шт. Доставка с собственного склада в Днепре за 24 часа.`,
+        ? `${product.name.uk} — ${count(product.unitsPerPack, 'piece', 'uk')} в упаковці, ${packPrice} грн за пачку. Опт від ${opt} грн/шт.`
+        : `${product.name.ru} — ${count(product.unitsPerPack, 'piece', 'ru')} в упаковке, ${packPrice} грн за пачку. Опт от ${opt} грн/шт.`,
+      l === 'uk'
+        ? 'Доставка з власного складу в Дніпрі за 24 години, безкоштовно.'
+        : 'Доставка с собственного склада в Днепре за 24 часа, бесплатно.',
+      l === 'uk' ? 'Друк логотипу від 100 шт.' : 'Печать логотипа от 100 шт.',
     ),
   });
 }

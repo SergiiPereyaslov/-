@@ -5,7 +5,7 @@ import type { Locale } from '@/data/types';
 import { getPost, getPosts, formatDate } from '@/lib/posts';
 import { getCategory } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
-import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
+import { pageMeta, clampTitle, fitDescription } from '@/lib/meta';
 import { SITE, canonical } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
@@ -27,7 +27,22 @@ export async function meta(
     locale: l,
     path: `/blog/${slug}/`,
     title: clampTitle(post.title[l]),
-    description: clampDescription(post.excerpt[l]),
+    // Анонси статей короткі (80–95 символів), а сніпет вміщає ~160.
+    // Хвіст додає те, чого в анонсі немає: хто це пише й для кого.
+    description: fitDescription(
+      post.excerpt[l],
+      l === 'uk'
+        ? [
+            'Досвід постачальника пакування для кав’ярень і доставки — SmartEcoPack, Дніпро.',
+            'Досвід постачальника пакування — SmartEcoPack, Дніпро.',
+            'Блог SmartEcoPack, Дніпро.',
+          ]
+        : [
+            'Опыт поставщика упаковки для кофеен и доставки — SmartEcoPack, Днепр.',
+            'Опыт поставщика упаковки — SmartEcoPack, Днепр.',
+            'Блог SmartEcoPack, Днепр.',
+          ],
+    ),
   });
 }
 

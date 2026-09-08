@@ -12,7 +12,8 @@ import {
   resolveCatalogSlug,
 } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
-import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
+import { pageMeta, fitTitle, fitDescription } from '@/lib/meta';
+import { count } from '@/i18n/plural';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
@@ -49,11 +50,12 @@ export async function meta(
     return pageMeta({
       locale: l,
       path,
-      title: clampTitle(
-        l === 'uk' ? `${node.group.name.uk} — оптом` : `${node.group.name.ru} — оптом`,
-      ),
-      description: clampDescription(
-        `${node.group.intro[l]} ${items.length} ${l === 'uk' ? 'позицій, ціна від' : 'позиций, цена от'} ${priceFrom(items).toFixed(2)} грн.`,
+      title: fitTitle(node.group.name[l], { text: l === 'uk' ? 'оптом' : 'оптом' }),
+      description: fitDescription(
+        `${node.group.intro[l]} ${count(items.length, 'position', l)}, ${l === 'uk' ? 'ціна від' : 'цена от'} ${priceFrom(items).toFixed(2)} грн.`,
+        l === 'uk'
+          ? 'Доставка по Дніпру за 24 години.'
+          : 'Доставка по Днепру за 24 часа.',
       ),
     });
   }
@@ -62,15 +64,19 @@ export async function meta(
   return pageMeta({
     locale: l,
     path,
-    title: clampTitle(
-      l === 'uk'
-        ? `${node.category.name.uk} оптом — ціна`
-        : `${node.category.name.ru} оптом — цена`,
+    title: fitTitle(
+      node.category.name[l],
+      { text: l === 'uk' ? 'оптом' : 'оптом', sep: ' ' },
+      { text: l === 'uk' ? 'ціна' : 'цена' },
     ),
-    description: clampDescription(
+    description: fitDescription(
       l === 'uk'
-        ? `${node.category.name.uk} від ${priceFrom(items).toFixed(2)} грн. ${items.length} позицій у наявності. Безкоштовна доставка по Дніпру за 24 години, друк логотипу.`
-        : `${node.category.name.ru} от ${priceFrom(items).toFixed(2)} грн. ${items.length} позиций в наличии. Бесплатная доставка по Днепру за 24 часа, печать логотипа.`,
+        ? `${node.category.name.uk} від ${priceFrom(items).toFixed(2)} грн: ${count(items.length, 'position', 'uk')} у наявності на складі в Дніпрі.`
+        : `${node.category.name.ru} от ${priceFrom(items).toFixed(2)} грн: ${count(items.length, 'position', 'ru')} в наличии на складе в Днепре.`,
+      l === 'uk'
+        ? 'Безкоштовна доставка за 24 години, опт від 10 пачок.'
+        : 'Бесплатная доставка за 24 часа, опт от 10 пачек.',
+      l === 'uk' ? 'Друк логотипу від 100 шт.' : 'Печать логотипа от 100 шт.',
     ),
   });
 }

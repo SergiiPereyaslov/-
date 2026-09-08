@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { saveCategory } from '../actions';
+import { MetaCounter } from '../../MetaCounter';
+import { CATEGORY_NAME_LIMIT } from '@/lib/meta-text';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,14 +38,27 @@ export default async function CategoryEditPage({ params }: { params: Promise<{ s
         <section className="card space-y-4 p-5">
           <h2 className="text-lg">Заголовки</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium">Назва в меню (укр)</span>
-              <input name="nameUk" defaultValue={category.nameUk} className="field" required />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium">Назва в меню (рос)</span>
-              <input name="nameRu" defaultValue={category.nameRu} className="field" required />
-            </label>
+            {/*
+              Назва категорії — не тільки пункт меню: із неї збирається title
+              видачі («{Назва} оптом — ціна»). Ліміт у лічильнику вже врахував
+              і цей хвіст, і назву компанії, яку додає шаблон.
+            */}
+            <MetaCounter
+              name="nameUk"
+              label="Назва в меню (укр)"
+              defaultValue={category.nameUk}
+              kind="title"
+              max={CATEGORY_NAME_LIMIT}
+              required
+            />
+            <MetaCounter
+              name="nameRu"
+              label="Назва в меню (рос)"
+              defaultValue={category.nameRu}
+              kind="title"
+              max={CATEGORY_NAME_LIMIT}
+              required
+            />
             <label className="block">
               <span className="mb-1 block text-sm font-medium">H1 (укр)</span>
               <input name="h1Uk" defaultValue={category.h1Uk} className="field" required />

@@ -3,6 +3,7 @@ import type { Locale } from '@/data/types';
 import { SITE } from './site';
 import { OG_ALT, OG_SIZE } from '@/views/og-image';
 
+
 /** Спільний опис картинки для соцмереж — маршрут /og, див. views/og-image.tsx. */
 const ogImage = (locale: Locale) => ({
   url: `${SITE.url}/og${locale === 'ru' ? '?l=ru' : ''}`,
@@ -21,18 +22,26 @@ export function pageMeta({
   title,
   description,
   noindex = false,
+  brandInTitle = true,
 }: {
   locale: Locale;
   path: string;
   title: string;
   description: string;
   noindex?: boolean;
+  /**
+   * false — заголовок іде у видачу як є, без « | SmartEcoPack».
+   * Використовується на картках товару: там ці 15 символів коштують
+   * ключового параметра в назві. Див. TITLE_LIMIT_NO_BRAND.
+   */
+  brandInTitle?: boolean;
 }): Metadata {
   const uk = `${SITE.url}${path}`;
   const ru = `${SITE.url}/ru${path}`;
 
   return {
-    title,
+    // absolute вимикає шаблон «%s | SmartEcoPack» кореневого layout
+    title: brandInTitle ? title : { absolute: title },
     description,
     alternates: {
       canonical: locale === 'uk' ? uk : ru,
@@ -57,19 +66,16 @@ export function pageMeta({
   };
 }
 
-/**
- * Ліміт заголовка.
- *
- * Ліміт видачі — 60 символів, але кореневий layout додає шаблон
- * « | SmartEcoPack» (15 символів), тому власна частина title має
- * вкладатися в 45. Не додавайте назву компанії в сам заголовок:
- * вона припасується автоматично, інакше бренд задвоюється.
- */
-export const BRAND_SUFFIX_LENGTH = ' | SmartEcoPack'.length;
-export const TITLE_LIMIT = 60 - BRAND_SUFFIX_LENGTH;
-
-export const clampTitle = (s: string, max = TITLE_LIMIT) =>
-  s.length <= max ? s : `${s.slice(0, max - 1).trimEnd()}…`;
-
-export const clampDescription = (s: string, max = 160) =>
-  s.length <= max ? s : `${s.slice(0, max - 1).trimEnd()}…`;
+export {
+  TITLE_LIMIT,
+  BRAND_SUFFIX_LENGTH,
+  TITLE_LIMIT_NO_BRAND,
+  CATEGORY_NAME_LIMIT,
+  DESCRIPTION_MIN,
+  DESCRIPTION_MAX,
+  clampTitle,
+  clampDescription,
+  fitTitle,
+  fitDescription,
+  shortenProductName,
+} from './meta-text';

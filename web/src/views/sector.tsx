@@ -4,7 +4,7 @@ import type { Locale } from '@/data/types';
 import { SECTORS, SECTOR_BY_SLUG } from '@/data/sectors';
 import { getCategory, priceFrom, productsOfCategory } from '@/lib/catalog';
 import { getDict } from '@/i18n/dictionaries';
-import { pageMeta, clampTitle, clampDescription } from '@/lib/meta';
+import { pageMeta, clampTitle, fitDescription } from '@/lib/meta';
 import { SITE, formatPhone } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Prose } from '@/components/Prose';
@@ -26,7 +26,12 @@ export async function meta(l: Locale, params: Promise<{ sector: string }>): Prom
     locale: l,
     path: `/dlya/${slug}/`,
     title: clampTitle(sector.h1[l]),
-    description: clampDescription(sector.intro[l]),
+    description: fitDescription(
+      sector.intro[l],
+      l === 'uk'
+        ? 'Готовий комплект, ціни й доставка по Дніпру за 24 години.'
+        : 'Готовый комплект, цены и доставка по Днепру за 24 часа.',
+    ),
   });
 }
 
