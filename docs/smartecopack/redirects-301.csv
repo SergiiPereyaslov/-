@@ -23,6 +23,17 @@ source,destination,type,note
 /druk-na-paperovih-stakanchikah,/brenduvannya/druk-na-stakanakh/,exact,службова
 /news,/blog/,exact,блог
 /contact,/kontakty/,exact,службова
+/catalog/korobki-dlya-pitsi,/catalog/korobky-dlya-pitsy/,exact,нова категорія — звірити з краулом
+/catalog/korobka-dlya-pitsi,/catalog/korobky-dlya-pitsy/,exact,нова категорія — звірити з краулом
+/catalog/upakovka-dlya-sushi,/catalog/upakovka-dlya-sushi-ta-vok/,exact,нова категорія — звірити з краулом
+/catalog/upakovka-dlya-vok,/catalog/upakovka-dlya-sushi-ta-vok/,exact,нова категорія — звірити з краулом
+/catalog/morozivnitsi,/catalog/morozyvnytsi/,exact,нова категорія — звірити з краулом
+/catalog/filtr-paket,/catalog/filtr-pakety/,exact,нова категорія — звірити з краулом
+/catalog/stakani-pet,/catalog/stakany-pet/,exact,нова категорія — звірити з краулом
+/catalog/desertnitsi-pet,/catalog/desertnytsi-pet/,exact,нова категорія — звірити з краулом
+/catalog/stolovi-pribori,/catalog/stolovi-prybory/,exact,нова категорія — звірити з краулом
+/catalog/dlya-napoyiv,/catalog/stakany/,exact,внутрішня зміна слага групи
+/catalog/yizha-navynos,/catalog/konteynery/,exact,внутрішня зміна слага групи
 /catalog/:slug/page-all,/catalog/:slug/,pattern,усунення дублів пагінації
 /catalog/:slug/page-:n,/catalog/:slug/,pattern,пагінація перебудовується
 /news/:slug,/blog/:slug/,pattern,ПОТРЕБУЄ ручної звірки — частина slug російською
