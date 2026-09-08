@@ -19,6 +19,7 @@ import { Prose } from '@/components/Prose';
 import { CategoryView } from '@/components/CategoryView';
 import { ProductCard } from '@/components/ProductCard';
 import { Faq } from '@/components/Faq';
+import { getPosts } from '@/lib/posts';
 import { Placeholder, type Shape } from '@/components/Placeholder';
 
 const SHAPE: Record<string, Shape> = {
@@ -160,8 +161,14 @@ export default async function CatalogSlugPage({
 
   /* ── Сторінка категорії ── */
   const c = node.category;
-  const [items, groups] = await Promise.all([productsOfCategory(slug), getGroups()]);
+  const [items, groups, posts] = await Promise.all([
+    productsOfCategory(slug),
+    getGroups(),
+    getPosts(),
+  ]);
   const group = groups.find((g) => g.slug === c.group);
+  // Статті, які самі посилаються на цю категорію
+  const articles = posts.filter((post) => post.related.includes(slug)).slice(0, 3);
 
   return (
     <div className="container-page pb-12">
@@ -192,6 +199,30 @@ export default async function CatalogSlugPage({
       <div className="max-w-3xl">
         <Faq items={c.faq} locale={l} title={dict.catalog.faq} />
       </div>
+
+      {/*
+        Зворотна перелінковка. Статті вже вели в категорії через поле related,
+        але назад посилань не було — граф виходив односпрямованим, і вага з
+        каталогу в блог не переходила. Тут той самий зв'язок читається у
+        зворотний бік, без окремого поля в даних.
+      */}
+      {articles.length > 0 && (
+        <nav className="mt-10 max-w-3xl border-t border-border pt-5">
+          <h2 className="mb-2 text-sm font-bold">
+            {l === 'uk' ? 'Читати про це' : 'Читать об этом'}
+          </h2>
+          <ul className="space-y-1.5 text-sm">
+            {articles.map((post) => (
+              <li key={post.slug}>
+                <Link href={`${p}/blog/${post.slug}/`} className="text-primary hover:underline">
+                  {post.title[l]}
+                </Link>
+                <span className="ml-2 text-muted">{post.excerpt[l]}</span>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </div>
   );
 }

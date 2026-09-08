@@ -53,7 +53,7 @@ export const POSTS: Post[] = [
         ru: 'Крышка подбирается по диаметру венца, а не по объёму стакана. «Стакан 340 мл» у разных производителей может иметь венец 79 или 80 мм, и крышка от одного не сядет на другой. Стандартное соответствие: 110–175 мл → 70 мм, 250 мл → 75 мм, 340 мл → 80 мм, 400–500 мл → 90 мм. Самый надёжный способ не ошибиться — покупать стаканы и крышки у одного поставщика.',
       },
     ],
-    related: ['stakany-paperovi', 'stakany-dvosharovi', 'kryshky-dlya-stakaniv'],
+    related: ['stakany-paperovi', 'stakany-dvosharovi', 'kryshky-dlya-stakaniv', 'stakany-gofrovani'],
   },
   {
     slug: 'paperova-upakovka-dlya-yizhi-navynos',
@@ -92,7 +92,7 @@ export const POSTS: Post[] = [
         ru: 'Жареные продукты выделяют пар. В глухом боксе панировка размокает за десять минут, поэтому бургер-боксы и снек-упаковка имеют перфорацию. Для картофеля фри критична жиростойкость покрытия: дешёвое «плывёт» от горячей порции за несколько минут.',
       },
     ],
-    related: ['lanch-boksy', 'salatnyky', 'supnyky', 'burger-boksy'],
+    related: ['lanch-boksy', 'salatnyky', 'supnyky', 'burger-boksy', 'tarilky-ta-sousnyky', 'snek-upakovka', 'upakovka-dlya-kartopli-fri'],
   },
   {
     slug: 'perevahy-paperovoyi-upakovky-dlya-biznesu',
@@ -166,7 +166,7 @@ export const POSTS: Post[] = [
         ru: 'Рельеф «съедает» тонкие линии и мелкий текст. Для гофры макет нужно упрощать: крупный логотип в 1–2 цвета без градиентов. Если нужна детальная печать — берите двухслойный стакан с гладкой стенкой или брендируйте термочехол.',
       },
     ],
-    related: ['stakany-paperovi', 'stakany-dvosharovi', 'termochokhly'],
+    related: ['stakany-paperovi', 'stakany-dvosharovi', 'termochokhly', 'stakany-gofrovani'],
   },
   {
     slug: 'yak-pidibraty-kryshku-do-stakana',
@@ -287,7 +287,7 @@ export const POSTS: Post[] = [
         ru: "Полной размерной линейки стаканов, трёх типов крышек, гофрированных стаканов «про запас» и холодной PET-линейки — если вы открываетесь не летом. Всё это имеет медленный оборот и замораживает деньги, нужные в первый месяц на другое. Каталог никуда не денется: доставка по Днепру приезжает за сутки, поэтому дозаказать всегда быстрее, чем угадать заранее.",
       },
     ],
-    related: ["stakany-paperovi", "kryshky-dlya-stakaniv", "trymachi-dlya-stakaniv", "mishalky"],
+    related: ['stakany-paperovi', 'kryshky-dlya-stakaniv', 'trymachi-dlya-stakaniv', 'mishalky', 'stakany-gofrovani', 'servetky', 'stiky-tsukru'],
   },
   {
     slug: "papir-chy-plastyk",
@@ -366,7 +366,7 @@ export const POSTS: Post[] = [
         ru: "Горячее — бумага, без исключений. Холодное, где важно показать продукт, — PET. Холодное, где показывать нечего, — бумага. Разогрев в духовке — алюминий. Это не компромисс с принципами, а разделение по функции: упаковка, которая не выполняет свою работу, вредит бренду сильнее материала, из которого она сделана.",
       },
     ],
-    related: ["stakany-paperovi", "stakany-pet", "konteynery-alyuminiyevi", "salatnyky"],
+    related: ['stakany-paperovi', 'stakany-pet', 'konteynery-alyuminiyevi', 'salatnyky', 'trubochky-polimerni', 'snek-upakovka', 'stolovi-prybory'],
   },
   {
     slug: "yak-vybraty-kraft-paket",
@@ -496,7 +496,7 @@ export const POSTS: Post[] = [
         ru: "Отдельная возможность — собственный рассыпной чай в фильтр-пакетах. Порция рассыпного стоит в разы дешевле пакетированного того же уровня, а продаётся по той же цене или дороже: «собственный купаж» звучит иначе, чем «чай в пакетике».",
       },
     ],
-    related: ["pakety-sashe", "desertnytsi-pet", "pakety-z-ruchkamy", "filtr-pakety"],
+    related: ['pakety-sashe', 'desertnytsi-pet', 'pakety-z-ruchkamy', 'filtr-pakety', 'chayni-paketyky'],
   },
   {
     slug: "brenduvannya-upakovky-dlya-fastfudu",
@@ -567,7 +567,7 @@ export const POSTS: Post[] = [
         ru: "Стик сахара. Он стоит копейки, лежит на блюдце перед клиентом, попадает ему в руки и рвётся руками — это полный контакт, а не беглый взгляд. Порция 5 г имеет две ровные плоскости под логотип и строку текста. По себестоимости контакта это самый дешёвый носитель из всех, что есть в заведении, и почти никто им не пользуется.",
       },
     ],
-    related: ["korobky-dlya-pitsy", "pakety-z-ruchkamy", "burger-boksy", "stiky-tsukru"],
+    related: ['korobky-dlya-pitsy', 'pakety-z-ruchkamy', 'burger-boksy', 'stiky-tsukru', 'snek-upakovka'],
   },
 ];
 

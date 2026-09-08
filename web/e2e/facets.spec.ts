@@ -60,3 +60,23 @@ test('фасетна сторінка веде в категорію, а не т
   await page.goto('/catalog/stakany-paperovi/340-ml/');
   await expect(page.locator('a[href="/catalog/stakany-paperovi/"]').first()).toBeVisible();
 });
+
+test('категорія посилається на статті, які про неї пишуть', async ({ page }) => {
+  // Граф перелінковки має бути двобічним: статті вели в каталог через
+  // поле related, але назад посилань не було — вага з каталогу в блог
+  // не переходила
+  await page.goto('/catalog/stakany-paperovi/');
+  await expect(page.getByRole('heading', { name: 'Читати про це' })).toBeVisible();
+
+  // Саме блок перелінковки, а не пункт «Блог» у шапці: він теж
+  // починається з /blog/ і перехопив би локатор
+  const links = page
+    .locator('nav', { has: page.getByRole('heading', { name: 'Читати про це' }) })
+    .locator('a[href^="/blog/"]');
+  expect(await links.count()).toBeGreaterThanOrEqual(2);
+
+  // Зв'язок двобічний: стаття, на яку веде категорія, веде назад у неї
+  const href = await links.first().getAttribute('href');
+  await page.goto(href!);
+  await expect(page.locator('a[href="/catalog/stakany-paperovi/"]').first()).toBeVisible();
+});
