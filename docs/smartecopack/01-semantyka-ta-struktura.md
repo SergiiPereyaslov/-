@@ -347,9 +347,23 @@
 
 ### 8.4 Блог: 18 статей
 
-Чотири статті мають відповідник у нашому блозі — ведуть на нього напряму.
-Решта 14 ведуть на `/blog/`: нерелевантна ціль гірша за загальну сторінку.
-Кожен рядок замінюється на конкретний URL, щойно статтю буде переписано.
+**Десять старих адрес ведуть на конкретні статті**, сім — на `/blog/`.
+
+Спершу відповідник мали лише чотири. Під шість найцінніших тем написано власний
+матеріал, і старі URL прив'язані до нього:
+
+| Стара адреса | Нова стаття |
+|---|---|
+| `10-klyuchevyh-aspektov-dlya-uspeshnogo-otkrytiya-kofejni` | `/blog/yak-vidkryty-kavyarnyu-chek-list/` |
+| `vidminnosti-plastikovogo-pakuvannya-vid-paperovogo` | `/blog/papir-chy-plastyk/` |
+| `bumazhnyj-paket-aktsenty-pri-vybore-optimalnogo-varianta` | `/blog/yak-vybraty-kraft-paket/` |
+| `upakovka-dlya-konditeriv` | `/blog/upakovka-dlya-konditerskoyi/` |
+| `sposoby-brendirovaniya-upakovki-dlya-fastfuda`, `neobychnaya-upakovka-dlya-fastfuda…` | `/blog/brenduvannya-upakovky-dlya-fastfudu/` |
+
+Сім, що лишились, — новинні або надто загальні («SmartEcoPack на Interpack
+2023», «Інновації — як розвивається світ упаковки»). Писати під них статтю
+заради редиректу немає сенсу: пошукового попиту на ці теми немає. Вони ведуть
+на `/blog/` — нерелевантна ціль гірша за загальну сторінку.
 
 Дві мої попередні реконструкції були **вигаданими адресами**, яких на сайті
 немає (`bumazhnaya-upakovka-dlya-edy-navynos-ot-smartekopak`,

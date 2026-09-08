@@ -83,29 +83,35 @@ const EXACT: Record<string, string> = {
   '/news/bumazhnaya-upakovka-na-chto-obrait-vnimanie-pri-vybore':
     '/blog/paperova-upakovka-dlya-yizhi-navynos/',
   '/news/druk-na-paperovih-upakovkah': '/blog/druk-na-paperovykh-stakanchykakh/',
+  // П'ять статей, під які написано власний матеріал замість загального /blog/
+  '/news/10-klyuchevyh-aspektov-dlya-uspeshnogo-otkrytiya-kofejni':
+    '/blog/yak-vidkryty-kavyarnyu-chek-list/',
+  '/news/vidminnosti-plastikovogo-pakuvannya-vid-paperovogo': '/blog/papir-chy-plastyk/',
+  '/news/bumazhnyj-paket-aktsenty-pri-vybore-optimalnogo-varianta':
+    '/blog/yak-vybraty-kraft-paket/',
+  '/news/upakovka-dlya-konditeriv': '/blog/upakovka-dlya-konditerskoyi/',
+  '/news/sposoby-brendirovaniya-upakovki-dlya-fastfuda':
+    '/blog/brenduvannya-upakovky-dlya-fastfudu/',
+  // Та сама тема під іншим кутом — ведемо на ту саму статтю
+  '/news/neobychnaya-upakovka-dlya-fastfuda-kak-vydelitsya-sredi-konkurentov':
+    '/blog/brenduvannya-upakovky-dlya-fastfudu/',
 };
 
 /**
- * Решта 14 статей старого блогу. Свого матеріалу під них немає, тому ведемо
+ * Решта статей старого блогу. Свого матеріалу під них немає, тому ведемо
  * на список блогу, а не на випадкову статтю: нерелевантна ціль гірша за
  * загальну сторінку — і для читача, і для пошуку.
  *
  * Коли ці статті буде переписано, кожен рядок замінюється на конкретний URL.
  */
 const OLD_POSTS = [
-  '10-klyuchevyh-aspektov-dlya-uspeshnogo-otkrytiya-kofejni',
   'brenduvannya---imidzh-abo-vpiznavanist-brendu',
-  'bumazhnyj-paket-aktsenty-pri-vybore-optimalnogo-varianta',
   'eko-pakuvannya-j-vazhlivi-dribnichki',
   'etapy-perehoda-na-ekologichnuyu-upakovku-dlya-vashego-biznesa',
   'innovatsii---kak-razvivaetsya-mir-upakovki',
-  'neobychnaya-upakovka-dlya-fastfuda-kak-vydelitsya-sredi-konkurentov',
   'osvizhayuchi-litni-tendentsii-u-sviti-pakuvannya-zminyuyuchisya-potrebi-ta-sezonni-prioriteti',
   'rozumna-upakovka---trend-na-efektivnit',
   'smartecopack-na-interpack2023-dyusseldorf',
-  'sposoby-brendirovaniya-upakovki-dlya-fastfuda',
-  'upakovka-dlya-konditeriv',
-  'vidminnosti-plastikovogo-pakuvannya-vid-paperovogo',
 ];
 
 for (const slug of OLD_POSTS) EXACT[`/news/${slug}`] = '/blog/';

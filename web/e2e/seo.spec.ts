@@ -164,7 +164,8 @@ test('301 зі старих URL ведуть на нові за один хоп'
     // Блог: стаття зі своїм матеріалом і стаття без нього
     ['/news', '/blog/'],
     ['/news/paperovi-stakani-na-scho-varto-zvernuti-uvagu', '/blog/yak-vybraty-paperovi-stakany/'],
-    ['/news/upakovka-dlya-konditeriv', '/blog/'],
+    ['/news/upakovka-dlya-konditeriv', '/blog/upakovka-dlya-konditerskoyi/'],
+    ['/news/smartecopack-na-interpack2023-dyusseldorf', '/blog/'],
     // Товари й мови
     ['/products/stakan-paperovyi-340-ml-kraft', '/product/stakan-paperovyi-340-ml-kraft/'],
     ['/uk/catalog/', '/catalog/'],
