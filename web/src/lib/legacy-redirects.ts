@@ -24,6 +24,20 @@ const EXACT: Record<string, string> = {
   '/catalog/paketi-paperovi': '/catalog/pakety-z-ruchkamy/',
   '/catalog/paket-sashe': '/catalog/pakety-sashe/',
   '/catalog/suputni-tovari': '/catalog/suputni-tovary/',
+  // Категорії, додані разом із переходом на шестигрупову структуру
+  '/catalog/korobki-dlya-pitsi': '/catalog/korobky-dlya-pitsy/',
+  '/catalog/korobka-dlya-pitsi': '/catalog/korobky-dlya-pitsy/',
+  '/catalog/upakovka-dlya-sushi': '/catalog/upakovka-dlya-sushi-ta-vok/',
+  '/catalog/upakovka-dlya-vok': '/catalog/upakovka-dlya-sushi-ta-vok/',
+  '/catalog/morozivnitsi': '/catalog/morozyvnytsi/',
+  '/catalog/filtr-paket': '/catalog/filtr-pakety/',
+  '/catalog/stakani-pet': '/catalog/stakany-pet/',
+  '/catalog/desertnitsi-pet': '/catalog/desertnytsi-pet/',
+  '/catalog/stolovi-pribori': '/catalog/stolovi-prybory/',
+  // Групи, що змінили слаг при переході від угруповання «за сценарієм»
+  // до угруповання «за типом товару» — структури діючого сайту клієнта
+  '/catalog/dlya-napoyiv': '/catalog/stakany/',
+  '/catalog/yizha-navynos': '/catalog/konteynery/',
   '/all-products': '/catalog/',
   '/branding': '/brenduvannya/',
   '/druk-na-paperovih-stakanchikah': '/brenduvannya/druk-na-stakanakh/',

@@ -3450,7 +3450,8 @@
       "stakan-dvosharovyi-340-ml-kraft",
       "stakan-dvosharovyi-340-ml-bilyi",
       "stakan-hofrovanyi-340-ml-kraft",
-      "stakan-hofrovanyi-340-ml-bilyi"
+      "stakan-hofrovanyi-340-ml-bilyi",
+      "stakan-pet-300-ml"
     ]
   },
   {
@@ -3532,7 +3533,8 @@
       "stakan-dvosharovyi-340-ml-kraft",
       "stakan-dvosharovyi-340-ml-bilyi",
       "stakan-hofrovanyi-340-ml-kraft",
-      "stakan-hofrovanyi-340-ml-bilyi"
+      "stakan-hofrovanyi-340-ml-bilyi",
+      "stakan-pet-300-ml"
     ]
   },
   {
@@ -3614,7 +3616,8 @@
       "stakan-dvosharovyi-340-ml-kraft",
       "stakan-dvosharovyi-340-ml-bilyi",
       "stakan-hofrovanyi-340-ml-kraft",
-      "stakan-hofrovanyi-340-ml-bilyi"
+      "stakan-hofrovanyi-340-ml-bilyi",
+      "stakan-pet-300-ml"
     ]
   },
   {
@@ -3699,7 +3702,9 @@
       "stakan-dvosharovyi-400-ml-kraft",
       "stakan-dvosharovyi-400-ml-bilyi",
       "stakan-hofrovanyi-400-ml-kraft",
-      "stakan-hofrovanyi-400-ml-bilyi"
+      "stakan-hofrovanyi-400-ml-bilyi",
+      "stakan-pet-400-ml",
+      "stakan-pet-500-ml"
     ]
   },
   {
@@ -3784,7 +3789,9 @@
       "stakan-dvosharovyi-400-ml-kraft",
       "stakan-dvosharovyi-400-ml-bilyi",
       "stakan-hofrovanyi-400-ml-kraft",
-      "stakan-hofrovanyi-400-ml-bilyi"
+      "stakan-hofrovanyi-400-ml-bilyi",
+      "stakan-pet-400-ml",
+      "stakan-pet-500-ml"
     ]
   },
   {
@@ -3869,7 +3876,9 @@
       "stakan-dvosharovyi-400-ml-kraft",
       "stakan-dvosharovyi-400-ml-bilyi",
       "stakan-hofrovanyi-400-ml-kraft",
-      "stakan-hofrovanyi-400-ml-bilyi"
+      "stakan-hofrovanyi-400-ml-bilyi",
+      "stakan-pet-400-ml",
+      "stakan-pet-500-ml"
     ]
   },
   {
@@ -7978,6 +7987,1704 @@
       {
         "minPacks": 100,
         "perUnit": 1.28
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-130-ml-kraft",
+    "sku": "SEP-MR-01",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 130 мл крафт",
+      "ru": "Креманка 130 мл крафт"
+    },
+    "spec": {
+      "uk": "130 мл",
+      "ru": "130 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "130 мл",
+          "ru": "130 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "130",
+      "color": "kraft"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 1.6,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 1.47
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.38
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.28
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-180-ml-kraft",
+    "sku": "SEP-MR-02",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 180 мл крафт",
+      "ru": "Креманка 180 мл крафт"
+    },
+    "spec": {
+      "uk": "180 мл",
+      "ru": "180 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "180 мл",
+          "ru": "180 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "180",
+      "color": "kraft"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 1.85,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 1.7
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.59
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.48
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-250-ml-kraft",
+    "sku": "SEP-MR-03",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 250 мл крафт",
+      "ru": "Креманка 250 мл крафт"
+    },
+    "spec": {
+      "uk": "250 мл",
+      "ru": "250 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "250 мл",
+          "ru": "250 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "250",
+      "color": "kraft"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.2,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.02
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.89
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.76
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-300-ml-kraft",
+    "sku": "SEP-MR-04",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 300 мл крафт",
+      "ru": "Креманка 300 мл крафт"
+    },
+    "spec": {
+      "uk": "300 мл",
+      "ru": "300 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "300 мл",
+          "ru": "300 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "300",
+      "color": "kraft"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.5,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.3
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.15
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-180-ml-bila",
+    "sku": "SEP-MR-05",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 180 мл біла",
+      "ru": "Креманка 180 мл белая"
+    },
+    "spec": {
+      "uk": "180 мл",
+      "ru": "180 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "180 мл",
+          "ru": "180 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "180",
+      "color": "white"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 1.75,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 1.61
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.51
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.4
+      }
+    ]
+  },
+  {
+    "slug": "morozyvnytsia-250-ml-bila",
+    "sku": "SEP-MR-06",
+    "category": "morozyvnytsi",
+    "name": {
+      "uk": "Морозивниця 250 мл біла",
+      "ru": "Креманка 250 мл белая"
+    },
+    "spec": {
+      "uk": "250 мл",
+      "ru": "250 мл"
+    },
+    "description": {
+      "uk": "Паперова морозивниця з покриттям, розрахованим на мінусову температуру. Ширший вінець — зручно їсти ложкою, ламінування не тріскається на морозі.",
+      "ru": "Бумажная креманка с покрытием, рассчитанным на минусовую температуру. Более широкий венец — удобно есть ложкой, ламинирование не трескается на морозе."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "250 мл",
+          "ru": "250 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "250",
+      "color": "white"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.1,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 1.93
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.81
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.68
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-pitsy-260-260-40",
+    "sku": "SEP-PZ-01",
+    "category": "korobky-dlya-pitsy",
+    "name": {
+      "uk": "Коробка для піци 260×260×40",
+      "ru": "Коробка для пиццы 260×260×40"
+    },
+    "spec": {
+      "uk": "під піцу 25 см",
+      "ru": "под пиццу 25 см"
+    },
+    "description": {
+      "uk": "Коробка для піци з мікрогофрокартону з вентиляційними отворами. Вбирає конденсат і не дає тісту розмокнути під час доставки.",
+      "ru": "Коробка для пиццы из микрогофрокартона с вентиляционными отверстиями. Впитывает конденсат и не даёт тесту размокнуть во время доставки."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "під піцу 25 см",
+          "ru": "под пиццу 25 см"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "boxSize": "260"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 8.4,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 7.73
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 7.22
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 6.72
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-pitsy-310-310-40",
+    "sku": "SEP-PZ-02",
+    "category": "korobky-dlya-pitsy",
+    "name": {
+      "uk": "Коробка для піци 310×310×40",
+      "ru": "Коробка для пиццы 310×310×40"
+    },
+    "spec": {
+      "uk": "під піцу 30 см",
+      "ru": "под пиццу 30 см"
+    },
+    "description": {
+      "uk": "Коробка для піци з мікрогофрокартону з вентиляційними отворами. Вбирає конденсат і не дає тісту розмокнути під час доставки.",
+      "ru": "Коробка для пиццы из микрогофрокартона с вентиляционными отверстиями. Впитывает конденсат и не даёт тесту размокнуть во время доставки."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "під піцу 30 см",
+          "ru": "под пиццу 30 см"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "boxSize": "310"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 10.2,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 9.38
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 8.77
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 8.16
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-pitsy-360-360-40",
+    "sku": "SEP-PZ-03",
+    "category": "korobky-dlya-pitsy",
+    "name": {
+      "uk": "Коробка для піци 360×360×40",
+      "ru": "Коробка для пиццы 360×360×40"
+    },
+    "spec": {
+      "uk": "під піцу 35 см",
+      "ru": "под пиццу 35 см"
+    },
+    "description": {
+      "uk": "Коробка для піци з мікрогофрокартону з вентиляційними отворами. Вбирає конденсат і не дає тісту розмокнути під час доставки.",
+      "ru": "Коробка для пиццы из микрогофрокартона с вентиляционными отверстиями. Впитывает конденсат и не даёт тесту размокнуть во время доставки."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "під піцу 35 см",
+          "ru": "под пиццу 35 см"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "boxSize": "360"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 12.6,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 11.59
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 10.84
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 10.08
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-pitsy-410-410-40",
+    "sku": "SEP-PZ-04",
+    "category": "korobky-dlya-pitsy",
+    "name": {
+      "uk": "Коробка для піци 410×410×40",
+      "ru": "Коробка для пиццы 410×410×40"
+    },
+    "spec": {
+      "uk": "під піцу 40 см",
+      "ru": "под пиццу 40 см"
+    },
+    "description": {
+      "uk": "Коробка для піци з мікрогофрокартону з вентиляційними отворами. Вбирає конденсат і не дає тісту розмокнути під час доставки.",
+      "ru": "Коробка для пиццы из микрогофрокартона с вентиляционными отверстиями. Впитывает конденсат и не даёт тесту размокнуть во время доставки."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "під піцу 40 см",
+          "ru": "под пиццу 40 см"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "boxSize": "410"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 15.3,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 14.08
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 13.16
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 12.24
+      }
+    ]
+  },
+  {
+    "slug": "boks-dlia-sushi-180-130-50",
+    "sku": "SEP-SW-01",
+    "category": "upakovka-dlya-sushi-ta-vok",
+    "name": {
+      "uk": "Бокс для суші 180×130×50",
+      "ru": "Бокс для суши 180×130×50"
+    },
+    "spec": {
+      "uk": "на 6–8 ролів",
+      "ru": "на 6–8 роллов"
+    },
+    "description": {
+      "uk": "Упаковка для азійської кухні: бокси для роллів із запасом по висоті та коробки для вок-локшини із замком, що відкривається однією рукою.",
+      "ru": "Упаковка для азиатской кухни: боксы для роллов с запасом по высоте и коробки для вок-лапши с замком, открывающимся одной рукой."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "на 6–8 ролів",
+          "ru": "на 6–8 роллов"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "sushi"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 5.2,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 4.78
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 4.47
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 4.16
+      }
+    ]
+  },
+  {
+    "slug": "boks-dlia-sushi-230-160-50",
+    "sku": "SEP-SW-02",
+    "category": "upakovka-dlya-sushi-ta-vok",
+    "name": {
+      "uk": "Бокс для суші 230×160×50",
+      "ru": "Бокс для суши 230×160×50"
+    },
+    "spec": {
+      "uk": "на 10–12 ролів",
+      "ru": "на 10–12 роллов"
+    },
+    "description": {
+      "uk": "Упаковка для азійської кухні: бокси для роллів із запасом по висоті та коробки для вок-локшини із замком, що відкривається однією рукою.",
+      "ru": "Упаковка для азиатской кухни: боксы для роллов с запасом по высоте и коробки для вок-лапши с замком, открывающимся одной рукой."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "на 10–12 ролів",
+          "ru": "на 10–12 роллов"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "sushi"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 6.8,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 6.26
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 5.85
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 5.44
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-vok-750-ml",
+    "sku": "SEP-SW-03",
+    "category": "upakovka-dlya-sushi-ta-vok",
+    "name": {
+      "uk": "Коробка для вок 750 мл",
+      "ru": "Коробка для вок 750 мл"
+    },
+    "spec": {
+      "uk": "750 мл",
+      "ru": "750 мл"
+    },
+    "description": {
+      "uk": "Упаковка для азійської кухні: бокси для роллів із запасом по висоті та коробки для вок-локшини із замком, що відкривається однією рукою.",
+      "ru": "Упаковка для азиатской кухни: боксы для роллов с запасом по высоте и коробки для вок-лапши с замком, открывающимся одной рукой."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "750 мл",
+          "ru": "750 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "wok"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 4.4,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 4.05
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 3.78
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 3.52
+      }
+    ]
+  },
+  {
+    "slug": "korobka-dlia-vok-1000-ml",
+    "sku": "SEP-SW-04",
+    "category": "upakovka-dlya-sushi-ta-vok",
+    "name": {
+      "uk": "Коробка для вок 1000 мл",
+      "ru": "Коробка для вок 1000 мл"
+    },
+    "spec": {
+      "uk": "1000 мл",
+      "ru": "1000 мл"
+    },
+    "description": {
+      "uk": "Упаковка для азійської кухні: бокси для роллів із запасом по висоті та коробки для вок-локшини із замком, що відкривається однією рукою.",
+      "ru": "Упаковка для азиатской кухни: боксы для роллов с запасом по высоте и коробки для вок-лапши с замком, открывающимся одной рукой."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "1000 мл",
+          "ru": "1000 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "wok"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 5.1,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "box",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 4.69
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 4.39
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 4.08
+      }
+    ]
+  },
+  {
+    "slug": "filtr-paket-60-80-mm",
+    "sku": "SEP-FP-01",
+    "category": "filtr-pakety",
+    "name": {
+      "uk": "Фільтр-пакет 60×80 мм",
+      "ru": "Фильтр-пакет 60×80 мм"
+    },
+    "spec": {
+      "uk": "на 250 мл",
+      "ru": "на 250 мл"
+    },
+    "description": {
+      "uk": "Фільтр-пакет із незабіленого целюлозного паперу без клею на шві. Дозволяє продавати навинос власний розсипний купаж.",
+      "ru": "Фильтр-пакет из неотбелённой целлюлозной бумаги без клея на шве. Позволяет продавать навынос собственный рассыпной купаж."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "на 250 мл",
+          "ru": "на 250 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "500 шт",
+          "ru": "500 шт"
+        }
+      }
+    ],
+    "facets": {
+      "bagSize": "60x80"
+    },
+    "unitsPerPack": 500,
+    "priceRetail": 0.18,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.17
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.15
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.14
+      }
+    ]
+  },
+  {
+    "slug": "filtr-paket-70-90-mm",
+    "sku": "SEP-FP-02",
+    "category": "filtr-pakety",
+    "name": {
+      "uk": "Фільтр-пакет 70×90 мм",
+      "ru": "Фильтр-пакет 70×90 мм"
+    },
+    "spec": {
+      "uk": "на 340–500 мл",
+      "ru": "на 340–500 мл"
+    },
+    "description": {
+      "uk": "Фільтр-пакет із незабіленого целюлозного паперу без клею на шві. Дозволяє продавати навинос власний розсипний купаж.",
+      "ru": "Фильтр-пакет из неотбелённой целлюлозной бумаги без клея на шве. Позволяет продавать навынос собственный рассыпной купаж."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "на 340–500 мл",
+          "ru": "на 340–500 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "500 шт",
+          "ru": "500 шт"
+        }
+      }
+    ],
+    "facets": {
+      "bagSize": "70x90"
+    },
+    "unitsPerPack": 500,
+    "priceRetail": 0.24,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.22
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.21
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.19
+      }
+    ]
+  },
+  {
+    "slug": "stakan-pet-300-ml",
+    "sku": "SEP-PT-01",
+    "category": "stakany-pet",
+    "name": {
+      "uk": "Стакан PET 300 мл",
+      "ru": "Стакан PET 300 мл"
+    },
+    "spec": {
+      "uk": "300 мл",
+      "ru": "300 мл"
+    },
+    "description": {
+      "uk": "Прозорий стакан PET для холодних напоїв до 60 °C. Показує продукт крізь стінку — саме те, що продає лимонади, смузі й бабл-ті.",
+      "ru": "Прозрачный стакан PET для холодных напитков до 60 °C. Показывает продукт сквозь стенку — именно то, что продаёт лимонады, смузи и бабл-ти."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "300 мл",
+          "ru": "300 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "300"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.4,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "cup",
+    "lidDiameter": 80,
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.21
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.06
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.92
+      }
+    ],
+    "compatibleWith": [
+      "kryshka-80-mm-ploska",
+      "kryshka-80-mm-kupolna",
+      "kryshka-80-mm-z-poilkoiu"
+    ]
+  },
+  {
+    "slug": "stakan-pet-400-ml",
+    "sku": "SEP-PT-02",
+    "category": "stakany-pet",
+    "name": {
+      "uk": "Стакан PET 400 мл",
+      "ru": "Стакан PET 400 мл"
+    },
+    "spec": {
+      "uk": "400 мл",
+      "ru": "400 мл"
+    },
+    "description": {
+      "uk": "Прозорий стакан PET для холодних напоїв до 60 °C. Показує продукт крізь стінку — саме те, що продає лимонади, смузі й бабл-ті.",
+      "ru": "Прозрачный стакан PET для холодных напитков до 60 °C. Показывает продукт сквозь стенку — именно то, что продаёт лимонады, смузи и бабл-ти."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "400 мл",
+          "ru": "400 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "400"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.9,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "cup",
+    "lidDiameter": 90,
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.67
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.49
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2.32
+      }
+    ],
+    "compatibleWith": [
+      "kryshka-90-mm-ploska",
+      "kryshka-90-mm-kupolna",
+      "kryshka-90-mm-z-poilkoiu"
+    ]
+  },
+  {
+    "slug": "stakan-pet-500-ml",
+    "sku": "SEP-PT-03",
+    "category": "stakany-pet",
+    "name": {
+      "uk": "Стакан PET 500 мл",
+      "ru": "Стакан PET 500 мл"
+    },
+    "spec": {
+      "uk": "500 мл",
+      "ru": "500 мл"
+    },
+    "description": {
+      "uk": "Прозорий стакан PET для холодних напоїв до 60 °C. Показує продукт крізь стінку — саме те, що продає лимонади, смузі й бабл-ті.",
+      "ru": "Прозрачный стакан PET для холодных напитков до 60 °C. Показывает продукт сквозь стенку — именно то, что продаёт лимонады, смузи и бабл-ти."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "500 мл",
+          "ru": "500 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "500"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 3.4,
+    "inStock": true,
+    "brandable": true,
+    "featured": false,
+    "shape": "cup",
+    "lidDiameter": 90,
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 3.13
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.92
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2.72
+      }
+    ],
+    "compatibleWith": [
+      "kryshka-90-mm-ploska",
+      "kryshka-90-mm-kupolna",
+      "kryshka-90-mm-z-poilkoiu"
+    ]
+  },
+  {
+    "slug": "desertnytsia-pet-120-ml-z-kryshkoiu",
+    "sku": "SEP-DP-01",
+    "category": "desertnytsi-pet",
+    "name": {
+      "uk": "Десертниця PET 120 мл з кришкою",
+      "ru": "Креманка PET 120 мл с крышкой"
+    },
+    "spec": {
+      "uk": "120 мл",
+      "ru": "120 мл"
+    },
+    "description": {
+      "uk": "Прозора десертниця з кришкою в комплекті. Кришка фіксується по периметру — десерт можна везти в сумці кур’єра боком.",
+      "ru": "Прозрачная креманка с крышкой в комплекте. Крышка фиксируется по периметру — десерт можно везти в сумке курьера боком."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "120 мл",
+          "ru": "120 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "120"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 2.7,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.48
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.32
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2.16
+      }
+    ]
+  },
+  {
+    "slug": "desertnytsia-pet-150-ml-z-kryshkoiu",
+    "sku": "SEP-DP-02",
+    "category": "desertnytsi-pet",
+    "name": {
+      "uk": "Десертниця PET 150 мл з кришкою",
+      "ru": "Креманка PET 150 мл с крышкой"
+    },
+    "spec": {
+      "uk": "150 мл",
+      "ru": "150 мл"
+    },
+    "description": {
+      "uk": "Прозора десертниця з кришкою в комплекті. Кришка фіксується по периметру — десерт можна везти в сумці кур’єра боком.",
+      "ru": "Прозрачная креманка с крышкой в комплекте. Крышка фиксируется по периметру — десерт можно везти в сумке курьера боком."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "150 мл",
+          "ru": "150 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "150"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 3,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 2.76
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 2.58
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2.4
+      }
+    ]
+  },
+  {
+    "slug": "desertnytsia-pet-200-ml-z-kryshkoiu",
+    "sku": "SEP-DP-03",
+    "category": "desertnytsi-pet",
+    "name": {
+      "uk": "Десертниця PET 200 мл з кришкою",
+      "ru": "Креманка PET 200 мл с крышкой"
+    },
+    "spec": {
+      "uk": "200 мл",
+      "ru": "200 мл"
+    },
+    "description": {
+      "uk": "Прозора десертниця з кришкою в комплекті. Кришка фіксується по периметру — десерт можна везти в сумці кур’єра боком.",
+      "ru": "Прозрачная креманка с крышкой в комплекте. Крышка фиксируется по периметру — десерт можно везти в сумке курьера боком."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "200 мл",
+          "ru": "200 мл"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "50 шт",
+          "ru": "50 шт"
+        }
+      }
+    ],
+    "facets": {
+      "volume": "200"
+    },
+    "unitsPerPack": 50,
+    "priceRetail": 3.5,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "round",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 3.22
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 3.01
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 2.8
+      }
+    ]
+  },
+  {
+    "slug": "vydelka-odnorazova-165-mm",
+    "sku": "SEP-PB2-01",
+    "category": "stolovi-prybory",
+    "name": {
+      "uk": "Виделка одноразова 165 мм",
+      "ru": "Вилка одноразовая 165 мм"
+    },
+    "spec": {
+      "uk": "165 мм",
+      "ru": "165 мм"
+    },
+    "description": {
+      "uk": "Одноразові столові прибори для доставки й фудкортів. Набір із серветкою в індивідуальному пакованні економить час збирача замовлень.",
+      "ru": "Одноразовые столовые приборы для доставки и фудкортов. Набор с салфеткой в индивидуальной упаковке экономит время сборщика заказов."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "165 мм",
+          "ru": "165 мм"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "fork"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 0.42,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.39
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.36
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.34
+      }
+    ]
+  },
+  {
+    "slug": "lozhka-odnorazova-165-mm",
+    "sku": "SEP-PB2-02",
+    "category": "stolovi-prybory",
+    "name": {
+      "uk": "Ложка одноразова 165 мм",
+      "ru": "Ложка одноразовая 165 мм"
+    },
+    "spec": {
+      "uk": "165 мм",
+      "ru": "165 мм"
+    },
+    "description": {
+      "uk": "Одноразові столові прибори для доставки й фудкортів. Набір із серветкою в індивідуальному пакованні економить час збирача замовлень.",
+      "ru": "Одноразовые столовые приборы для доставки и фудкортов. Набор с салфеткой в индивидуальной упаковке экономит время сборщика заказов."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "165 мм",
+          "ru": "165 мм"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "spoon"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 0.42,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.39
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.36
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.34
+      }
+    ]
+  },
+  {
+    "slug": "lozhka-desertna-130-mm",
+    "sku": "SEP-PB2-03",
+    "category": "stolovi-prybory",
+    "name": {
+      "uk": "Ложка десертна 130 мм",
+      "ru": "Ложка десертная 130 мм"
+    },
+    "spec": {
+      "uk": "130 мм",
+      "ru": "130 мм"
+    },
+    "description": {
+      "uk": "Одноразові столові прибори для доставки й фудкортів. Набір із серветкою в індивідуальному пакованні економить час збирача замовлень.",
+      "ru": "Одноразовые столовые приборы для доставки и фудкортов. Набор с салфеткой в индивидуальной упаковке экономит время сборщика заказов."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "130 мм",
+          "ru": "130 мм"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "spoon"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 0.36,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.33
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.31
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.29
+      }
+    ]
+  },
+  {
+    "slug": "nizh-odnorazovyi-165-mm",
+    "sku": "SEP-PB2-04",
+    "category": "stolovi-prybory",
+    "name": {
+      "uk": "Ніж одноразовий 165 мм",
+      "ru": "Нож одноразовый 165 мм"
+    },
+    "spec": {
+      "uk": "165 мм",
+      "ru": "165 мм"
+    },
+    "description": {
+      "uk": "Одноразові столові прибори для доставки й фудкортів. Набір із серветкою в індивідуальному пакованні економить час збирача замовлень.",
+      "ru": "Одноразовые столовые приборы для доставки и фудкортов. Набор с салфеткой в индивидуальной упаковке экономит время сборщика заказов."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "165 мм",
+          "ru": "165 мм"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "knife"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 0.45,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 0.41
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 0.39
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 0.36
+      }
+    ]
+  },
+  {
+    "slug": "nabir-prybory-servetka",
+    "sku": "SEP-PB2-05",
+    "category": "stolovi-prybory",
+    "name": {
+      "uk": "Набір прибори + серветка",
+      "ru": "Набор приборы + салфетка"
+    },
+    "spec": {
+      "uk": "у пакованні",
+      "ru": "в упаковке"
+    },
+    "description": {
+      "uk": "Одноразові столові прибори для доставки й фудкортів. Набір із серветкою в індивідуальному пакованні економить час збирача замовлень.",
+      "ru": "Одноразовые столовые приборы для доставки и фудкортов. Набор с салфеткой в индивидуальной упаковке экономит время сборщика заказов."
+    },
+    "attributes": [
+      {
+        "label": {
+          "uk": "Розмір",
+          "ru": "Размер"
+        },
+        "value": {
+          "uk": "у пакованні",
+          "ru": "в упаковке"
+        }
+      },
+      {
+        "label": {
+          "uk": "У пачці",
+          "ru": "В пачке"
+        },
+        "value": {
+          "uk": "100 шт",
+          "ru": "100 шт"
+        }
+      }
+    ],
+    "facets": {
+      "itemType": "set"
+    },
+    "unitsPerPack": 100,
+    "priceRetail": 1.35,
+    "inStock": true,
+    "brandable": false,
+    "featured": false,
+    "shape": "flat",
+    "tiers": [
+      {
+        "minPacks": 10,
+        "perUnit": 1.24
+      },
+      {
+        "minPacks": 30,
+        "perUnit": 1.16
+      },
+      {
+        "minPacks": 100,
+        "perUnit": 1.08
       }
     ]
   }

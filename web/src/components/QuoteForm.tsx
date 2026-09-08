@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Locale } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { events } from '@/lib/analytics';
+import { currentVariant } from '@/lib/ab';
 
 const PHONE_RE = /^\+?380\d{9}$/;
 
@@ -38,7 +39,14 @@ export function QuoteForm({
       const res = await fetch('/api/lead/', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ kind: 'quote', name, phone: normalized, source, locale }),
+        body: JSON.stringify({
+          kind: 'quote',
+          name,
+          phone: normalized,
+          source,
+          locale,
+          abVariant: currentVariant(),
+        }),
       });
       if (res.ok) events.lead('quote', source);
       setState(res.ok ? 'sent' : 'error');

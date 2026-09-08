@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { featuredProducts, getCategory, getGroups, priceFrom, productsOfGroup } from '@/lib/catalog';
+import { SECTORS } from '@/data/sectors';
 import { getDict } from '@/i18n/dictionaries';
 import { SITE, formatPhone } from '@/lib/site';
 import { pageMeta } from '@/lib/meta';
@@ -12,11 +13,12 @@ import { JsonLd } from '@/components/JsonLd';
 import { QuoteForm } from '@/components/QuoteForm';
 
 const GROUP_SHAPE: Record<string, Shape> = {
-  'dlya-napoyiv': 'cup',
-  'yizha-navynos': 'round',
+  stakany: 'cup',
+  konteynery: 'round',
   fastfud: 'box',
   pakety: 'bag',
   'suputni-tovary': 'flat',
+  'pet-posud': 'cup',
 };
 
 const COPY = {
@@ -32,7 +34,7 @@ const COPY = {
       ['від 100 шт', 'друк вашого логотипу на упаковці'],
     ],
     groupsTitle: 'Каталог',
-    groupsLead: 'П’ять груп замість довгого списку — обирайте напрямок, а не гортайте категорії.',
+    groupsLead: 'Шість груп замість довгого списку — обирайте напрямок, а не гортайте категорії.',
     hitsTitle: 'Хіти продажів',
     brandTitle: 'Упаковка з вашим логотипом',
     brandLead:
@@ -46,12 +48,7 @@ const COPY = {
       ['Доставка', 'Дніпро — за 24 години. Україна — Нова пошта.'],
     ],
     audienceTitle: 'Для кого',
-    audience: [
-      ['Кав’ярні', 'Стакани, кришки, термочохли, тримачі', 'dlya-napoyiv'],
-      ['Доставка їжі', 'Ланч-бокси, салатники, супниці', 'yizha-navynos'],
-      ['Фастфуд', 'Бургер-бокси, упаковка для фрі та снеків', 'fastfud'],
-      ['Пекарні та кондитерські', 'Пакети, саше, серветки', 'pakety'],
-    ],
+    audienceLead: 'Другий вхід у каталог: не за товаром, а за типом закладу. На кожній сторінці — стартовий комплект у порядку, у якому його зазвичай замовляють.',
     faqTitle: 'Часті питання',
     priceFrom: 'від',
     contactTitle: 'Потрібен прайс або консультація?',
@@ -69,7 +66,7 @@ const COPY = {
       ['от 100 шт', 'печать вашего логотипа на упаковке'],
     ],
     groupsTitle: 'Каталог',
-    groupsLead: 'Пять групп вместо длинного списка — выбирайте направление, а не листайте категории.',
+    groupsLead: 'Шесть групп вместо длинного списка — выбирайте направление, а не листайте категории.',
     hitsTitle: 'Хиты продаж',
     brandTitle: 'Упаковка с вашим логотипом',
     brandLead:
@@ -83,12 +80,7 @@ const COPY = {
       ['Доставка', 'Днепр — за 24 часа. Украина — Новая почта.'],
     ],
     audienceTitle: 'Для кого',
-    audience: [
-      ['Кофейни', 'Стаканы, крышки, термочехлы, холдеры', 'dlya-napoyiv'],
-      ['Доставка еды', 'Ланч-боксы, салатники, супницы', 'yizha-navynos'],
-      ['Фастфуд', 'Бургер-боксы, упаковка для фри и снеков', 'fastfud'],
-      ['Пекарни и кондитерские', 'Пакеты, саше, салфетки', 'pakety'],
-    ],
+    audienceLead: 'Второй вход в каталог: не по товару, а по типу заведения. На каждой странице — стартовый комплект в порядке, в котором его обычно заказывают.',
     faqTitle: 'Частые вопросы',
     priceFrom: 'от',
     contactTitle: 'Нужен прайс или консультация?',
@@ -277,19 +269,29 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
         </ol>
       </section>
 
-      {/* Сегменти */}
-      <section className="border-t border-border bg-surface py-12 lg:py-16">
+      {/*
+        Сегменти — другий вхід у каталог, за типом закладу.
+        У шапку ці сторінки свідомо не винесені: меню лишається на одному
+        пункті «Каталог», інакше воно перевантажується на мобільному.
+      */}
+      <section className="ab-b border-t border-border bg-surface py-12 lg:py-16">
         <div className="container-page">
           <h2 className="text-2xl">{t.audienceTitle}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{t.audienceLead}</p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {t.audience.map(([title, body, group]) => (
+            {SECTORS.map((sector) => (
               <Link
-                key={title}
-                href={`${p}/catalog/${group}/`}
+                key={sector.slug}
+                href={`${p}/dlya/${sector.slug}/`}
                 className="card p-5 transition hover:border-primary/50"
               >
-                <h3 className="text-base font-bold">{title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted">{body}</p>
+                <h3 className="text-base font-bold">{sector.forWhom[l]}</h3>
+                <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-muted">
+                  {sector.intro[l]}
+                </p>
+                <p className="mt-3 text-[13px] font-semibold text-primary">
+                  {l === 'uk' ? 'Стартовий комплект' : 'Стартовый комплект'} →
+                </p>
               </Link>
             ))}
           </div>

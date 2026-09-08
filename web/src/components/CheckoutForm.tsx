@@ -6,6 +6,7 @@ import type { Locale } from '@/data/types';
 import type { Dict } from '@/i18n/dictionaries';
 import { useCart, lineSum } from './CartProvider';
 import { events } from '@/lib/analytics';
+import { currentVariant } from '@/lib/ab';
 
 const PHONE_RE = /^\+?380\d{9}$/;
 
@@ -60,6 +61,7 @@ export function CheckoutForm({ locale, dict }: { locale: Locale; dict: Dict }) {
           delivery,
           customer,
           locale,
+          abVariant: currentVariant(),
           items: lines.map((l) => ({
             sku: l.sku,
             name: l.name[locale],

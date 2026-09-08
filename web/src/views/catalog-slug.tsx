@@ -21,11 +21,12 @@ import { Faq } from '@/components/Faq';
 import { Placeholder, type Shape } from '@/components/Placeholder';
 
 const SHAPE: Record<string, Shape> = {
-  'dlya-napoyiv': 'cup',
-  'yizha-navynos': 'round',
+  stakany: 'cup',
+  konteynery: 'round',
   fastfud: 'box',
   pakety: 'bag',
   'suputni-tovary': 'flat',
+  'pet-posud': 'cup',
 };
 
 export async function staticParams() {

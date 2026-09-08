@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { notifyLead, type LeadNotification } from '@/lib/notify';
 import type { LeadKind } from '@/generated/prisma/client';
+import { isVariant } from '@/lib/ab';
+import { bumpAb } from '@/app/api/ab/route';
 
 /**
  * Приймання заявок.
@@ -27,6 +29,8 @@ interface Body {
   locale?: string;
   items?: { sku: string; name: string; packs: number; sum: number }[];
   total?: number;
+  /** Варіант навігації, у якому відвідувач дійшов до заявки. */
+  abVariant?: string;
 }
 
 const PHONE_RE = /^\+?380\d{9}$/;
@@ -75,6 +79,7 @@ export async function POST(request: Request) {
         locale: body.locale === 'ru' ? 'ru' : 'uk',
         items,
         total: typeof body.total === 'number' ? body.total : null,
+        abVariant: isVariant(body.abVariant) ? body.abVariant : null,
       },
     });
   } catch (e) {
@@ -111,6 +116,16 @@ export async function POST(request: Request) {
       where: { id: lead.id },
       data: { notified: false, notifyError: String(e).slice(0, 2000) },
     });
+  }
+
+  // Заявка — ключова метрика тесту. Рахуємо тут, а не на клієнті: сторінка
+  // «дякуємо» може не відкритися, а заявка вже є.
+  if (lead.abVariant) {
+    try {
+      await bumpAb(lead.abVariant, 'leads');
+    } catch {
+      /* лічильник тесту ніколи не блокує відповідь клієнту */
+    }
   }
 
   return NextResponse.json({ ok: true, orderNumber: lead.number });

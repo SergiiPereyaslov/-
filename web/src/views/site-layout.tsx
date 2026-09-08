@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Comfortaa, Inter } from 'next/font/google';
+import { Comfortaa } from 'next/font/google';
 import '@/app/globals.css';
 import type { Locale } from '@/data/types';
 import { getCategories, getGroups } from '@/lib/catalog';
@@ -12,17 +12,18 @@ import { themeScript } from '@/components/ThemeToggle';
 import { JsonLd } from '@/components/JsonLd';
 import { FloatingContacts } from '@/components/FloatingContacts';
 import { Analytics } from '@/components/Analytics';
+import { AbTracker } from '@/components/AbTracker';
+import { abScript } from '@/lib/ab';
 
-const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-/** Фірмовий шрифт бренду — геометричний гротеск з округлими закінченнями. */
+/**
+ * Фірмовий шрифт бренду — геометричний гротеск з округлими закінченнями.
+ * Єдиний шрифт на сайті: і заголовки, і основний текст, і цифри.
+ * Тому вантажимо повний діапазон нарисів — 300 потрібен довгим абзацам,
+ * де 400 виглядає надто щільно.
+ */
 const comfortaa = Comfortaa({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-comfortaa',
   display: 'swap',
 });
@@ -122,7 +123,7 @@ export async function SiteLayout({
   };
 
   return (
-    <html lang={l} className={`${inter.variable} ${comfortaa.variable}`} suppressHydrationWarning>
+    <html lang={l} className={comfortaa.variable} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         {/*
           Тему ставимо першим інлайновим скриптом у body: він виконується до
@@ -130,6 +131,12 @@ export async function SiteLayout({
           власний <head> у layout не потрібен.
         */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/*
+          Варіант навігації ставимо тим самим прийомом і з тієї ж причини:
+          обидва варіанти є в розмітці, атрибут на <html> вирішує, який
+          з них показати, і робить це до першого фарбування.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: abScript }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
@@ -153,6 +160,7 @@ export async function SiteLayout({
         <FloatingContacts phone={SITE.phones[0]} telegram={SITE.telegram} viber={SITE.viber} />
         <JsonLd data={organization} />
         <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        <AbTracker />
       </body>
     </html>
   );

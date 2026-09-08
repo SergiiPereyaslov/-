@@ -15,11 +15,12 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Placeholder, type Shape } from '@/components/Placeholder';
 
 const SHAPE: Record<string, Shape> = {
-  'dlya-napoyiv': 'cup',
-  'yizha-navynos': 'round',
+  stakany: 'cup',
+  konteynery: 'round',
   fastfud: 'box',
   pakety: 'bag',
   'suputni-tovary': 'flat',
+  'pet-posud': 'cup',
 };
 
 export async function meta(l: Locale): Promise<Metadata> {
@@ -46,6 +47,9 @@ export default async function CatalogPage({ locale: l }: { locale: Locale }) {
   const dict = getDict(l);
   const p = l === 'uk' ? '' : '/ru';
   const groups = await getGroups();
+  // Кількість беремо з даних, а не з тексту: інакше при кожній зміні
+  // структури каталогу число в лідері мовчки застаріває.
+  const categoryCount = groups.reduce((n, g) => n + g.categories.length, 0);
 
   // Картки категорій з лічильником і мінімальною ціною — готуємо на сервері
   const sections = await Promise.all(
@@ -72,8 +76,8 @@ export default async function CatalogPage({ locale: l }: { locale: Locale }) {
       <h1 className="text-3xl">{dict.catalog.title}</h1>
       <p className="mt-2 max-w-2xl text-muted">
         {l === 'uk'
-          ? 'П’ять груп, 25 категорій. Оберіть напрямок — усередині фільтри за об’ємом, розміром і кольором.'
-          : 'Пять групп, 25 категорий. Выберите направление — внутри фильтры по объёму, размеру и цвету.'}
+          ? `Каталог поділено на ${groups.length} груп і ${categoryCount} категорій. Оберіть напрямок — усередині фільтри за об’ємом, розміром і кольором.`
+          : `Каталог разделён на ${groups.length} групп и ${categoryCount} категорий. Выберите направление — внутри фильтры по объёму, размеру и цвету.`}
       </p>
 
       <div className="mt-8 space-y-10">

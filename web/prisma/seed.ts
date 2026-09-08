@@ -111,6 +111,33 @@ const main = async () => {
     await prisma.post.upsert({ where: { slug: p.slug }, create: { slug: p.slug, ...data }, update: data });
   }
   console.log(`статті: ${POSTS.length}`);
+
+  /*
+   * Прибирання осиротілих записів.
+   *
+   * Upsert сам по собі не видаляє нічого, тому перейменування слага групи
+   * лишало в базі стару групу — вона потрапляла в generateStaticParams
+   * і в sitemap як порожня сторінка. Порядок видалення знизу вгору:
+   * товари → категорії → групи, інакше зовнішні ключі не дадуть видалити.
+   */
+  const removedProducts = await prisma.product.deleteMany({
+    where: { slug: { notIn: products.map((p) => p.slug) } },
+  });
+  const removedCategories = await prisma.category.deleteMany({
+    where: { slug: { notIn: CATEGORIES.map((c) => c.slug) } },
+  });
+  const removedGroups = await prisma.group.deleteMany({
+    where: { slug: { notIn: GROUPS.map((g) => g.slug) } },
+  });
+
+  const removed =
+    removedProducts.count + removedCategories.count + removedGroups.count;
+  if (removed > 0) {
+    console.log(
+      `прибрано застарілих: груп ${removedGroups.count}, ` +
+        `категорій ${removedCategories.count}, товарів ${removedProducts.count}`,
+    );
+  }
 };
 
 main()

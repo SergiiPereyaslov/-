@@ -14,7 +14,7 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Верхній рівень каталогу: 5 груп, кожна — самостійна SEO-посадкова.
+/// Верхній рівень каталогу: 6 груп, кожна — самостійна SEO-посадкова.
 model Group {
   slug      String     @id
   nameUk    String
@@ -155,6 +155,8 @@ model Lead {
   requisites   String?    @db.Text
   locale       String     @default("uk")
   source       String?
+  /// Варіант навігації, у якому опинився відвідувач: 'a' | 'b' | null
+  abVariant    String?    @db.VarChar(1)
   /// [{ sku, name, packs, sum }]
   items        Json       @default("[]")
   total        Decimal?   @db.Decimal(10, 2)
@@ -167,6 +169,30 @@ model Lead {
 
   @@index([status, createdAt])
   @@map("leads")
+}
+
+/// Лічильники A/B-тесту навігації, агреговані по днях.
+///
+/// Свідомо не зберігаємо жодного ідентифікатора відвідувача: для рішення
+/// потрібні лише суми по варіанту й дню, а зайві персональні дані — це
+/// зобов'язання, а не актив.
+model AbStat {
+  id       Int      @id @default(autoincrement())
+  variant  String   @db.VarChar(1)
+  day      DateTime @db.Date
+  /// Унікальні сесії, що відкрили будь-яку сторінку
+  sessions Int      @default(0)
+  /// Сесії, що дійшли до каталогу
+  catalog  Int      @default(0)
+  /// Додавання в кошик
+  cart     Int      @default(0)
+  /// Використання пошуку
+  search   Int      @default(0)
+  /// Оформлені заявки
+  leads    Int      @default(0)
+
+  @@unique([variant, day])
+  @@map("ab_stats")
 }
 
 model AdminUser {

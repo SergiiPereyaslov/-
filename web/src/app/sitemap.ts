@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getCategories, getGroups, getAllProducts, productsOfCategory } from '@/lib/catalog';
 import { getPosts } from '@/lib/posts';
 import { CITIES } from '@/data/cities';
+import { SECTORS } from '@/data/sectors';
 import { SITE } from '@/lib/site';
 import type { Facet } from '@/data/types';
 
@@ -52,6 +53,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Гео-посадкові: окремий кластер під запити «упаковка + місто»
   const cities = CITIES.map((c) => entry(`/upakovka/${c.slug}/`, 0.7, 'monthly'));
 
+  // Секторні посадкові: кластер «упаковка + тип закладу».
+  // Пріоритет вищий за гео: це другий вхід у каталог, а не довгий хвіст.
+  const sectors = SECTORS.map((x) => entry(`/dlya/${x.slug}/`, 0.8, 'monthly'));
+
   const facets: MetadataRoute.Sitemap = [];
   for (const c of categories) {
     const items = await productsOfCategory(c.slug);
@@ -67,6 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages.map(([path, priority, freq]) => entry(path, priority, freq)),
     ...cities,
+    ...sectors,
     ...groups.map((g) => entry(`/catalog/${g.slug}/`, 0.85, 'weekly')),
     ...categories.map((c) => entry(`/catalog/${c.slug}/`, 0.8, 'weekly')),
     ...facets,

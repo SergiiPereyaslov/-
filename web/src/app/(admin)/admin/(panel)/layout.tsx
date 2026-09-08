@@ -13,6 +13,7 @@ const NAV = [
   ['/admin/categories/', 'Категорії'],
   ['/admin/posts/', 'Блог'],
   ['/admin/import/', 'Імпорт'],
+  ['/admin/ab/', 'A/B-тест'],
 ] as const;
 
 /**

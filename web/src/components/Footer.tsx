@@ -5,6 +5,7 @@ import { SITE, formatPhone } from '@/lib/site';
 import type { NavGroup } from './Header';
 import { Logo } from './Logo';
 import { CITIES } from '@/data/cities';
+import { SECTORS } from '@/data/sectors';
 
 export function Footer({
   locale,
@@ -32,6 +33,22 @@ export function Footer({
               <li key={g.slug}>
                 <Link href={l(`/catalog/${g.slug}/`)} className="hover:opacity-70">
                   {g.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="ab-b">
+          {/* Другий вхід у каталог — за типом закладу. У шапці його немає навмисно. */}
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide">
+            {locale === 'uk' ? 'Для кого' : 'Для кого'}
+          </h2>
+          <ul className="space-y-2 text-sm opacity-85">
+            {SECTORS.map((s) => (
+              <li key={s.slug}>
+                <Link href={l(`/dlya/${s.slug}/`)} className="hover:opacity-70">
+                  {s.forWhom[locale]}
                 </Link>
               </li>
             ))}
