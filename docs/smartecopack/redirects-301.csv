@@ -1,40 +1,160 @@
-source,destination,type,note
-/catalog/stakani-paperovi,/catalog/stakany-paperovi/,exact,категорія
-/catalog/stakani-dvosharovi,/catalog/stakany-dvosharovi/,exact,категорія
-/catalog/stakani-gofrovani,/catalog/stakany-gofrovani/,exact,категорія
-/catalog/krishki-dlya-stakaniv,/catalog/kryshky-dlya-stakaniv/,exact,категорія
-/catalog/termochohli,/catalog/termochokhly/,exact,категорія
-/catalog/trimachi,/catalog/trymachi-dlya-stakaniv/,exact,категорія
-/catalog/trubochki-paperovi,/catalog/trubochky-paperovi/,exact,категорія
-/catalog/trubochki-polimerni,/catalog/trubochky-polimerni/,exact,категорія
-/catalog/Lanch-box,/catalog/lanch-boksy/,exact,категорія
-/catalog/lanch-box,/catalog/lanch-boksy/,exact,категорія (lowercase-варіант)
-/catalog/salatnitsa,/catalog/salatnyky/,exact,категорія
-/catalog/supnik,/catalog/supnyky/,exact,категорія
-/catalog/alyuminievi-kontejneri,/catalog/konteynery-alyuminiyevi/,exact,категорія
-/catalog/tarilka-pryamokutna,/catalog/tarilky-ta-sousnyky/,exact,категорія — URL не відповідав змісту
-/catalog/upakovka-dlya-fast-fudu,/catalog/fastfud/,exact,категорія стає групою
-/catalog/upakovka-dlya-fast-fudu/page-all,/catalog/fastfud/,exact,усунення дубля пагінації
-/catalog/paketi-paperovi,/catalog/pakety-z-ruchkamy/,exact,категорія
-/catalog/paket-sashe,/catalog/pakety-sashe/,exact,категорія
-/catalog/suputni-tovari,/catalog/suputni-tovary/,exact,категорія
-/all-products,/catalog/,exact,тонка сторінка-дубль
-/branding,/brenduvannya/,exact,службова
-/druk-na-paperovih-stakanchikah,/brenduvannya/druk-na-stakanakh/,exact,службова
-/news,/blog/,exact,блог
-/contact,/kontakty/,exact,службова
-/catalog/korobki-dlya-pitsi,/catalog/korobky-dlya-pitsy/,exact,нова категорія — звірити з краулом
-/catalog/korobka-dlya-pitsi,/catalog/korobky-dlya-pitsy/,exact,нова категорія — звірити з краулом
-/catalog/upakovka-dlya-sushi,/catalog/upakovka-dlya-sushi-ta-vok/,exact,нова категорія — звірити з краулом
-/catalog/upakovka-dlya-vok,/catalog/upakovka-dlya-sushi-ta-vok/,exact,нова категорія — звірити з краулом
-/catalog/morozivnitsi,/catalog/morozyvnytsi/,exact,нова категорія — звірити з краулом
-/catalog/filtr-paket,/catalog/filtr-pakety/,exact,нова категорія — звірити з краулом
-/catalog/stakani-pet,/catalog/stakany-pet/,exact,нова категорія — звірити з краулом
-/catalog/desertnitsi-pet,/catalog/desertnytsi-pet/,exact,нова категорія — звірити з краулом
-/catalog/stolovi-pribori,/catalog/stolovi-prybory/,exact,нова категорія — звірити з краулом
-/catalog/dlya-napoyiv,/catalog/stakany/,exact,внутрішня зміна слага групи
-/catalog/yizha-navynos,/catalog/konteynery/,exact,внутрішня зміна слага групи
-/catalog/:slug/page-all,/catalog/:slug/,pattern,усунення дублів пагінації
-/catalog/:slug/page-:n,/catalog/:slug/,pattern,пагінація перебудовується
-/news/:slug,/blog/:slug/,pattern,ПОТРЕБУЄ ручної звірки — частина slug російською
-/products/:slug,/product/:slug/,pattern,ПОТРЕБУЄ звірки slug 1:1 з краулу
+source,destination,old_status,old_title,internal_links
+/all-posts,/blog/,200,Блог,3
+/all-products,/catalog/,200,Усі товари,533
+/all-products/filter-discounted,/catalog/,200,Усі товари,18
+/all-products/filter-featured,/catalog/,200,Усі товари,46
+/all-products/filter-featured/page-0,/catalog/,404,Сторінку не знайдено,1
+/all-products/filter-featured/page-2,/catalog/,200,Усі товари  сторінка 2,7
+/all-products/filter-featured/page-3,/catalog/,200,Усі товари  сторінка 3,6
+/all-products/filter-featured/page-4,/catalog/,404,Сторінку не знайдено,1
+/all-products/filter-featured/page-all,/catalog/,200,Усі товари,6
+/all-products/page-0,/catalog/,404,Сторінку не знайдено,1
+/all-products/page-10,/catalog/,200,Усі товари  сторінка 10,10
+/all-products/page-11,/catalog/,200,Усі товари  сторінка 11,9
+/all-products/page-12,/catalog/,200,Усі товари  сторінка 12,8
+/all-products/page-13,/catalog/,200,Усі товари  сторінка 13,16
+/all-products/page-14,/catalog/,404,Сторінку не знайдено,1
+/all-products/page-2,/catalog/,200,Усі товари  сторінка 2,8
+/all-products/page-3,/catalog/,200,Усі товари  сторінка 3,9
+/all-products/page-4,/catalog/,200,Усі товари  сторінка 4,10
+/all-products/page-5,/catalog/,200,Усі товари  сторінка 5,11
+/all-products/page-6,/catalog/,200,Усі товари  сторінка 6,12
+/all-products/page-7,/catalog/,200,Усі товари  сторінка 7,9
+/all-products/page-8,/catalog/,200,Усі товари  сторінка 8,12
+/all-products/page-9,/catalog/,200,Усі товари  сторінка 9,11
+/all-products/page-all,/catalog/,200,Усі товари,16
+/authors,/blog/,200,Автори статей,3
+/branding,/brenduvannya/,200,Брендування упаковки для кафе та ресторанів ᐉ СмартЕкоПак,1471
+/catalog/Lanch-box,/catalog/lanch-boksy/,200,Крафт бокси для їжі ᐉ СмартЕкоПак,1060
+/catalog/Lanch-box/filter-discounted,/catalog/lanch-boksy/,200,Крафт бокси для їжі ᐉ СмартЕкоПак Зі знижкою,6
+/catalog/Lanch-box/filter-featured,/catalog/lanch-boksy/,200,Крафт бокси для їжі ᐉ СмартЕкоПак Хіти продажу,6
+/catalog/Lanch-box/page-0,/catalog/lanch-boksy/,404,Сторінку не знайдено,1
+/catalog/Lanch-box/page-2,/catalog/lanch-boksy/,200,Крафт бокси для їжі ᐉ СмартЕкоПак  сторінка 2,5
+/catalog/Lanch-box/page-3,/catalog/lanch-boksy/,404,Сторінку не знайдено,1
+/catalog/Lanch-box/page-all,/catalog/lanch-boksy/,200,Крафт бокси для їжі ᐉ СмартЕкоПак,5
+/catalog/alyuminievi-kontejneri,/catalog/konteynery-alyuminiyevi/,200,Алюмінієві контейнери,1035
+/catalog/desertnitsi-pet,/catalog/desertnytsi-pet/,200,Десертниці пластикові з кришкою,987
+/catalog/filtr-paket,/catalog/filtr-pakety/,200,Фільтр пакети для чаю - купити в Дніпрі ᐉ СмартЕкоПак,1005
+/catalog/filtr-paket/filter-featured,/catalog/filtr-pakety/,200,Фільтр пакети для чаю - купити в Дніпрі ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/korobka-dlya-pitsi,/catalog/korobky-dlya-pitsy/,200,Коробка для піци - купити в Дніпрі ᐉ СмартЕкоПак,1025
+/catalog/korobka-dlya-pitsi/filter-featured,/catalog/korobky-dlya-pitsy/,200,Коробка для піци - купити в Дніпрі ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/korobka-dlya-sushi-shidnoi-kuhni,/catalog/upakovka-dlya-sushi-ta-vok/,200,Упаковка для китайської локшини вок  суші  нагетів ᐉ СмартЕкоПак,1048
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/filter-discounted,/catalog/upakovka-dlya-sushi-ta-vok/,200,Упаковка для китайської локшини вок  суші  нагетів ᐉ СмартЕкоПак Зі знижкою,6
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/filter-featured,/catalog/upakovka-dlya-sushi-ta-vok/,200,Упаковка для китайської локшини вок  суші  нагетів ᐉ СмартЕкоПак Хіти продажу,6
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/page-0,/catalog/upakovka-dlya-sushi-ta-vok/,404,Сторінку не знайдено,1
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/page-2,/catalog/upakovka-dlya-sushi-ta-vok/,200,Упаковка для китайської локшини вок  суші  нагетів ᐉ СмартЕкоПак  сторінка 2,5
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/page-3,/catalog/upakovka-dlya-sushi-ta-vok/,404,Сторінку не знайдено,1
+/catalog/korobka-dlya-sushi-shidnoi-kuhni/page-all,/catalog/upakovka-dlya-sushi-ta-vok/,200,Упаковка для китайської локшини вок  суші  нагетів ᐉ СмартЕкоПак,5
+/catalog/krishki-dlya-stakaniv,/catalog/kryshky-dlya-stakaniv/,200,Кришки для паперових стаканів ᐉ SmartEcoPack,1020
+/catalog/krishki-dlya-stakaniv/filter-featured,/catalog/kryshky-dlya-stakaniv/,200,Кришки для паперових стаканів ᐉ SmartEcoPack Хіти продажу,4
+/catalog/mishalki,/catalog/mishalky/,200,Мішалки для кави ᐉ СмартЕкоПак,1005
+/catalog/mishalki/filter-featured,/catalog/mishalky/,200,Мішалки для кави ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/morozivnitsi,/catalog/morozyvnytsi/,200,Паперові стаканчики для морозива білі ᐉ SmartEcoPack,1025
+/catalog/paket-sashe,/catalog/pakety-sashe/,200,Пакет саше - купити в Дніпрі  Україні ᐉ СмартЕкоПак,1012
+/catalog/paket-sashe/filter-discounted,/catalog/pakety-sashe/,200,Пакет саше - купити в Дніпрі  Україні ᐉ СмартЕкоПак Зі знижкою,4
+/catalog/paket-sashe/filter-featured,/catalog/pakety-sashe/,200,Пакет саше - купити в Дніпрі  Україні ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/paket-z-ruchkami,/catalog/pakety-z-ruchkamy/,200,Крафт пакети з ручками ᐉ СмартЕкоПак,1014
+/catalog/paket-z-ruchkami/filter-discounted,/catalog/pakety-z-ruchkamy/,200,Крафт пакети з ручками ᐉ СмартЕкоПак Зі знижкою,4
+/catalog/paket-z-ruchkami/filter-featured,/catalog/pakety-z-ruchkamy/,200,Крафт пакети з ручками ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/paket-z-ruchkami2,/catalog/pakety-bez-ruchok/,200,Крафт пакети без ручок ᐉ СмартЕкоПак,1009
+/catalog/paket-z-ruchkami2/filter-discounted,/catalog/pakety-bez-ruchok/,200,Крафт пакети без ручок ᐉ СмартЕкоПак Зі знижкою,4
+/catalog/paket-z-ruchkami2/filter-featured,/catalog/pakety-bez-ruchok/,200,Крафт пакети без ручок ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/paketi-paperovi,/catalog/pakety/,200,Крафт пакети оптом - купити в Дніпрі ᐉSmartEcoPack,1538
+/catalog/paketi-paperovi/filter-discounted,/catalog/pakety/,200,Крафт пакети оптом - купити в Дніпрі ᐉSmartEcoPack Зі знижкою,6
+/catalog/paketi-paperovi/filter-featured,/catalog/pakety/,200,Крафт пакети оптом - купити в Дніпрі ᐉSmartEcoPack Хіти продажу,6
+/catalog/paketi-paperovi/page-0,/catalog/pakety/,404,Сторінку не знайдено,1
+/catalog/paketi-paperovi/page-2,/catalog/pakety/,200,Крафт пакети оптом - купити в Дніпрі ᐉSmartEcoPack  сторінка 2,5
+/catalog/paketi-paperovi/page-3,/catalog/pakety/,404,Сторінку не знайдено,1
+/catalog/paketi-paperovi/page-all,/catalog/pakety/,200,Крафт пакети оптом - купити в Дніпрі ᐉSmartEcoPack,5
+/catalog/portsijni-tovari,/catalog/stiky-tsukru/,200,Цукор в стіках,1003
+/catalog/portsijni-tovari/filter-featured,/catalog/stiky-tsukru/,200,Цукор в стіках Хіти продажу,4
+/catalog/salatnik-z-plastikovoyu-krishkoyu,/catalog/salatnyky/,200,Салатники паперові - купити в Дніпрі ᐉ SmartEcoPack,1068
+/catalog/salatnik-z-plastikovoyu-krishkoyu/filter-featured,/catalog/salatnyky/,200,Салатники паперові - купити в Дніпрі ᐉ SmartEcoPack Хіти продажу,6
+/catalog/salatnik-z-plastikovoyu-krishkoyu/page-0,/catalog/salatnyky/,404,Сторінку не знайдено,1
+/catalog/salatnik-z-plastikovoyu-krishkoyu/page-2,/catalog/salatnyky/,200,Салатники паперові - купити в Дніпрі ᐉ SmartEcoPack  сторінка 2,5
+/catalog/salatnik-z-plastikovoyu-krishkoyu/page-3,/catalog/salatnyky/,404,Сторінку не знайдено,1
+/catalog/salatnik-z-plastikovoyu-krishkoyu/page-all,/catalog/salatnyky/,200,Салатники паперові - купити в Дніпрі ᐉ SmartEcoPack,5
+/catalog/servetki,/catalog/servetky/,200,Серветки,1006
+/catalog/servetki/filter-featured,/catalog/servetky/,200,Серветки Хіти продажу,4
+/catalog/stakani-dvosharovi,/catalog/stakany-dvosharovi/,200,Двошарові Стакани для кави ᐉ SmartEcoPack,1017
+/catalog/stakani-dvosharovi/filter-featured,/catalog/stakany-dvosharovi/,200,Двошарові Стакани для кави ᐉ SmartEcoPack Хіти продажу,4
+/catalog/stakani-gofrovani,/catalog/stakany-gofrovani/,200,Гофровані стакани ᐉ SmartEcoPack,1018
+/catalog/stakani-gofrovani/filter-featured,/catalog/stakany-gofrovani/,200,Гофровані стакани ᐉ SmartEcoPack Хіти продажу,4
+/catalog/stakani-odnosharovi,/catalog/stakany-paperovi/,200,Стакани одношарові,1031
+/catalog/stakani-odnosharovi/filter-featured,/catalog/stakany-paperovi/,200,Стакани одношарові Хіти продажу,4
+/catalog/stakani-paperovi,/catalog/stakany-paperovi/,200,Паперові стакани для кави оптом ᐉSmartEcoPack,1580
+/catalog/stakani-paperovi/,/catalog/stakany-paperovi/,301,,2
+/catalog/stakani-paperovi/filter-featured,/catalog/stakany-paperovi/,200,Паперові стакани для кави оптом ᐉSmartEcoPack Хіти продажу,7
+/catalog/stakani-paperovi/page-0,/catalog/stakany-paperovi/,404,Сторінку не знайдено,1
+/catalog/stakani-paperovi/page-2,/catalog/stakany-paperovi/,200,Паперові стакани для кави оптом ᐉSmartEcoPack  сторінка 2,7
+/catalog/stakani-paperovi/page-3,/catalog/stakany-paperovi/,200,Паперові стакани для кави оптом ᐉSmartEcoPack  сторінка 3,6
+/catalog/stakani-paperovi/page-4,/catalog/stakany-paperovi/,404,Сторінку не знайдено,1
+/catalog/stakani-paperovi/page-all,/catalog/stakany-paperovi/,200,Паперові стакани для кави оптом ᐉSmartEcoPack,6
+/catalog/stakani-pet,/catalog/pet-posud/,200,РЕТ посуд,1493
+/catalog/stakani-ret,/catalog/stakany-pet/,200,ᐉ Стакани з купольною кришкою - купити в Дніпрі,993
+/catalog/stakani-rr,/catalog/stakany-pet/,404,Сторінку не знайдено,5
+/catalog/stolovi-pribori-ps,/catalog/stolovi-prybory/,200,ᐉ Столові прибори - купити в Дніпрі,991
+/catalog/stolovij-posud,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак,1626
+/catalog/stolovij-posud/filter-discounted,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак Зі знижкою,9
+/catalog/stolovij-posud/filter-featured,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак Хіти продажу,9
+/catalog/stolovij-posud/page-0,/catalog/konteynery/,404,Сторінку не знайдено,1
+/catalog/stolovij-posud/page-2,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак  сторінка 2,9
+/catalog/stolovij-posud/page-3,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак  сторінка 3,9
+/catalog/stolovij-posud/page-4,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак  сторінка 4,9
+/catalog/stolovij-posud/page-5,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак  сторінка 5,8
+/catalog/stolovij-posud/page-6,/catalog/konteynery/,404,Сторінку не знайдено,1
+/catalog/stolovij-posud/page-all,/catalog/konteynery/,200,Паперові контейнери для їжі в Дніпрі ᐉ СмартЕкоПак,8
+/catalog/supnik,/catalog/supnyky/,200,Супниці крафт з кришкою ᐉ СмартЕкоПак,1034
+/catalog/supnik/filter-featured,/catalog/supnyky/,200,Супниці крафт з кришкою ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/suputni-tovari,/catalog/suputni-tovary/,200,Супутні товари,1529
+/catalog/suputni-tovari/filter-featured,/catalog/suputni-tovary/,200,Супутні товари Хіти продажу,6
+/catalog/suputni-tovari/page-0,/catalog/suputni-tovary/,404,Сторінку не знайдено,1
+/catalog/suputni-tovari/page-2,/catalog/suputni-tovary/,200,Супутні товари  сторінка 2,5
+/catalog/suputni-tovari/page-3,/catalog/suputni-tovary/,404,Сторінку не знайдено,1
+/catalog/suputni-tovari/page-all,/catalog/suputni-tovary/,200,Супутні товари,5
+/catalog/tarilka-pryamokutna,/catalog/tarilky-ta-sousnyky/,200,Паперові крафтові тарілки ᐉ SmartEcoPack,1026
+/catalog/tarilka-pryamokutna/filter-featured,/catalog/tarilky-ta-sousnyky/,200,Паперові крафтові тарілки ᐉ SmartEcoPack Хіти продажу,4
+/catalog/termochohli,/catalog/termochokhly/,200,Термочохли для паперових стаканів ᐉ СмартЕкоПак,1008
+/catalog/trimachi,/catalog/trymachi-dlya-stakaniv/,200,Тримачі (холдери) для стаканів в Дніпрі ᐉ SmartEcoPack,1008
+/catalog/trubochki-paperovi,/catalog/trubochky-paperovi/,200,Трубочки паперові ᐉ SmartEcoPack,1009
+/catalog/trubochki-paperovi/filter-featured,/catalog/trubochky-paperovi/,200,Трубочки паперові ᐉ SmartEcoPack Хіти продажу,4
+/catalog/trubochki-polimerni,/catalog/trubochky-polimerni/,200,Трубочки для коктейлів  напоїв - купити в Дніпрі ᐉ SmartEcoPack,1010
+/catalog/upakovka-dlya-fast-fudu,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack,1580
+/catalog/upakovka-dlya-fast-fudu/filter-discounted,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack Зі знижкою,7
+/catalog/upakovka-dlya-fast-fudu/filter-featured,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack Хіти продажу,7
+/catalog/upakovka-dlya-fast-fudu/page-0,/catalog/fastfud/,404,Сторінку не знайдено,1
+/catalog/upakovka-dlya-fast-fudu/page-2,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack  сторінка 2,7
+/catalog/upakovka-dlya-fast-fudu/page-3,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack  сторінка 3,6
+/catalog/upakovka-dlya-fast-fudu/page-4,/catalog/fastfud/,404,Сторінку не знайдено,1
+/catalog/upakovka-dlya-fast-fudu/page-all,/catalog/fastfud/,200,Упаковка для фаст фуда в Дніпрі ᐉSmartEcoPack,6
+/catalog/upakovka-dlya-gamburgeru,/catalog/burger-boksy/,200,Упаковка для бургерів  коробки ᐉ СмартЕкоПак,1026
+/catalog/upakovka-dlya-gamburgeru/filter-discounted,/catalog/burger-boksy/,200,Упаковка для бургерів  коробки ᐉ СмартЕкоПак Зі знижкою,4
+/catalog/upakovka-dlya-gamburgeru/filter-featured,/catalog/burger-boksy/,200,Упаковка для бургерів  коробки ᐉ СмартЕкоПак Хіти продажу,4
+/catalog/upakovka-dlya-kartopli-fri/filter-featured,/catalog/upakovka-dlya-kartopli-fri/,200,Упаковка для картоплі фрі  ᐉ СмартЕкоПак Хіти продажу,4
+/comparison,/catalog/,200,Порівняння товарів,3
+/contact,/kontakty/,200,Контакти,1479
+/dostavka,/dostavka-i-oplata/,200,Доставка та оплата,1470
+/druk-na-kraft-paketah,/brenduvannya/druk-na-paketakh/,200,Друк на крафт пакетах - нанесення логотипу ᐉ СмартЕкоПак,985
+/druk-na-paperovih-stakanchikah,/brenduvannya/druk-na-stakanakh/,200,Стаканчики для кави з логотипом - брендування  друк ᐉ СмартЕкоПак,988
+/news,/blog/,200,Блог,3
+/news/10-klyuchevyh-aspektov-dlya-uspeshnogo-otkrytiya-kofejni,/blog/,200,10 ключових аспектів для успішного відкриття кав'ярні,31
+/news/brenduvannya---imidzh-abo-vpiznavanist-brendu,/blog/,200,Брендування - рекламне просування чи сервіс?,38
+/news/bumazhnaya-upakovka-na-chto-obrait-vnimanie-pri-vybore,/blog/paperova-upakovka-dlya-yizhi-navynos/,200,Паперова упаковка: на що звернути увагу при виборі упаковки для їжі?,35
+/news/bumazhnyj-paket-aktsenty-pri-vybore-optimalnogo-varianta,/blog/,200,Паперові пакети очами експертів,23
+/news/druk-na-paperovih-upakovkah,/blog/druk-na-paperovykh-stakanchykakh/,200,Друк на паперових упаковках,30
+/news/eko-pakuvannya-j-vazhlivi-dribnichki,/blog/,200,Еко пакування й важливі дрібнички,25
+/news/etapy-perehoda-na-ekologichnuyu-upakovku-dlya-vashego-biznesa,/blog/,200,Етапи переходу на екологічну упаковку для вашого бізнесу,26
+/news/innovatsii---kak-razvivaetsya-mir-upakovki,/blog/,200,Інновації – як розвивається світ упаковки?,38
+/news/neobychnaya-upakovka-dlya-fastfuda-kak-vydelitsya-sredi-konkurentov,/blog/,200,Незвичайна упаковка для фастфуду: як виділитися серед конкурентів,26
+/news/osvizhayuchi-litni-tendentsii-u-sviti-pakuvannya-zminyuyuchisya-potrebi-ta-sezonni-prioriteti,/blog/,200,Освіжаючі літні тенденції у світі пакування: змінюючіся потреби та сезонні пріоритети,38
+/news/paperovi-stakani-na-scho-varto-zvernuti-uvagu,/blog/yak-vybraty-paperovi-stakany/,200,Паперові стакани  на що варто звернути увагу?,27
+/news/perevagi-paperovoi-upakovki-dlya-biznesu,/blog/perevahy-paperovoyi-upakovky-dlya-biznesu/,200,Переваги паперової упаковки для бізнесу,23
+/news/rozumna-upakovka---trend-na-efektivnit,/blog/,200,Розумна упаковка - тренд на  ефективніть,32
+/news/smartecopack-na-interpack2023-dyusseldorf,/blog/,200,SmartEcoPack на Interpack2023  Дюссельдорф,38
+/news/sposoby-brendirovaniya-upakovki-dlya-fastfuda,/blog/,200,Способи брендування упаковки для фастфуду,26
+/news/upakovka-dlya-konditeriv,/blog/,200,Упаковка для кондитерів,32
+/news/vidminnosti-plastikovogo-pakuvannya-vid-paperovogo,/blog/,200,Відмінності пластикового пакування від паперового,24
+/obmin-ta-povernennya-tovaru,/publichna-oferta/,200,Обмін та повернення товару,492
+/perevagi,/pro-nas/,200,Переваги,3
+/politika-konfidentsialnosti,/polityka-konfidentsiynosti/,200,Політика конфіденційності,492
+/wishlist,/catalog/,200,Вибране,3

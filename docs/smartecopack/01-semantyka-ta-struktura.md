@@ -204,85 +204,110 @@
 
 ## 8. Мапа 301-редиректів
 
-Повна мапа — у `redirects-301.csv` (машиночитний формат, підключається в
-`next.config.ts`). Статуси: усі 301, permanent.
+**Джерело — краул старого сайту від 02.04.2025**, 982 URL. До нього мапа була
+реконструйована з видачі й вгадувала слаги; тепер вона побудована на фактичних
+адресах. Машиночитний формат — `redirects-301.csv` (159 правил зі старим
+статусом, старим title і кількістю внутрішніх посилань на кожен URL).
 
-### 8.1 Категорії — підтверджені
+### 8.1 Що показав краул
 
-| Старий URL | Новий URL |
+| Показник | Значення |
 |---|---|
-| `/catalog/stakani-paperovi` | `/catalog/stakany-paperovi/` |
-| `/catalog/stakani-dvosharovi` | `/catalog/stakany-dvosharovi/` |
-| `/catalog/stakani-gofrovani` | `/catalog/stakany-gofrovani/` |
-| `/catalog/krishki-dlya-stakaniv` | `/catalog/kryshky-dlya-stakaniv/` |
-| `/catalog/termochohli` | `/catalog/termochokhly/` |
-| `/catalog/trimachi` | `/catalog/trymachi-dlya-stakaniv/` |
-| `/catalog/trubochki-paperovi` | `/catalog/trubochky-paperovi/` |
-| `/catalog/trubochki-polimerni` | `/catalog/trubochky-polimerni/` |
-| `/catalog/Lanch-box` | `/catalog/lanch-boksy/` |
-| `/catalog/salatnitsa` | `/catalog/salatnyky/` |
-| `/catalog/supnik` | `/catalog/supnyky/` |
-| `/catalog/alyuminievi-kontejneri` | `/catalog/konteynery-alyuminiyevi/` |
-| `/catalog/tarilka-pryamokutna` | `/catalog/tarilky-ta-sousnyky/` |
-| `/catalog/upakovka-dlya-fast-fudu` | `/catalog/fastfud/` |
-| `/catalog/upakovka-dlya-fast-fudu/page-all` | `/catalog/fastfud/` |
-| `/catalog/paketi-paperovi` | `/catalog/pakety-z-ruchkamy/` |
-| `/catalog/paket-sashe` | `/catalog/pakety-sashe/` |
-| `/catalog/suputni-tovari` | `/catalog/suputni-tovary/` |
+| URL усього | 982 (491 uk + 491 ru — дзеркало 1:1) |
+| Віддають 200 | 891 |
+| Уже 404 на старому сайті | 89 |
+| Неіндексовані | 252, з них **161 — `non_canonical`** (дублі пагінації та фільтрів) |
+| Категорії | 34 (плюс 1 із друкарською помилкою в слагу, вже 404) |
+| Товари | 299 живих + 24 битих посилання |
+| Статті блогу | 18 |
+| Title довші за 60 символів | **324 з 445** (медіана 88, максимум 137) |
 
-### 8.2 Службові сторінки
+Медіана title у 88 символів підтверджує проблему №6 з аналізу: Google обрізає
+такі заголовки у видачі. Ліміт 60 символів на новому сайті закриває це.
+
+161 неіндексована сторінка — це `page-N`, `page-all`, `filter-featured` і
+`filter-discounted`. Вони не давали трафіку, але розмивали краулінговий бюджет.
+Усі згорнуті в патерни, а не переносяться.
+
+### 8.2 Категорії: 34 правила
+
+Що виявив краул і чого не давала реконструкція:
+
+| Старий URL | Новий URL | Що було не так |
+|---|---|---|
+| `/catalog/stolovij-posud` | `/catalog/konteynery/` | Назва «Паперові контейнери для їжі» — це **група**, а не категорія. 6 сторінок пагінації, 1626 внутрішніх посилань — найпопулярніший розділ сайту |
+| `/catalog/paketi-paperovi` | `/catalog/pakety/` | Теж група, а не категорія. Раніше я вів її на `pakety-z-ruchkamy` — це втратило б решту пакетів |
+| `/catalog/stakani-pet` | `/catalog/pet-posud/` | Називається «РЕТ посуд» — знову група |
+| `/catalog/paket-z-ruchkami2` | `/catalog/pakety-bez-ruchok/` | Слаг каже «з ручками», сторінка називається «Крафт пакети **без** ручок» |
+| `/catalog/portsijni-tovari` | `/catalog/stiky-tsukru/` | Технічний слаг, за яким не вгадати «Цукор в стіках» |
+| `/catalog/korobka-dlya-sushi-shidnoi-kuhni` | `/catalog/upakovka-dlya-sushi-ta-vok/` | Я вгадував `upakovka-dlya-sushi` — правило не спрацювало б |
+| `/catalog/salatnik-z-plastikovoyu-krishkoyu` | `/catalog/salatnyky/` | Я вгадував `salatnitsa` |
+| `/catalog/upakovka-dlya-gamburgeru` | `/catalog/burger-boksy/` | Правила не було взагалі |
+| `/catalog/stakani-odnosharovi` | `/catalog/stakany-paperovi/` | Окрема категорія старого сайту, якої я не передбачив |
+| `/catalog/stakani-ret` | `/catalog/stakany-pet/` | «Стакани з купольною кришкою». `ret` — кирилична «Р» замість латинської |
+| `/catalog/stakani-rr` | `/catalog/stakany-pet/` | Друкарська помилка, вже 404. Правило лишили — на нього може стояти зовнішнє посилання |
+| `/catalog/upakovka-dlya-kartopli-fri` | — | Слаг збігається з нашим, правило не потрібне |
+
+Решта 22 категорії лягли на транслітерацію без сюрпризів.
+
+### 8.3 Статичні сторінки
 
 | Старий URL | Новий URL |
 |---|---|
 | `/all-products` | `/catalog/` |
 | `/branding` | `/brenduvannya/` |
 | `/druk-na-paperovih-stakanchikah` | `/brenduvannya/druk-na-stakanakh/` |
-| `/news` | `/blog/` |
+| `/druk-na-kraft-paketah` | `/brenduvannya/druk-na-paketakh/` |
+| `/dostavka` | `/dostavka-i-oplata/` |
 | `/contact` | `/kontakty/` |
+| `/politika-konfidentsialnosti` | `/polityka-konfidentsiynosti/` |
+| `/obmin-ta-povernennya-tovaru` | `/publichna-oferta/` |
+| `/perevagi` | `/pro-nas/` |
+| `/comparison`, `/wishlist` | `/catalog/` (функції старого рушія, яких у нас немає) |
+| `/news`, `/all-posts`, `/authors` | `/blog/` |
 
-### 8.2а Категорії, додані при переході на структуру клієнта
+### 8.4 Блог: 18 статей
 
-Ці правила додані разом із шестигруповим каталогом. Старі адреси реконструйовані
-за тим самим принципом, що й решта мапи (транслітерація з російської), і
-**потребують звірки з краулом** — див. 8.4.
+Чотири статті мають відповідник у нашому блозі — ведуть на нього напряму.
+Решта 14 ведуть на `/blog/`: нерелевантна ціль гірша за загальну сторінку.
+Кожен рядок замінюється на конкретний URL, щойно статтю буде переписано.
 
-| Старий URL | Новий URL |
-|---|---|
-| `/catalog/korobki-dlya-pitsi`, `/catalog/korobka-dlya-pitsi` | `/catalog/korobky-dlya-pitsy/` |
-| `/catalog/upakovka-dlya-sushi`, `/catalog/upakovka-dlya-vok` | `/catalog/upakovka-dlya-sushi-ta-vok/` |
-| `/catalog/morozivnitsi` | `/catalog/morozyvnytsi/` |
-| `/catalog/filtr-paket` | `/catalog/filtr-pakety/` |
-| `/catalog/stakani-pet` | `/catalog/stakany-pet/` |
-| `/catalog/desertnitsi-pet` | `/catalog/desertnytsi-pet/` |
-| `/catalog/stolovi-pribori` | `/catalog/stolovi-prybory/` |
-| `/catalog/dlya-napoyiv` | `/catalog/stakany/` |
-| `/catalog/yizha-navynos` | `/catalog/konteynery/` |
+Дві мої попередні реконструкції були **вигаданими адресами**, яких на сайті
+немає (`bumazhnaya-upakovka-dlya-edy-navynos-ot-smartekopak`,
+`druk-na-paperovih-stakanchikah-vid-smartekopak`). Вони замінені на реальні.
 
-Два останні правила — внутрішні: групи змінили слаг при переході від
-угруповання «за сценарієм» до угруповання «за типом товару». Назовні ці адреси
-не публікувалися, правила лишені як страховка на випадок збережених посилань.
-
-### 8.3 Правила-шаблони
+### 8.5 Правила-шаблони
 
 | Патерн | Дія |
 |---|---|
-| `/catalog/:slug/page-all` | 301 → `/catalog/:slug/` |
-| `/catalog/:slug/page-:n` | 301 → `/catalog/:slug/` (пагінація перебудовується) |
-| `/news/:slug` | 301 → `/blog/:slug` (пер-слаг мапа з краулу) |
-| `/ru/*` | зберігається, редиректиться за тими самими правилами всередині `/ru/` |
-| будь-який URL з великими літерами | 301 → lowercase-версія |
+| `/catalog/:slug/page-all`, `/catalog/:slug/page-:n` | 301 → `/catalog/:slug/` |
+| `/catalog/:slug/filter-featured`, `filter-discounted` | 301 → `/catalog/:slug/` |
+| `/all-products` + будь-який хвіст фільтрів і пагінації | 301 → `/catalog/` |
+| `/products/:slug` | 301 → `/product/:slug/` |
+| `/news/:slug` | 301 → `/blog/:slug/` (для 4 статей), інакше `/blog/` |
+| `/ru/*` | ті самі правила всередині `/ru/` |
+| URL з великими літерами (`/catalog/Lanch-box`) | 301 → lowercase |
 
-### 8.4 Що ще потрібно з краулу
+**Перевірено автоматично:** усі 330 старих URL (uk + ru), крім товарів,
+проходять через мапу й потрапляють на сторінку, яка існує. Жодного правила «в
+нікуди». Це зафіксовано e2e-тестом.
 
-- **Пер-слаг мапа блогу.** Частина статей має російські slug під українським
-  контентом (`bumazhnaya-upakovka-dlya-edy-navynos-ot-smartekopak`). Кожна
-  потребує ручної відповідності — автоматично не виводиться.
-- **URL товарів.** Формат `/products/{slug}` відомий, але повний перелік — ні.
-  Правило `/products/:slug → /product/:slug/` покриє структуру, проте slug'и
-  треба звірити 1:1, інакше отримаємо масові 404.
-- **Хвіст.** Сторінки тегів, фільтрів, пагінації, які не видно з видачі.
+### 8.6 Що досі відкрите — товари
 
-**Без цих трьох пунктів мапа неповна і запуск робити не можна.**
+299 живих товарів. Мапа для них **не побудована** й побудована бути не може без
+вивантаження з вашої адмінки — краул дає URL і назву, але не дає ціни, артикула,
+фасування й категорії.
+
+**Найдешевше рішення: зберегти старі слаги товарів.** Тоді правило
+`/products/:slug → /product/:slug/` покриває всі 299 позицій один в один, і
+жодної окремої мапи не потрібно. Слаги на кшталт
+`stakan-kraft-odnosharovij-350-ml` цілком придатні — вони описові й уже мають
+вагу в пошуку. Переписувати їх заради краси означає ризикувати позиціями без
+жодної вигоди.
+
+Проміжний варіант, якщо частину товарів не переносити: краул показує, з якої
+категорії краулер знайшов товар, — це дає прив'язку для 242 із 299 позицій.
+Решту 57 (знайдені з головної та `/all-products`) доведеться розкласти вручну.
 
 ## 9. Пріоритет робіт за трафіком
 

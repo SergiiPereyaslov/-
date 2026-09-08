@@ -104,18 +104,43 @@ test('службові сторінки закриті від індексаці
 });
 
 test('301 зі старих URL ведуть на нові за один хоп', async ({ request }) => {
+  // Усі джерела — реальні URL із краулу старого сайту (02.04.2025),
+  // а не реконструкція. Повний перелік — docs/smartecopack/redirects-301.csv.
   const map: [string, string][] = [
+    // Категорії з нетривіальним перейменуванням
     ['/catalog/Lanch-box', '/catalog/lanch-boksy/'],
     ['/catalog/stakani-paperovi', '/catalog/stakany-paperovi/'],
-    ['/catalog/tarilka-pryamokutna', '/catalog/tarilky-ta-sousnyky/'],
+    ['/catalog/salatnik-z-plastikovoyu-krishkoyu', '/catalog/salatnyky/'],
+    ['/catalog/korobka-dlya-sushi-shidnoi-kuhni', '/catalog/upakovka-dlya-sushi-ta-vok/'],
+    ['/catalog/upakovka-dlya-gamburgeru', '/catalog/burger-boksy/'],
+    ['/catalog/portsijni-tovari', '/catalog/stiky-tsukru/'],
+    // Слаг каже «з ручками», сторінка називається «без ручок»
+    ['/catalog/paket-z-ruchkami2', '/catalog/pakety-bez-ruchok/'],
+    // Старі «категорії», які насправді були групами
+    ['/catalog/stolovij-posud', '/catalog/konteynery/'],
+    ['/catalog/paketi-paperovi', '/catalog/pakety/'],
+    ['/catalog/stakani-pet', '/catalog/pet-posud/'],
+    // Технічні хвости старого рушія
+    ['/catalog/upakovka-dlya-fast-fudu/page-all', '/catalog/fastfud/'],
+    ['/catalog/stakani-paperovi/filter-featured', '/catalog/stakany-paperovi/'],
+    ['/catalog/paket-sashe/filter-discounted', '/catalog/pakety-sashe/'],
+    ['/all-products/filter-featured/page-2', '/catalog/'],
+    // Статичні
     ['/all-products', '/catalog/'],
     ['/branding', '/brenduvannya/'],
-    ['/news', '/blog/'],
+    ['/druk-na-kraft-paketah', '/brenduvannya/druk-na-paketakh/'],
+    ['/dostavka', '/dostavka-i-oplata/'],
     ['/contact', '/kontakty/'],
-    ['/catalog/upakovka-dlya-fast-fudu/page-all', '/catalog/fastfud/'],
+    ['/politika-konfidentsialnosti', '/polityka-konfidentsiynosti/'],
+    // Блог: стаття зі своїм матеріалом і стаття без нього
+    ['/news', '/blog/'],
+    ['/news/paperovi-stakani-na-scho-varto-zvernuti-uvagu', '/blog/yak-vybraty-paperovi-stakany/'],
+    ['/news/upakovka-dlya-konditeriv', '/blog/'],
+    // Товари й мови
     ['/products/stakan-paperovyi-340-ml-kraft', '/product/stakan-paperovyi-340-ml-kraft/'],
     ['/uk/catalog/', '/catalog/'],
     ['/ru/branding', '/ru/brenduvannya/'],
+    ['/ru/catalog/stolovij-posud', '/ru/catalog/konteynery/'],
   ];
 
   for (const [from, to] of map) {
