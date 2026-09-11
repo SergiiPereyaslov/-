@@ -83,6 +83,7 @@ export const DICT = {
       inCategory: 'товарів у категорії',
       popularSizes: 'Популярні розміри',
       faq: 'Часті питання',
+      realPhotos: 'Фото зі складу',
     },
     cart: {
       title: 'Кошик',
@@ -239,6 +240,7 @@ export const DICT = {
       inCategory: 'товаров в категории',
       popularSizes: 'Популярные размеры',
       faq: 'Частые вопросы',
+      realPhotos: 'Фото со склада',
     },
     cart: {
       title: 'Корзина',

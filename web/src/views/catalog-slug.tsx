@@ -23,6 +23,8 @@ import { ItemListJsonLd } from '@/components/ItemListJsonLd';
 import { SITE } from '@/lib/site';
 import { getPosts } from '@/lib/posts';
 import { Placeholder, type Shape } from '@/components/Placeholder';
+import { PhotoGallery } from '@/components/PhotoGallery';
+import { getCategoryPhotos } from '@/lib/catalog-photos';
 
 const SHAPE: Record<string, Shape> = {
   stakany: 'cup',
@@ -203,6 +205,8 @@ export default async function CatalogSlugPage({
         dict={dict}
         categorySlug={c.slug}
       />
+
+      <PhotoGallery photos={getCategoryPhotos(c.slug)} title={dict.catalog.realPhotos} />
 
       <Prose blocks={c.seo} locale={l} className="mt-12 max-w-3xl" />
 
