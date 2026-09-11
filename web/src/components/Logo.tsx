@@ -24,7 +24,7 @@ export function Logo({ className = '', title = 'SmartEcoPack' }: { className?: s
         textAnchor="middle"
         fill="currentColor"
         fontSize="11"
-        fontFamily="var(--font-comfortaa), system-ui, sans-serif"
+        fontFamily="var(--font-bitter), system-ui, sans-serif"
         fontWeight="600"
       >
         smart
@@ -35,7 +35,7 @@ export function Logo({ className = '', title = 'SmartEcoPack' }: { className?: s
         textAnchor="middle"
         fill="currentColor"
         fontSize="13"
-        fontFamily="var(--font-comfortaa), system-ui, sans-serif"
+        fontFamily="var(--font-bitter), system-ui, sans-serif"
         fontWeight="700"
       >
         eco
@@ -46,7 +46,7 @@ export function Logo({ className = '', title = 'SmartEcoPack' }: { className?: s
         textAnchor="middle"
         fill="currentColor"
         fontSize="11"
-        fontFamily="var(--font-comfortaa), system-ui, sans-serif"
+        fontFamily="var(--font-bitter), system-ui, sans-serif"
         fontWeight="600"
       >
         pack

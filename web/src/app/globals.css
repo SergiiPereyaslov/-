@@ -4,89 +4,80 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
- * Фірмова палітра SmartEcoPack.
+ * Фірмова палітра SmartEcoPack — преміум-мінімалізм.
  *
- * Значення зняті з чинного сайту: темно-зелений топ-бар, м'ятний акцент із
- * фотографій, тепле молочне тло й сірий (не чорний) текст. Перед запуском їх
- * варто звірити з брендбуком — тут вони визначені на око зі скріншотів.
- *
- * Помаранчевого в бренді немає, тому «акцент» для знижок і термінів — це
- * темно-зелений на м'ятній підкладці, а не інший колір.
+ * Ядро бренду (темно-зелений + крафт) збережено для впізнаваності, але
+ * звужене: прибрано окремий «цукерковий» м'ятний акцент, --primary
+ * приглушений на пів тону, а нейтралі отримали ледь теплий, а не
+ * яскраво-зелений відтінок — палітра з 2 акцентів, а не з 4.
  */
 :root {
-  --ink: #46493f;
-  --muted: #6e7268;
-  --bg: #f4f4ef;
+  --ink: #3d3f37;
+  --muted: #74776c;
+  --bg: #f7f6f2;
   --surface: #ffffff;
-  --kraft: #edede5;
-  --border: #e1e1d7;
+  --kraft: #eeece4;
+  --border: #e3e1d8;
 
-  --primary: #4e9e6a;
-  --primary-hover: #3f8757;
+  --primary: #4a7a56;
+  --primary-hover: #3c6546;
   --on-primary: #ffffff;
 
   /* Темно-зелений: топ-бар, підвал, великі площини */
-  --deep: #2f5c23;
+  --deep: #28401f;
   --on-deep: #f1f3ea;
 
-  /* М'ятний із фотографій бренду */
-  --mint: #86c9a4;
+  --accent: #28401f;
+  --accent-soft: #e9ede4;
 
-  --accent: #2f5c23;
-  --accent-soft: #e3f0e8;
-
-  --success: #3f8757;
-  --danger: #b4402f;
+  --success: #3c6546;
+  --danger: #a8402f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --ink: #eceee7;
-    --muted: #a5aa9f;
-    --bg: #171a14;
-    --surface: #1f231c;
-    --kraft: #262a22;
-    --border: #333829;
+    --ink: #e9e8e1;
+    --muted: #a3a599;
+    --bg: #16180f;
+    --surface: #1e2117;
+    --kraft: #24271c;
+    --border: #313527;
 
-    --primary: #6fbf8c;
-    --primary-hover: #82cc9c;
-    --on-primary: #0f2113;
+    --primary: #6ea77c;
+    --primary-hover: #7fb98d;
+    --on-primary: #0f1a11;
 
-    --deep: #24401c;
-    --on-deep: #eceee7;
+    --deep: #223318;
+    --on-deep: #e9e8e1;
 
-    --mint: #86c9a4;
+    --accent: #8db494;
+    --accent-soft: #202a1c;
 
-    --accent: #86c9a4;
-    --accent-soft: #22301f;
-
-    --success: #6fbf8c;
-    --danger: #e08272;
+    --success: #6ea77c;
+    --danger: #d18874;
   }
 }
 
 :root[data-theme='dark'] {
-  --ink: #eceee7;
-  --muted: #a5aa9f;
-  --bg: #171a14;
-  --surface: #1f231c;
-  --kraft: #262a22;
-  --border: #333829;
+  --ink: #e9e8e1;
+  --muted: #a3a599;
+  --bg: #16180f;
+  --surface: #1e2117;
+  --kraft: #24271c;
+  --border: #313527;
 
-  --primary: #6fbf8c;
-  --primary-hover: #82cc9c;
-  --on-primary: #0f2113;
+  --primary: #6ea77c;
+  --primary-hover: #7fb98d;
+  --on-primary: #0f1a11;
 
-  --deep: #24401c;
-  --on-deep: #eceee7;
+  --deep: #223318;
+  --on-deep: #e9e8e1;
 
-  --mint: #86c9a4;
+  --accent: #8db494;
+  --accent-soft: #202a1c;
 
-  --accent: #86c9a4;
-  --accent-soft: #22301f;
-
-  --success: #6fbf8c;
-  --danger: #e08272;
+  --success: #6ea77c;
+  --danger: #d18874;
 }
 
 @theme inline {
@@ -103,22 +94,20 @@
   --color-accent-soft: var(--accent-soft);
   --color-deep: var(--deep);
   --color-on-deep: var(--on-deep);
-  --color-mint: var(--mint);
   --color-success: var(--success);
   --color-danger: var(--danger);
 
   /*
-   * Comfortaa — фірмовий шрифт бренду й тепер єдиний шрифт сайту:
-   * заголовки, основний текст, навігація, кнопки, ціни.
-   * --font-display лишається окремою змінною навмисно: заголовки й кнопки
-   * набираються тим самим сімейством, але з іншим трекінгом і нарисом.
+   * Manrope — текст, навігація, кнопки, ціни. Bitter — заголовки:
+   * slab-serif дає друкований, «крафтовий» характер там, де Comfortaa
+   * читався грайливо. Дві ролі замість однієї — свідомий вибір.
    */
-  --font-sans: var(--font-comfortaa), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-comfortaa), system-ui, sans-serif;
+  --font-sans: var(--font-manrope), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-bitter), Georgia, serif;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
 }
 
 @layer base {
@@ -140,8 +129,7 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 700;
-    /* Comfortaa геометричний і широкий — від'ємний трекінг йому шкодить */
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
@@ -193,14 +181,14 @@
   }
 
   .btn {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     min-height: 44px;
     padding: 0.625rem 1.25rem;
-    border-radius: 999px;
+    border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.9375rem;
     line-height: 1.2;

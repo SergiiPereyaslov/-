@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Comfortaa } from 'next/font/google';
+import { Manrope, Bitter } from 'next/font/google';
 import '@/app/globals.css';
 import type { Locale } from '@/data/types';
 import { getCategories, getGroups } from '@/lib/catalog';
@@ -16,15 +16,21 @@ import { AbTracker } from '@/components/AbTracker';
 import { abScript } from '@/lib/ab';
 
 /**
- * Фірмовий шрифт бренду — геометричний гротеск з округлими закінченнями.
- * Єдиний шрифт на сайті: і заголовки, і основний текст, і цифри.
- * Тому вантажимо повний діапазон нарисів — 300 потрібен довгим абзацам,
- * де 400 виглядає надто щільно.
+ * Пара шрифтів: Manrope — нейтральний гротеск для тексту, навігації,
+ * цін і кнопок; Bitter — slab-serif для заголовків, що читається як
+ * друк на крафтовому папері, а не як маскот-шрифт.
  */
-const comfortaa = Comfortaa({
+const manrope = Manrope({
   subsets: ['latin', 'cyrillic'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-comfortaa',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
+const bitter = Bitter({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['600', '700'],
+  variable: '--font-bitter',
   display: 'swap',
 });
 
@@ -123,7 +129,7 @@ export async function SiteLayout({
   };
 
   return (
-    <html lang={l} className={comfortaa.variable} suppressHydrationWarning>
+    <html lang={l} className={`${manrope.variable} ${bitter.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         {/*
           Тему ставимо першим інлайновим скриптом у body: він виконується до

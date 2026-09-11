@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { featuredProducts, getCategory, getGroups, priceFrom, productsOfGroup } from '@/lib/catalog';
@@ -23,6 +24,8 @@ const GROUP_SHAPE: Record<string, Shape> = {
 
 const COPY = {
   uk: {
+    eyebrow: 'Радимо, який крафт замінить пластик — не просто продаємо, що є на складі',
+    heroImageAlt: 'Крафтові паперові стакани для кави на винос і паперові бокси для їжі',
     h1: 'Паперова упаковка для їжі навинос у Дніпрі',
     lead: 'Власний склад і власна логістика: замовлення по Дніпру доїжджає за 24 години і безкоштовно. По Україні — Новою поштою.',
     toCatalog: 'Перейти в каталог',
@@ -55,6 +58,8 @@ const COPY = {
     contactLead: 'Зателефонуйте або залиште номер — передзвонимо в робочий час.',
   },
   ru: {
+    eyebrow: 'Советуем, какой крафт заменит пластик — не просто продаём, что есть на складе',
+    heroImageAlt: 'Крафтовые бумажные стаканы для кофе на вынос и бумажные боксы для еды',
     h1: 'Бумажная упаковка для еды навынос в Днепре',
     lead: 'Собственный склад и собственная логистика: заказ по Днепру доезжает за 24 часа и бесплатно. По Украине — Новой почтой.',
     toCatalog: 'Перейти в каталог',
@@ -171,11 +176,12 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
 
   return (
     <>
-      {/* Hero: головна перевага — швидкість, а не «еко» */}
+      {/* Hero: головна перевага в H1 — швидкість; «еко»-позиціонування — у бейджі над H1 і у фото */}
       <section className="border-b border-border bg-bg">
         <div className="container-page grid gap-8 py-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-20">
           <div>
-            <h1 className="text-[clamp(1.9rem,4.5vw,2.9rem)] leading-[1.12]">{t.h1}</h1>
+            <span className="chip border-primary/30 bg-accent-soft text-primary">{t.eyebrow}</span>
+            <h1 className="mt-4 text-[clamp(1.9rem,4.5vw,2.9rem)] leading-[1.12]">{t.h1}</h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">{t.lead}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href={`${p}/catalog/`} className="btn btn-primary">
@@ -186,13 +192,25 @@ export default async function HomePage({ locale: l }: { locale: Locale }) {
               </a>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {t.advantages.map(([big, small]) => (
-              <div key={small} className="rounded-md border border-border bg-accent-soft p-4">
-                <div className="font-display text-2xl font-bold text-primary tnum">{big}</div>
-                <div className="mt-1 text-[13px] leading-snug text-muted">{small}</div>
-              </div>
-            ))}
+          <div className="flex flex-col gap-4">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-border">
+              <Image
+                src="/images/hero-kraft-cups.jpg"
+                alt={t.heroImageAlt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {t.advantages.map(([big, small]) => (
+                <div key={small} className="rounded-md border border-border bg-accent-soft p-4">
+                  <div className="font-display text-2xl font-bold text-primary tnum">{big}</div>
+                  <div className="mt-1 text-[13px] leading-snug text-muted">{small}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

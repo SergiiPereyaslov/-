@@ -1,16 +1,23 @@
 import type { Metadata } from 'next';
-import { Comfortaa } from 'next/font/google';
+import { Manrope, Bitter } from 'next/font/google';
 import '../globals.css';
 
 /*
- * Адмінка ділить із сайтом і палітру, і шрифт: --font-sans у globals.css
- * посилається на --font-comfortaa, тож без цієї змінної тут був би
- * системний шрифт.
+ * Адмінка ділить із сайтом і палітру, і шрифти: --font-sans/--font-display
+ * у globals.css посилаються на --font-manrope/--font-bitter, тож без цих
+ * змінних тут був би системний шрифт.
  */
-const comfortaa = Comfortaa({
+const manrope = Manrope({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-comfortaa',
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
+const bitter = Bitter({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['600', '700'],
+  variable: '--font-bitter',
   display: 'swap',
 });
 
@@ -25,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="uk" className={comfortaa.variable}>
+    <html lang="uk" className={`${manrope.variable} ${bitter.variable}`}>
       <body className="min-h-screen bg-bg font-sans text-ink">{children}</body>
     </html>
   );
