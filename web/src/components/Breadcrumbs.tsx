@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE } from '@/lib/site';
+import { JsonLd } from './JsonLd';
 import type { Locale } from '@/data/types';
 
 export interface Crumb {
@@ -47,7 +48,7 @@ export function Breadcrumbs({
           ))}
         </ol>
       </nav>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
     </>
   );
 }

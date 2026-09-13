@@ -57,11 +57,35 @@ const nextConfig: NextConfig = {
   /** Версію фреймворка стороннім знати нема потреби. */
   poweredByHeader: false,
 
+  /**
+   * Заголовки безпеки віддає сам застосунок, а не лише nginx.
+   *
+   * Дублювання з deploy/nginx.conf навмисне: поки що застосунок слухає
+   * тільки 127.0.0.1 і обійти проксі неможливо, але це властивість однієї
+   * конкретної конфігурації. Щойно поруч з'явиться інший спосіб дістатись
+   * до порту — контейнер із опублікованим портом, тимчасовий прев'ю-стенд —
+   * заголовки поїдуть разом із застосунком, а не лишаться в чужому конфізі.
+   *
+   * HSTS тут немає свідомо: у розробці сайт віддається по http://localhost,
+   * і браузер запам'ятав би домен як «тільки https» на рік. Його ставить
+   * nginx, який і термінує TLS.
+   */
   async headers() {
     return [
       {
         source: '/:path*',
-        headers: [{ key: 'Content-Security-Policy', value: csp }],
+        headers: [
+          { key: 'Content-Security-Policy', value: csp },
+          // Браузер не має вгадувати тип: завантажений файл, який видає себе
+          // за картинку, не виконається як скрипт.
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // На чужий домен їде тільки походження, без шляху й параметрів.
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Дубль frame-ancestors у CSP — для старих браузерів.
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // Сайту не потрібні ні камера, ні мікрофон, ні геолокація.
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
       },
     ];
   },
@@ -86,6 +110,17 @@ const nextConfig: NextConfig = {
   experimental: {
     /** Вмикає app/global-not-found.tsx — 404 для адрес поза мовними деревами. */
     globalNotFound: true,
+
+    /**
+     * Імпорт каталогу йде Server Action'ом, а типовий ліміт тіла — 1 МБ.
+     * Без цього рядка перевірка «файл більший за 5 МБ» в import/actions.ts
+     * недосяжна: CSV на 1–5 МБ падав би раніше й з невиразною помилкою
+     * фреймворка замість зрозумілого тексту. Три рубежі мають збігатися —
+     * nginx client_max_body_size 8m, ця межа, і перевірка в коді.
+     */
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
   },
 
   images: {

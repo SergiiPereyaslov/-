@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { CITIES, CITY_BY_SLUG } from '@/data/cities';
@@ -96,7 +97,11 @@ export default async function CityPage({
   params: Promise<{ city: string }>;
 }) {
   const { city: slug } = await params;
-  const city = CITY_BY_SLUG.get(slug)!;
+  const city = CITY_BY_SLUG.get(slug);
+  // generateStaticParams перелічує лише відомі міста, але dynamicParams за
+  // замовчуванням лишається true — тож будь-який чужий слаг доїжджає сюди й
+  // без цієї перевірки падав би на 500 замість 404.
+  if (!city) notFound();
   const dict = getDict(l);
   const p = l === 'uk' ? '' : '/ru';
 

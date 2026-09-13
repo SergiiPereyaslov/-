@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { Locale } from '@/data/types';
 import { SECTORS, SECTOR_BY_SLUG } from '@/data/sectors';
@@ -43,7 +44,9 @@ export default async function SectorPage({
   params: Promise<{ sector: string }>;
 }) {
   const { sector: slug } = await params;
-  const sector = SECTOR_BY_SLUG.get(slug)!;
+  const sector = SECTOR_BY_SLUG.get(slug);
+  // Див. коментар у city.tsx: невідомий слаг має дати 404, а не 500.
+  if (!sector) notFound();
   const dict = getDict(l);
   const p = l === 'uk' ? '' : '/ru';
 
