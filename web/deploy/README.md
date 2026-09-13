@@ -2,6 +2,15 @@
 
 Два способи: Docker (простіше) або systemd на голому сервері.
 
+> Розгортаєте з нуля на своєму сервері? Є детальна покрокова інструкція під
+> чистий Ubuntu — [INSTALL.md](INSTALL.md). Цей файл — коротка довідка для тих,
+> хто вже знає, що робить.
+
+> **Збірка потребує заповненої бази.** `npm run build` генерує 258 статичних
+> сторінок і читає каталог з PostgreSQL. Тому міграції й сідування виконуються
+> **до** збірки, інакше буде `P1001: Can't reach database server` або сайт
+> без товарів.
+
 ## Обов'язково перед першим запуском
 
 **Локаль бази даних.** Кластер PostgreSQL має бути створений з UTF-8:
@@ -50,6 +59,11 @@ sudo adduser --system --group --home /srv/smartecopack smartecopack
 sudo -u smartecopack git clone <repo> /srv/smartecopack/repo
 cd /srv/smartecopack/repo/web
 npm ci
+
+# спочатку база: збірка читає з неї каталог
+npm run db:migrate
+npm run db:seed
+
 NEXT_PUBLIC_SITE_URL=https://smartecopack.com npm run build
 
 # standalone-збірка потребує статики поруч
@@ -80,8 +94,9 @@ sudo systemctl daemon-reload && sudo systemctl enable --now smartecopack
 ```bash
 git pull
 npm ci
+npx prisma migrate deploy      # міграції — до збірки, а не після
 npm run build
-npx prisma migrate deploy      # міграції — окремим кроком, до перезапуску
+cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
 sudo systemctl restart smartecopack
 ```
 
