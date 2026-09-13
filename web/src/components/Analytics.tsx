@@ -2,6 +2,7 @@
 
 import Script from 'next/script';
 import { useSyncExternalStore } from 'react';
+import { gaInitScript } from '@/lib/inline-scripts';
 import {
   getConsent,
   getServerConsent,
@@ -28,9 +29,9 @@ export function Analytics({ gaId }: { gaId?: string }) {
       {consent === 'granted' && (
         <>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+          {/* Рядок береться з lib/inline-scripts, бо його хеш входить у CSP */}
           <Script id="ga-init" strategy="afterInteractive">
-            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-              window.gtag=gtag;gtag('js',new Date());gtag('config','${gaId}',{anonymize_ip:true});`}
+            {gaInitScript(gaId)}
           </Script>
         </>
       )}

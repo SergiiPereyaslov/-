@@ -43,6 +43,40 @@ const makeNumber = () =>
 const clamp = (v: unknown, max: number) =>
   typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : null;
 
+/** Верхня межа суми: більше за це — не замовлення, а сміття або помилка. */
+const MAX_TOTAL = 100_000_000;
+
+const money = (v: unknown) =>
+  typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= MAX_TOTAL ? v : null;
+
+/**
+ * Позиції кошика приходять з клієнта й лягають у БД як JSON. Тому кожне поле
+ * обрізається окремо: без цього в заявку можна було б покласти мегабайт тексту
+ * в `name` — ліміт на 200 позицій від цього не рятує.
+ *
+ * Суми тут — заявлені клієнтом, а не перераховані сервером: менеджер усе одно
+ * підтверджує рахунок вручну. В адмінці вони підписані саме так.
+ */
+const cleanItems = (raw: unknown) => {
+  if (!Array.isArray(raw)) return [];
+  return raw.slice(0, 200).flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const i = item as Record<string, unknown>;
+    const sku = clamp(i.sku, 64);
+    const name = clamp(i.name, 200);
+    if (!sku && !name) return [];
+    const packs = typeof i.packs === 'number' && Number.isFinite(i.packs) ? Math.trunc(i.packs) : 0;
+    return [
+      {
+        sku: sku ?? '',
+        name: name ?? '',
+        packs: Math.min(Math.max(packs, 0), 1_000_000),
+        sum: money(i.sum) ?? 0,
+      },
+    ];
+  });
+};
+
 export async function POST(request: Request) {
   let body: Body;
   try {
@@ -57,7 +91,7 @@ export async function POST(request: Request) {
   }
 
   const kind = (KINDS.has(String(body.kind)) ? body.kind : 'quote') as LeadKind;
-  const items = Array.isArray(body.items) ? body.items.slice(0, 200) : [];
+  const items = cleanItems(body.items);
   const number = makeNumber();
 
   let lead;
@@ -78,7 +112,7 @@ export async function POST(request: Request) {
         source: clamp(body.source, 64),
         locale: body.locale === 'ru' ? 'ru' : 'uk',
         items,
-        total: typeof body.total === 'number' ? body.total : null,
+        total: money(body.total),
         abVariant: isVariant(body.abVariant) ? body.abVariant : null,
       },
     });

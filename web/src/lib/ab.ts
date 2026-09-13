@@ -1,3 +1,5 @@
+import { abScriptFor } from './inline-scripts';
+
 /**
  * A/B-тест навігації каталогу.
  *
@@ -35,15 +37,7 @@ const MAX_AGE = 60 * 60 * 24 * 180;
  * рушіях Math.random погано розподілений на коротких серіях, і на перших
  * сотнях сесій це дало б перекіс, який виглядав би як результат тесту.
  */
-export const abScript = AB_ENABLED
-  ? `(function(){try{
-var m=document.cookie.match(/(?:^|; )${AB_COOKIE}=([ab])/);
-var v=m&&m[1];
-if(!v){var a=new Uint8Array(1);crypto.getRandomValues(a);v=a[0]%2?'b':'a';
-document.cookie='${AB_COOKIE}='+v+';path=/;max-age=${MAX_AGE};samesite=lax';}
-document.documentElement.setAttribute('${AB_ATTR}',v);
-}catch(e){document.documentElement.setAttribute('${AB_ATTR}','b');}})();`
-  : `document.documentElement.setAttribute('${AB_ATTR}','b');`;
+export const abScript = abScriptFor(AB_ENABLED, AB_COOKIE, AB_ATTR, MAX_AGE);
 
 /** Поточний варіант на клієнті. На сервері завжди 'b' — див. коментар вище. */
 export const currentVariant = (): AbVariant => {

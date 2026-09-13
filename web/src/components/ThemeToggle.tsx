@@ -75,4 +75,8 @@ export function ThemeToggle({ label }: { label: string }) {
 }
 
 /** Інлайн-скрипт, що ставить тему до першого рендера — прибирає спалах. */
-export const themeScript = `(function(){try{var t=localStorage.getItem('sep-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+/**
+ * Сам скрипт живе в lib/inline-scripts.ts — звідти його читає next.config.ts,
+ * щоб порахувати хеш для CSP. Ре-експорт лишений, щоб не міняти імпорти.
+ */
+export { themeScript } from '@/lib/inline-scripts';

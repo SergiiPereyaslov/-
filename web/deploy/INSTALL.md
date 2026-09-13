@@ -59,19 +59,51 @@ sudo -u postgres psql -c "SHOW lc_collate;"
 Сам сайт від цього не постраждає — пошук працює через окреме нормалізоване
 поле, — але адміністрування бази стане неприємним.
 
-Створіть користувача й базу:
+Створюємо **дві** ролі, а не одну:
 
 ```bash
 sudo -u postgres psql <<'SQL'
-CREATE USER smartecopack WITH PASSWORD 'ЗАМІНІТЬ_НА_НАДІЙНИЙ_ПАРОЛЬ';
-CREATE DATABASE smartecopack OWNER smartecopack ENCODING 'UTF8';
+-- Власник схеми: ним виконуються тільки міграції
+CREATE USER sep_owner WITH PASSWORD 'ПАРОЛЬ_ВЛАСНИКА';
+CREATE DATABASE smartecopack OWNER sep_owner ENCODING 'UTF8';
+
+-- Роль застосунку: читає й пише дані, але не може змінювати схему
+CREATE USER sep_app WITH PASSWORD 'ПАРОЛЬ_ЗАСТОСУНКУ';
 SQL
 ```
 
-Перевірка підключення:
+Права для ролі застосунку (виконати вже в самій базі):
 
 ```bash
-psql "postgresql://smartecopack:ВАШ_ПАРОЛЬ@localhost:5432/smartecopack" -c "select 1"
+sudo -u postgres psql -d smartecopack <<'SQL'
+GRANT CONNECT ON DATABASE smartecopack TO sep_app;
+GRANT USAGE ON SCHEMA public TO sep_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sep_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sep_app;
+
+-- Те саме автоматично для таблиць, які створять майбутні міграції
+ALTER DEFAULT PRIVILEGES FOR ROLE sep_owner IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO sep_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE sep_owner IN SCHEMA public
+  GRANT USAGE, SELECT ON SEQUENCES TO sep_app;
+SQL
+```
+
+> **Навіщо дві ролі.** Якщо сайт працює власником бази, він має право
+> `DROP TABLE` і `TRUNCATE` — а вони йому в роботі не потрібні жодного разу.
+> Тоді будь-яка майбутня діра (вразливість у залежності, помилка в коді)
+> дає зловмиснику не читання даних, а знищення бази. Розділення ролей
+> коштує п'яти рядків і прибирає цілий клас наслідків.
+>
+> Порядок прав важливий: `GRANT ... ON ALL TABLES` діє лише на таблиці, що
+> вже існують, тому цей блок виконують **після** міграцій (крок 5).
+> `ALTER DEFAULT PRIVILEGES` закриває питання для наступних міграцій.
+
+Перевірка підключення обома ролями:
+
+```bash
+psql "postgresql://sep_owner:ПАРОЛЬ_ВЛАСНИКА@localhost:5432/smartecopack" -c "select 1"
+psql "postgresql://sep_app:ПАРОЛЬ_ЗАСТОСУНКУ@localhost:5432/smartecopack" -c "select 1"
 ```
 
 ---
@@ -102,7 +134,7 @@ ls    # маєте побачити package.json, prisma/, src/, public/, deploy
 
 ```bash
 sudo -u smartecopack tee /srv/smartecopack/repo/.env > /dev/null <<'ENV'
-DATABASE_URL="postgresql://smartecopack:ВАШ_ПАРОЛЬ@localhost:5432/smartecopack"
+DATABASE_URL="postgresql://sep_app:ПАРОЛЬ_ЗАСТОСУНКУ@localhost:5432/smartecopack"
 NEXT_PUBLIC_SITE_URL="https://smartecopack.com"
 
 TELEGRAM_BOT_TOKEN=""
@@ -114,24 +146,22 @@ SMTP_PASSWORD=""
 LEAD_EMAIL_TO="sales@smartecopack.com"
 
 NEXT_PUBLIC_GA_ID=""
-ADMIN_SESSION_SECRET="ДОВГИЙ_ВИПАДКОВИЙ_РЯДОК"
 ENV
 
 sudo chmod 600 /srv/smartecopack/repo/.env
 ```
 
-Згенерувати секрет для сесій адмінки:
-
-```bash
-openssl rand -base64 48
-```
+У `.env` іде **роль застосунку** (`sep_app`). Пароль власника (`sep_owner`)
+на сервері не зберігається взагалі — його вводять руками тоді, коли треба
+накотити міграції.
 
 Що станеться, якщо пропустити необов'язкові значення:
 
 - **без Telegram/SMTP** — заявки все одно зберігаються в базі й видно в адмінці,
   але менеджер не отримає миттєвого сповіщення;
 - **без `NEXT_PUBLIC_GA_ID`** — скрипт аналітики просто не вантажиться;
-- **без `ADMIN_SESSION_SECRET`** — адмінка працювати не буде, це обов'язкове поле.
+- **без `NEXT_PUBLIC_AB_NAV=1`** — A/B-тест навігації вимкнений, усі бачать
+  варіант B. Це нормальний стан за замовчуванням.
 
 ---
 
@@ -145,8 +175,26 @@ openssl rand -base64 48
 ```bash
 cd /srv/smartecopack/repo
 sudo -u smartecopack npm ci                 # postinstall сам виконає prisma generate
-sudo -u smartecopack npm run db:migrate     # створює таблиці (3 міграції)
-sudo -u smartecopack npm run db:seed        # каталог і статті блогу
+
+# Міграції — від власника схеми. Пароль передається лише на час команди
+# і не лишається ані в .env, ані в історії (рядок починається з пробілу).
+ sudo -u smartecopack DATABASE_URL="postgresql://sep_owner:ПАРОЛЬ_ВЛАСНИКА@localhost:5432/smartecopack" npm run db:migrate
+```
+
+Тепер, коли таблиці існують, видаємо права ролі застосунку (блок із кроку 2):
+
+```bash
+sudo -u postgres psql -d smartecopack <<'SQL'
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sep_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sep_app;
+SQL
+```
+
+Наповнення каталогу — уже звичайною роллю застосунку, це заодно перевіряє,
+що прав їй вистачає:
+
+```bash
+sudo -u smartecopack npm run db:seed
 ```
 
 Очікуваний вивід сідування:
@@ -203,7 +251,7 @@ sudo cp /srv/smartecopack/repo/deploy/smartecopack.service /etc/systemd/system/
 # юніт читає змінні з окремого файлу з правами 600
 sudo install -m 600 /dev/null /etc/smartecopack.env
 sudo tee /etc/smartecopack.env > /dev/null <<'ENV'
-DATABASE_URL=postgresql://smartecopack:ВАШ_ПАРОЛЬ@localhost:5432/smartecopack
+DATABASE_URL=postgresql://sep_app:ПАРОЛЬ_ЗАСТОСУНКУ@localhost:5432/smartecopack
 NEXT_PUBLIC_SITE_URL=https://smartecopack.com
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
@@ -212,7 +260,6 @@ SMTP_PORT=587
 SMTP_USER=
 SMTP_PASSWORD=
 LEAD_EMAIL_TO=sales@smartecopack.com
-ADMIN_SESSION_SECRET=ТОЙ_САМИЙ_СЕКРЕТ_ЩО_Й_У_.env
 ENV
 
 sudo systemctl daemon-reload
@@ -239,6 +286,13 @@ sudo journalctl -u smartecopack -f
 
 У файлі `deploy/nginx.conf` домен прописаний як `smartecopack.com`.
 Якщо ваш домен інший — замініть його в усіх трьох блоках `server_name`.
+
+Конфіг також містить обмеження частоти запитів (`limit_req`): вхід в адмінку —
+60 запитів/хв з IP, форма заявки — 10/хв, пошук і лічильник A/B — 120/хв.
+Перевищення повертає `429`. Якщо сайт стоятиме за Cloudflare або іншим
+проксі, `$binary_remote_addr` буде адресою проксі, а не відвідувача, —
+тоді потрібен `real_ip_header` з `set_real_ip_from`, інакше ліміт рахуватиме
+всіх відвідувачів як одного.
 
 ```bash
 sudo cp /srv/smartecopack/repo/deploy/nginx.conf /etc/nginx/sites-available/smartecopack
@@ -316,9 +370,9 @@ cd /srv/smartecopack/repo
 # 1. Розпакувати новий архів поверх (або git pull, якщо працюєте з репозиторію)
 sudo -u smartecopack tar -xzf /tmp/smartecopack-site-новий.tar.gz -C /srv/smartecopack/repo
 
-# 2. Залежності й міграції — ДО збірки
+# 2. Залежності й міграції — ДО збірки, міграції від власника схеми
 sudo -u smartecopack npm ci
-sudo -u smartecopack npm run db:migrate
+ sudo -u smartecopack DATABASE_URL="postgresql://sep_owner:ПАРОЛЬ_ВЛАСНИКА@localhost:5432/smartecopack" npm run db:migrate
 
 # 3. Збірка й розкладка статики
 sudo -u smartecopack npm run build
@@ -355,6 +409,14 @@ sudo -u postgres pg_restore -d smartecopack --clean /var/backups/sep-2026-09-13.
 
 Перевіряйте відновлення хоча б раз на квартал — дамп, який ніхто не
 відновлював, резервною копією не є.
+
+> **У дампі є персональні дані.** Заявки містять ім'я, телефон, e-mail і
+> реквізити клієнтів. Тека `/var/backups` має бути доступна лише root
+> (`chmod 700`), а якщо копії їдуть у хмару — шифруйте їх перед відправкою:
+>
+> ```bash
+> pg_dump -Fc smartecopack | age -r ВАШ_ПУБЛІЧНИЙ_КЛЮЧ > sep-$(date +%F).dump.age
+> ```
 
 ---
 
@@ -395,6 +457,25 @@ sudo systemctl restart smartecopack
 **Після зміни домену в canonical лишився старий**
 `NEXT_PUBLIC_SITE_URL` вшивається у збірку. Змініть значення в `.env`
 і в `/etc/smartecopack.env`, потім **перезберіть** сайт (крок 6).
+
+**«Забагато спроб. Спробуйте за N хв.» при вході в адмінку**
+Спрацював захист від перебору: 10 невдалих спроб поспіль блокують вхід на
+15 хвилин. Або зачекайте, або зніміть блокування вручну:
+
+```bash
+sudo -u postgres psql -d smartecopack \
+  -c "UPDATE admin_users SET \"failedAttempts\"=0, \"lockedUntil\"=NULL;"
+```
+
+**`429 Too Many Requests` на сайті**
+Спрацював `limit_req` у nginx. Для звичайного відвідувача це майже
+неможливо; якщо ловите самі — перевірте, чи сайт не за проксі (див. крок 8),
+і за потреби підніміть `rate` у `deploy/nginx.conf`.
+
+**`permission denied for table …` у логах застосунку**
+Роль `sep_app` не отримала прав на таблиці, які додала нова міграція.
+Виконайте блок `GRANT` із кроку 5 ще раз — або переконайтесь, що
+`ALTER DEFAULT PRIVILEGES` із кроку 2 виконувався **від імені `sep_owner`**.
 
 ---
 

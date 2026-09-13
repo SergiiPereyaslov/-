@@ -202,6 +202,11 @@ model AdminUser {
   passwordHash String
   createdAt    DateTime  @default(now())
 
+  /// Лічильник невдалих спроб входу поспіль; обнуляється успішним входом.
+  failedAttempts Int       @default(0)
+  /// До цього моменту вхід відхиляється навіть із правильним паролем.
+  lockedUntil    DateTime?
+
   sessions Session[]
 
   @@map("admin_users")

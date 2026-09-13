@@ -18,6 +18,16 @@ export const hashPassword = (plain: string) => bcrypt.hash(plain, 12);
 
 export const verifyPassword = (plain: string, hash: string) => bcrypt.compare(plain, hash);
 
+/**
+ * Хеш-пустушка для входу з неіснуючим e-mail.
+ *
+ * Без неї bcrypt не рахувався б зовсім, відповідь поверталась би за мілісекунди
+ * замість ~300 мс — і за одним лише часом відповіді можна було б з'ясувати,
+ * які адреси зареєстровані. Це хеш випадкового рядка: пароля, який би йому
+ * підійшов, не існує.
+ */
+export const DUMMY_HASH = '$2b$12$FY/DFq/2igiaAT2h3sr7zeKaV3DgBoXlOmo9M1by2yrGgVfstDwqK';
+
 /** Порівняння токенів у сталий час — щоб не текла інформація через таймінг. */
 const safeEqual = (a: string, b: string) => {
   const bufA = Buffer.from(a);
