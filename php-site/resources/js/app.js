@@ -173,5 +173,183 @@ Alpine.data('searchBox', (locale) => ({
     },
 }));
 
+
+/**
+ * Ціна за одиницю з урахуванням оптових щаблів.
+ *
+ * Та сама логіка, що й у Product::unitPriceFor() на сервері: щаблі
+ * впорядковані за зростанням minPacks, тож останній, який перекрито
+ * кількістю пачок, і дає остаточну ціну. Дублювання свідоме — інакше
+ * зміна кількості вимагала б запиту на сервер при кожному натисканні.
+ */
+export function unitPriceFor(product, packs) {
+    let price = product.priceRetail;
+
+    for (const tier of product.tiers ?? []) {
+        if (packs >= tier.minPacks) {
+            price = tier.perUnit;
+        }
+    }
+
+    return price;
+}
+
+/** Картка товару: кількість пачок і перерахунок ціни без запиту на сервер. */
+Alpine.data('productCard', (product) => ({
+    packs: 1,
+
+    get unitPrice() {
+        return unitPriceFor(product, this.packs);
+    },
+
+    get packPrice() {
+        return this.unitPrice * product.unitsPerPack;
+    },
+
+    get inCart() {
+        return this.$store.cart.packsOf(product.slug) > 0;
+    },
+
+    addToCart() {
+        this.$store.cart.add(product.slug, this.packs);
+    },
+}));
+
+/**
+ * Категорія: фільтри, сортування й «показати ще».
+ *
+ * Працює над уже відрендереною сіткою, а не будує її наново. Причина —
+ * пошук: усі товари категорії лишаються в HTML, а скрипт лише ховає
+ * зайве. Якби картки малював JS, робот бачив би порожню сторінку.
+ */
+Alpine.data('categoryView', (total) => ({
+    selected: {},
+    sort: 'popular',
+    shown: 12,
+    sheetOpen: false,
+    visibleCount: total,
+    chips: [],
+
+    init() {
+        this.apply();
+    },
+
+    get activeCount() {
+        return this.chips.length;
+    },
+
+    get hasMore() {
+        return this.visibleCount > this.shown;
+    },
+
+    isSelected(key, value) {
+        return (this.selected[key] ?? []).includes(value);
+    },
+
+    toggle(key, value) {
+        const current = this.selected[key] ?? [];
+
+        this.selected[key] = current.includes(value)
+            ? current.filter((v) => v !== value)
+            : [...current, value];
+
+        // Новий фільтр — нова видача, тому лічильник показаного скидається
+        this.shown = 12;
+        this.apply();
+    },
+
+    reset() {
+        this.selected = {};
+        this.shown = 12;
+        this.apply();
+    },
+
+    showMore() {
+        this.shown += 12;
+        this.apply();
+    },
+
+    apply() {
+        const cards = Array.from(this.$refs.grid.querySelectorAll('[data-product]'));
+        const active = Object.entries(this.selected).filter(([, values]) => values.length > 0);
+
+        const matching = cards.filter((card) => {
+            const facets = JSON.parse(card.dataset.facets || '{}');
+
+            return active.every(([key, values]) => values.includes(facets[key]));
+        });
+
+        this.sortCards(matching);
+
+        // Позиція в сітці задається через CSS order: переставляти вузли
+        // означало б губити стан Alpine усередині карток (обрану кількість)
+        cards.forEach((card) => {
+            card.style.display = 'none';
+            card.style.order = '';
+        });
+
+        matching.slice(0, this.shown).forEach((card, index) => {
+            card.style.display = '';
+            card.style.order = String(index);
+        });
+
+        this.visibleCount = matching.length;
+        this.chips = this.buildChips();
+    },
+
+    sortCards(cards) {
+        const byName = new Intl.Collator(document.documentElement.lang || 'uk');
+
+        const compare = {
+            'price-asc': (a, b) => a.dataset.price - b.dataset.price,
+            'price-desc': (a, b) => b.dataset.price - a.dataset.price,
+            name: (a, b) => byName.compare(a.dataset.name, b.dataset.name),
+            popular: (a, b) => b.dataset.featured - a.dataset.featured,
+        };
+
+        cards.sort(compare[this.sort] ?? compare.popular);
+    },
+
+    buildChips() {
+        const out = [];
+
+        for (const [key, values] of Object.entries(this.selected)) {
+            for (const value of values) {
+                const input = this.$el.querySelector(`input[value="${value}"]`);
+                const label = input?.nextElementSibling?.textContent?.trim() ?? value;
+
+                out.push({ key, value, label });
+            }
+        }
+
+        return out;
+    },
+}));
+
+/** Панель товару: кількість, підсумок і додавання в кошик. */
+Alpine.data('productPanel', (product) => ({
+    packs: 1,
+
+    get unitPrice() {
+        return unitPriceFor(product, this.packs);
+    },
+
+    get total() {
+        return this.unitPrice * product.unitsPerPack * this.packs;
+    },
+
+    get totalLabel() {
+        return (product.totalForTemplate ?? '').replace('{n}', this.packs);
+    },
+
+    get inCart() {
+        return this.$store.cart.packsOf(product.slug) > 0;
+    },
+
+    addToCart() {
+        this.$store.cart.add(product.slug, this.packs);
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
