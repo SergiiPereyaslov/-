@@ -3,6 +3,7 @@
 namespace App\View\Composers;
 
 use App\Models\Group;
+use App\Services\CatalogCache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -17,6 +18,8 @@ class NavigationComposer
 {
     /** Меню каталогу не змінюється роками; добу тримати безпечно. */
     private const TTL_SECONDS = 86400;
+
+    public function __construct(private readonly CatalogCache $cache) {}
 
     public function compose(View $view): void
     {
@@ -39,7 +42,7 @@ class NavigationComposer
      */
     private function tree(string $locale): array
     {
-        return Cache::remember("nav.{$locale}", self::TTL_SECONDS, function (): array {
+        return Cache::remember($this->cache->key("nav.{$locale}"), self::TTL_SECONDS, function (): array {
             $groups = Group::query()
                 ->select(['slug', 'nameUk', 'nameRu', 'sortOrder'])
                 ->with(['categories' => fn ($q) => $q
