@@ -5,6 +5,7 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -68,3 +69,12 @@ $pages = function (): void {
 
 Route::group([], $pages);
 Route::prefix('ru')->group($pages);
+
+/*
+| Технічні файли — поза мовними деревами.
+|
+| Карта сайту одна на обидві мови: кожна адреса подана раз, із
+| посиланнями на свою пару через xhtml:link.
+*/
+Route::get('/sitemap.xml', SitemapController::class);
+Route::get('/robots.txt', [SitemapController::class, 'robots']);

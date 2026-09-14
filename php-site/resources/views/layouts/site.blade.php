@@ -13,13 +13,38 @@
     <title>@yield('title', config('site.name'))</title>
     <meta name="description" content="@yield('description')">
 
-    <link rel="canonical" href="@yield('canonical', Url::canonical(request()->getPathInfo()))">
+    {{--
+        Шлях без мовного префікса. Url::canonical() додає префікс сам, тож
+        передавати йому адресу, у якій префікс уже є, означало б отримати
+        /ru/ru/… — і кожна російська сторінка канонізувалась би на
+        неіснуючу адресу.
+    --}}
+    @php $bare = $locale === 'ru' ? (substr(request()->getPathInfo(), 3) ?: '/') : request()->getPathInfo(); @endphp
+
+    <link rel="canonical" href="@yield('canonical', Url::canonical($bare))">
 
     {{-- Обидві мови рівноправні для пошуку; x-default веде на українську --}}
-    @php $bare = $locale === 'ru' ? (substr(request()->getPathInfo(), 3) ?: '/') : request()->getPathInfo(); @endphp
     <link rel="alternate" hreflang="uk" href="{{ Url::canonical($bare, 'uk') }}">
     <link rel="alternate" hreflang="ru" href="{{ Url::canonical($bare, 'ru') }}">
     <link rel="alternate" hreflang="x-default" href="{{ Url::canonical($bare, 'uk') }}">
+
+    {{--
+        Картка для соцмереж і месенджерів. Посилання на сайт найчастіше
+        кидають саме в них, тож без цих тегів у чаті замість картки
+        з'являвся б голий URL.
+    --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ config('site.name') }}">
+    <meta property="og:locale" content="{{ $locale === 'ru' ? 'ru_RU' : 'uk_UA' }}">
+    <meta property="og:title" content="@yield('title', config('site.name'))">
+    <meta property="og:description" content="@yield('description')">
+    <meta property="og:url" content="@yield('canonical', Url::canonical($bare))">
+    <meta property="og:image" content="{{ rtrim(config('site.url'), '/') }}/images/og-{{ $locale }}.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
 
     @stack('head')
 
