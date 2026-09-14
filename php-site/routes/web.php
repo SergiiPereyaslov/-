@@ -2,8 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Тимчасовий маршрут для перевірки нормалізації адрес — замінюється на етапі 4
-Route::get('/', fn () => response('корінь: '.app()->getLocale()));
-Route::get('/ru', fn () => response('корінь: '.app()->getLocale()));
-Route::get('/catalog/{slug}', fn (string $slug) => response("категорія {$slug}: ".app()->getLocale()));
-Route::get('/ru/catalog/{slug}', fn (string $slug) => response("категорія {$slug}: ".app()->getLocale()));
+/*
+| Маршрути сайту.
+|
+| Дві мовні гілки: українська в корені, російська під /ru. Мову ставить
+| middleware CanonicalUrl за префіксом, тому контролери про неї не знають
+| і однакові для обох дерев.
+*/
+
+$pages = function (): void {
+    // Тимчасова сторінка для перевірки каркаса — замінюється на етапі 4
+    Route::get('/', fn () => view('pages.home'))->name('home');
+    Route::get('/catalog/{slug}', fn (string $slug) => view('pages.home'))->name('catalog.show');
+};
+
+Route::group([], $pages);
+Route::prefix('ru')->group($pages);
