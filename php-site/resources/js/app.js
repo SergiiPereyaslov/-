@@ -443,5 +443,113 @@ Alpine.data('cartView', (labels) => ({
     },
 }));
 
+/**
+ * Надсилання заявки.
+ *
+ * Спільний компонент для короткої форми запиту прайсу й повного
+ * оформлення: обидві шлють в один ендпоінт, різниця лише в наборі полів
+ * і в тому, чи їде з ними кошик.
+ */
+Alpine.data('leadForm', (options) => ({
+    form: {
+        phone: '',
+        name: '',
+        email: '',
+        company: '',
+        comment: '',
+        delivery: 'pickup',
+        customer: 'individual',
+        city: '',
+        requisites: '',
+    },
+    sending: false,
+    done: false,
+    error: '',
+    number: '',
+
+    /** Той самий формат, що й на сервері — щоб не гнати завідомо хибне. */
+    isPhoneValid() {
+        return /^\+?380\d{9}$/.test(this.form.phone.replace(/[\s()\-]/g, ''));
+    },
+
+    async submit() {
+        if (!this.isPhoneValid()) {
+            this.error = options.messages.phoneInvalid;
+
+            return;
+        }
+
+        this.sending = true;
+        this.error = '';
+
+        const payload = {
+            ...this.form,
+            kind: options.kind,
+            source: options.source,
+            locale: options.locale,
+        };
+
+        /*
+         * Кошик їде тільки з оформлення; у короткій формі його немає.
+         * Позиції беруться з lines батьківського cartView — там уже
+         * лежать актуальні ціни, підтягнуті з сервера, а не те, що
+         * зберігав браузер.
+         */
+        if (options.withCart) {
+            payload.items = (this.lines ?? []).map((line) => ({
+                sku: line.sku,
+                name: line.name,
+                packs: line.packs,
+                sum: line.sum,
+            }));
+            payload.total = payload.items.reduce((sum, item) => sum + item.sum, 0);
+        }
+
+        try {
+            const response = await fetch('/api/lead', {
+                method: 'POST',
+                /*
+                 * Токена CSRF тут немає навмисно. Ендпоінт заявок
+                 * лежить у групі api — без сесії, тож анонімний
+                 * відвідувач не отримує cookie, і сторінки лишаються
+                 * придатними до повного кешування. Від зловживань
+                 * захищає обмеження частоти, а не токен: форма й так
+                 * публічна, і підробка запиту дає рівно те саме, що
+                 * й відкрити сторінку та натиснути кнопку.
+                 */
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || !data.ok) {
+                this.error = options.messages.error;
+                this.sending = false;
+
+                return;
+            }
+
+            this.number = data.number ?? '';
+            this.done = true;
+
+            if (options.withCart) {
+                this.$store.cart.clear();
+            }
+
+            if (options.redirectTo) {
+                window.location.href = options.redirectTo + '?n=' + encodeURIComponent(this.number);
+            }
+        } catch {
+            this.error = options.messages.error;
+        }
+
+        this.sending = false;
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();

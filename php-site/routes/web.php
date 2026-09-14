@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +27,19 @@ $pages = function (): void {
     Route::get('/product/{slug}', [ProductController::class, 'show']);
 
     Route::get('/koshyk', fn () => view('pages.cart'));
+    Route::get('/oformlennya', fn () => view('pages.checkout'));
+
+    /*
+     * Номер заявки приходить параметром і показується відвідувачу.
+     * Обрізаємо його за форматом номера, а не довіряємо як є: інакше
+     * в адресу можна було б покласти довільний текст і показати його
+     * на нашій сторінці як «номер заявки».
+     */
+    Route::get('/dyakuyemo', fn (Request $request) => view('pages.thanks', [
+        'number' => preg_match('/^SEP-[A-Z0-9]{6,8}$/', (string) $request->query('n'))
+            ? $request->query('n')
+            : null,
+    ]));
 };
 
 Route::group([], $pages);

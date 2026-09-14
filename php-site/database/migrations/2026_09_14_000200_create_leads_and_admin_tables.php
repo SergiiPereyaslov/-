@@ -17,8 +17,8 @@ return new class extends Migration
          * база сама не дасть записати стан, якого не існує, і це
          * лишається правдою навіть коли в неї полізуть повз застосунок.
          */
-        DB::statement("CREATE TYPE \"LeadKind\" AS ENUM ('quote', 'order', 'branding')");
-        DB::statement("CREATE TYPE \"LeadStatus\" AS ENUM ('new', 'in_progress', 'done', 'rejected')");
+        $this->createEnum('LeadKind', ['quote', 'order', 'branding']);
+        $this->createEnum('LeadStatus', ['new', 'in_progress', 'done', 'rejected']);
 
         Schema::create('leads', function (Blueprint $table) {
             /*
@@ -97,6 +97,28 @@ return new class extends Migration
 
             $table->unique(['variant', 'day']);
         });
+    }
+
+    /**
+     * Створити тип-перелічення, якщо його ще немає.
+     *
+     * DROP TABLE не прибирає типи, тому після migrate:fresh вони
+     * лишаються в базі, і повторний CREATE TYPE падає. Перевірка тут
+     * робить міграцію придатною до повторного запуску.
+     *
+     * @param  list<string>  $values
+     */
+    private function createEnum(string $name, array $values): void
+    {
+        $exists = DB::selectOne('SELECT 1 FROM pg_type WHERE typname = ?', [$name]);
+
+        if ($exists !== null) {
+            return;
+        }
+
+        $list = implode(', ', array_map(fn (string $v): string => "'{$v}'", $values));
+
+        DB::statement("CREATE TYPE \"{$name}\" AS ENUM ({$list})");
     }
 
     public function down(): void

@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    /*
+    | Сповіщення про заявки. Обидва канали необов'язкові: заявка спершу
+    | пишеться в базу, і відмова каналу не втрачає звернення клієнта.
+    */
+    'telegram' => [
+        'token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
+    'lead_email_to' => env('LEAD_EMAIL_TO'),
+
 ];
