@@ -351,5 +351,97 @@ Alpine.data('productPanel', (product) => ({
     },
 }));
 
+/**
+ * Кошик: підтягує актуальні дані товарів за слагами з localStorage.
+ *
+ * Ціни не зберігаються в браузері навмисно (див. коментар до сховища
+ * кошика), тому сторінка спершу порожня, а після відповіді сервера
+ * показує позиції з чинним прайсом.
+ */
+Alpine.data('cartView', (labels) => ({
+    products: {},
+    ready: false,
+
+    async init() {
+        await this.load();
+
+        // Кількість могли змінити в іншій вкладці — перезавантажуємо дані
+        this.$watch('$store.cart.items', () => this.loadMissing());
+    },
+
+    async load() {
+        const slugs = Object.keys(this.$store.cart.items);
+
+        if (slugs.length === 0) {
+            this.ready = true;
+
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cart-products/?slugs=${encodeURIComponent(slugs.join(','))}`, {
+                headers: { Accept: 'application/json' },
+            });
+
+            if (response.ok) {
+                for (const product of await response.json()) {
+                    this.products[product.slug] = product;
+                }
+            }
+        } catch {
+            // Мережа недоступна: показуємо порожній кошик замість помилки
+        }
+
+        this.ready = true;
+    },
+
+    /** Товар, доданий в іншій вкладці, ще не має даних — дотягуємо. */
+    loadMissing() {
+        const missing = Object.keys(this.$store.cart.items).filter((slug) => !this.products[slug]);
+
+        if (missing.length > 0) {
+            this.load();
+        }
+    },
+
+    get lines() {
+        return Object.entries(this.$store.cart.items)
+            .map(([slug, packs]) => {
+                const product = this.products[slug];
+
+                if (!product) {
+                    return null;
+                }
+
+                const unit = unitPriceFor(product, packs);
+
+                return {
+                    ...product,
+                    packs,
+                    unitPrice: unit,
+                    sum: unit * product.unitsPerPack * packs,
+                    // Наступний оптовий поріг — підказка, яка прямо
+                    // піднімає середній чек
+                    nextTier: (product.tiers ?? []).find((t) => packs < t.minPacks) ?? null,
+                };
+            })
+            .filter(Boolean);
+    },
+
+    get totalSum() {
+        return this.lines.reduce((sum, line) => sum + line.sum, 0);
+    },
+
+    tierHint(line) {
+        return (labels.tierHint ?? '')
+            .replace('{n}', line.nextTier.minPacks - line.packs)
+            .replace('{price}', line.nextTier.perUnit.toFixed(2));
+    },
+
+    setPacks(slug, packs) {
+        this.$store.cart.set(slug, Math.max(1, Math.min(1000, parseInt(packs) || 1)));
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();

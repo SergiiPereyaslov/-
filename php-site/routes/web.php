@@ -24,6 +24,8 @@ $pages = function (): void {
     Route::get('/catalog/{slug}/{facet}', [CatalogController::class, 'facet']);
 
     Route::get('/product/{slug}', [ProductController::class, 'show']);
+
+    Route::get('/koshyk', fn () => view('pages.cart'));
 };
 
 Route::group([], $pages);
