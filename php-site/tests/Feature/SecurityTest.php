@@ -119,6 +119,35 @@ class SecurityTest extends TestCase
         $this->get('/')->assertHeaderMissing('X-Powered-By');
     }
 
+    /**
+     * Особисті сторінки не кешуються й не індексуються.
+     *
+     * Заголовки ставить саме застосунок: у nginx їхній add_header у
+     * location /admin/ не спрацьовує — try_files робить внутрішній
+     * редирект у локацію для .php, і заголовки додає вже вона.
+     */
+    public function test_private_pages_are_not_cacheable_or_indexable(): void
+    {
+        foreach (['/admin/', '/koshyk/', '/oformlennya/', '/dyakuyemo/', '/ru/koshyk/'] as $path) {
+            $response = $this->get($path);
+
+            $this->assertStringContainsString(
+                'no-store',
+                (string) $response->headers->get('Cache-Control'),
+                "Сторінка {$path} може осісти в кеші",
+            );
+            $response->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        }
+    }
+
+    /** Публічні сторінки навпаки — мають індексуватись. */
+    public function test_public_pages_stay_indexable(): void
+    {
+        foreach (['/', '/catalog/', '/blog/'] as $path) {
+            $this->get($path)->assertHeaderMissing('X-Robots-Tag');
+        }
+    }
+
     /** Cookie сесії недосяжна для скриптів і не їде на чужі сайти. */
     public function test_session_cookie_is_http_only_and_same_site(): void
     {

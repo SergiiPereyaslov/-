@@ -18,11 +18,24 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SecurityHeaders
 {
+    /**
+     * Розділи, які не кешуються й не індексуються.
+     *
+     * Адмінка — бо в ній видно заявки з телефонами. Кошик, оформлення
+     * й подяка — бо вони особисті: спільний кеш віддав би одному
+     * відвідувачу те, що зібрано для іншого.
+     */
+    private const PRIVATE_PREFIXES = ['/admin', '/koshyk/', '/oformlennya/', '/dyakuyemo/'];
+
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
         foreach ($this->headers() as $name => $value) {
+            $response->headers->set($name, $value);
+        }
+
+        foreach ($this->privateHeaders($request) as $name => $value) {
             $response->headers->set($name, $value);
         }
 
@@ -37,6 +50,36 @@ class SecurityHeaders
         header_remove('X-Powered-By');
 
         return $response;
+    }
+
+    /**
+     * Заголовки для сторінок, які не можна ні кешувати, ні індексувати.
+     *
+     * Ставляться застосунком навмисно. У nginx ці ж add_header у
+     * location /admin/ не спрацьовують узагалі: try_files робить
+     * внутрішній редирект у location ~ \.php$, і заголовки додає вже
+     * вона, а не та локація, де їх написали. Перевірено curl'ом на
+     * живому стенді — заголовків у відповіді не було.
+     *
+     * @return array<string, string>
+     */
+    private function privateHeaders(Request $request): array
+    {
+        $path = $request->getPathInfo();
+
+        foreach (self::PRIVATE_PREFIXES as $prefix) {
+            if (str_starts_with($path, $prefix) || str_starts_with($path, '/ru'.$prefix)) {
+                return [
+                    // no-store, а не no-cache: no-cache дозволяє зберегти
+                    // копію й лише вимагає перевірки. У панелі видно
+                    // телефони клієнтів — копії не має бути взагалі.
+                    'Cache-Control' => 'no-store, max-age=0',
+                    'X-Robots-Tag' => 'noindex, nofollow',
+                ];
+            }
+        }
+
+        return [];
     }
 
     /** @return array<string, string> */
