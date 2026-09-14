@@ -38,6 +38,45 @@ class Schema
     }
 
     /**
+     * Локальний бізнес — для видачі за запитами з прив'язкою до міста.
+     *
+     * Окремо від organization(): та описує юридичну особу, а ця —
+     * конкретну точку з координатами й графіком, і саме її пошук
+     * показує на карті.
+     *
+     * @return array<string, mixed>
+     */
+    public static function localBusiness(): array
+    {
+        $locale = app()->getLocale();
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'LocalBusiness',
+            '@id' => rtrim(config('site.url'), '/').'/#local',
+            'name' => config('site.name'),
+            'url' => config('site.url'),
+            'email' => config('site.email'),
+            'telephone' => config('site.phones'),
+            'priceRange' => '$$',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => config("site.address.street.{$locale}"),
+                'addressLocality' => config("site.address.city.{$locale}"),
+                'addressRegion' => config('site.address.region'),
+                'postalCode' => config('site.address.postal_code'),
+                'addressCountry' => config('site.address.country'),
+            ],
+            'geo' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => config('site.address.lat'),
+                'longitude' => config('site.address.lng'),
+            ],
+            'openingHours' => 'Mo-Fr 09:00-18:00',
+        ];
+    }
+
+    /**
      * Хлібні крихти.
      *
      * @param  list<array{label: string, href?: string}>  $crumbs

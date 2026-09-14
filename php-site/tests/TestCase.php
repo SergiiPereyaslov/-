@@ -17,10 +17,14 @@ abstract class TestCase extends BaseTestCase
      */
     protected function prepareUrlForRequest($uri): string
     {
-        $keepSlash = $uri !== '/' && str_ends_with($uri, '/');
+        // Слеш стоїть у кінці шляху, а не всього рядка: у /a/?b=1 його
+        // треба шукати перед знаком питання
+        [$path, $query] = array_pad(explode('?', $uri, 2), 2, null);
 
-        $url = parent::prepareUrlForRequest($uri);
+        $keepSlash = $path !== '/' && str_ends_with((string) $path, '/');
 
-        return $keepSlash ? $url.'/' : $url;
+        $url = parent::prepareUrlForRequest((string) $path);
+
+        return ($keepSlash ? $url.'/' : $url).($query === null ? '' : '?'.$query);
     }
 }

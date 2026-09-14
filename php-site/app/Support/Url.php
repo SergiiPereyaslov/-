@@ -41,13 +41,21 @@ class Url
         return rtrim(config('site.url'), '/').self::to($path, $locale);
     }
 
-    /** Нормалізує шлях до вигляду /щось/ — з провідним і завершальним слешем. */
+    /**
+     * Нормалізує шлях до вигляду /щось/ — з провідним і завершальним слешем.
+     *
+     * Файли — виняток: /blog/rss.xml лишається як є. Слеш після
+     * розширення зробив би адресу схожою на теку, а стрічку за таким
+     * посиланням читалка не знайшла б.
+     */
     public static function withSlash(string $path): string
     {
         if ($path === '' || $path === '/') {
             return '/';
         }
 
-        return '/'.trim($path, '/').'/';
+        $clean = '/'.trim($path, '/');
+
+        return str_contains(basename($clean), '.') ? $clean : $clean.'/';
     }
 }
