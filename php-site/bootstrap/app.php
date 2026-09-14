@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Middleware\CachePage;
 use App\Http\Middleware\CanonicalUrl;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -37,6 +39,19 @@ return Application::configure(basePath: dirname(__DIR__))
          */
         $middleware->redirectGuestsTo('/admin/');
         $middleware->redirectUsersTo('/admin/dashboard/');
+
+        /*
+         * Кеш сторінок — у групі web, після сесії: інакше він не бачив
+         * би, що відвідувач авторизований, і міг би віддати анонімному
+         * сторінку, зібрану для адміністратора.
+         */
+        $middleware->appendToGroup('web', CachePage::class);
+
+        /*
+         * Заголовки безпеки — глобально, а не в групі web: вони потрібні
+         * і на API, і на карті сайту, і на всьому, що віддає застосунок.
+         */
+        $middleware->append(SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
